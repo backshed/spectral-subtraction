@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>BatchFileProcessing</class>
+ <widget class="QDialog" name="BatchFileProcessing">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1021</width>
+    <height>636</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <widget class="QGroupBox" name="groupBox">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>20</y>
+     <width>241</width>
+     <height>531</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Parameters</string>
+   </property>
+   <widget class="QPushButton" name="Run">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>490</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Run</string>
+    </property>
+   </widget>
+   <widget class="QGroupBox" name="Standard">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>221</width>
+      <height>121</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Standard</string>
+    </property>
+    <widget class="QLabel" name="label_9">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>20</y>
+       <width>91</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Beta</string>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="BetaStd">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>40</y>
+       <width>91</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="decimals">
+      <number>4</number>
+     </property>
+     <property name="minimum">
+      <double>0.000000000000000</double>
+     </property>
+     <property name="singleStep">
+      <double>0.010000000000000</double>
+     </property>
+     <property name="value">
+      <double>0.020000000000000</double>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>70</y>
+       <width>71</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Iterations</string>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="AlphaStd">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>40</y>
+       <width>91</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="decimals">
+      <number>4</number>
+     </property>
+     <property name="minimum">
+      <double>0.000000000000000</double>
+     </property>
+     <property name="value">
+      <double>2.000000000000000</double>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>71</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Alpha</string>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="IterStd">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>90</y>
+       <width>91</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>1</number>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>150</y>
+      <width>221</width>
+      <height>171</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Equal-Loudness</string>
+    </property>
+    <widget class="QDoubleSpinBox" name="BetaWtEL">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>90</y>
+       <width>91</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="decimals">
+      <number>4</number>
+     </property>
+     <property name="value">
+      <double>0.005000000000000</double>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_4">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>70</y>
+       <width>91</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Alpha Weight</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_6">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>120</y>
+       <width>151</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Iterations</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_7">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>70</y>
+       <width>91</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Beta Weight</string>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="AlphaWtEL">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>90</y>
+       <width>91</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="decimals">
+      <number>4</number>
+     </property>
+     <property name="minimum">
+      <double>0.000000000000000</double>
+     </property>
+     <property name="maximum">
+      <double>1.000000000000000</double>
+     </property>
+     <property name="value">
+      <double>0.020000000000000</double>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="AlphaEL">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>40</y>
+       <width>91</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="decimals">
+      <number>4</number>
+     </property>
+     <property name="minimum">
+      <double>0.000000000000000</double>
+     </property>
+     <property name="value">
+      <double>4.000000000000000</double>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_3">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>71</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Alpha</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_10">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>20</y>
+       <width>91</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Beta</string>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="BetaEL">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>40</y>
+       <width>91</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="decimals">
+      <number>4</number>
+     </property>
+     <property name="value">
+      <double>0.800000000000000</double>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="IterEL">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>140</y>
+       <width>91</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>1</number>
+     </property>
+     <property name="value">
+      <number>50</number>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_3">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>330</y>
+      <width>221</width>
+      <height>101</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Geometric Approach</string>
+    </property>
+    <widget class="QSpinBox" name="IterGA">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>40</y>
+       <width>91</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>1</number>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_5">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>71</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Iterations</string>
+     </property>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QTableWidget" name="tableWidget">
+   <property name="geometry">
+    <rect>
+     <x>280</x>
+     <y>20</y>
+     <width>711</width>
+     <height>531</height>
+    </rect>
+   </property>
+   <column>
+    <property name="text">
+     <string>File</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>SNR</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Algorithm</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>NRR</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>SDR</string>
+    </property>
+   </column>
+  </widget>
+  <widget class="QDialogButtonBox" name="buttonBox_2">
+   <property name="geometry">
+    <rect>
+     <x>650</x>
+     <y>560</y>
+     <width>341</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="standardButtons">
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox_2</sender>
+   <signal>accepted()</signal>
+   <receiver>BatchFileProcessing</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>820</x>
+     <y>575</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>510</x>
+     <y>317</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox_2</sender>
+   <signal>rejected()</signal>
+   <receiver>BatchFileProcessing</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>876</x>
+     <y>574</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>419</x>
+     <y>587</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

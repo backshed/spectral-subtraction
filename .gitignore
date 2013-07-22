@@ -11,3 +11,10 @@
 *.lai
 *.la
 *.a
+
+*.dll
+*.exe
+*.raw
+*.wav
+a.out
+*.user
