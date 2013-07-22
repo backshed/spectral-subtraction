@@ -423,14 +423,14 @@ NoiseEstimator::NoiseEstimator(SpectralSubtractor *parent):
 void NoiseEstimator::estimationHandler(SubtractionConfiguration& config, bool reinit)
 {
 	// noise estimation
-	switch (config.noiseEstimationAlgorithm)
+	switch (config.estimationAlgo)
 	{
 		case SubtractionConfiguration::NoiseEstimationAlgorithm::Simple:
 			simpleEstimation(config.spectrum, config.noise_power, reinit);
 			break;
 
 		case SubtractionConfiguration::NoiseEstimationAlgorithm::Martin:
-			if(config.spectralSubtractionAlgorithm == SubtractionConfiguration::SpectralSubtractionAlgorithm::GeometricApproach)
+			if(config.subtractionAlgo == SubtractionConfiguration::SpectralSubtractionAlgorithm::GeometricApproach)
 				fftw_execute(config.plan_fw_windowed); // A utiliser dans martinEstimation si GA ?
 
 			if(config.useOLA)
@@ -461,7 +461,7 @@ bool NoiseEstimator::waveletEstimation(SubtractionConfiguration& config, bool re
 	{
 		std::copy_n(config.spectrum, parent->spectrumSize, config.tmp_spectrum);
 		// 2° SS with noise_power_reest
-		switch (config.spectralSubtractionAlgorithm)
+		switch (config.subtractionAlgo)
 		{
 			case SubtractionConfiguration::SpectralSubtractionAlgorithm::Standard:
 				parent->subtraction(config, config.tmp_spectrum, config.noise_power_reest);

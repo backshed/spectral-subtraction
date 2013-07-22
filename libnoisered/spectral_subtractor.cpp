@@ -172,13 +172,13 @@ SpectralSubtractor::~SpectralSubtractor()
 void SpectralSubtractor::subtractionHandler(SubtractionConfiguration &config, bool reinit)
 {
 	double *effective_power_estimation = 0;
-	if(config.noiseEstimationAlgorithm == SubtractionConfiguration::NoiseEstimationAlgorithm::Wavelets)
+	if(config.estimationAlgo == SubtractionConfiguration::NoiseEstimationAlgorithm::Wavelets)
 		effective_power_estimation = config.noise_power_reest;
 	else
 		effective_power_estimation = config.noise_power;
 
 	// Main algorithm
-	switch (config.spectralSubtractionAlgorithm)
+	switch (config.subtractionAlgo)
 	{//TODO optimiser les appels laule
 		case SubtractionConfiguration::SpectralSubtractionAlgorithm::Standard:
 			subtraction(config, config.spectrum, effective_power_estimation);
@@ -196,12 +196,12 @@ void SpectralSubtractor::subtractionHandler(SubtractionConfiguration &config, bo
 
 void SpectralSubtractor::execute(SubtractionConfiguration &config)
 {
-	if(config.spectralSubtractionAlgorithm == SubtractionConfiguration::SpectralSubtractionAlgorithm::GeometricApproach)
+	if(config.subtractionAlgo == SubtractionConfiguration::SpectralSubtractionAlgorithm::GeometricApproach)
 		config.useOLA = true;
 
 	const int increment = config.useOLA? config.ola_frame_increment : config.frame_increment;
 
-	for(int iter = 0; iter < config.iterations; ++iter)
+	for(auto iter = 0U; iter < config.iterations; ++iter)
 	{
 		for(unsigned int sample_n = 0; sample_n < config.filesize; sample_n += increment)
 		{

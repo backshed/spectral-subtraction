@@ -68,9 +68,9 @@ class SubtractionConfiguration
 
 
 
-		//*** Subtraction parameters***//
-		NoiseEstimationAlgorithm noiseEstimationAlgorithm;
-		SpectralSubtractionAlgorithm spectralSubtractionAlgorithm;
+		//*** Subtraction "public" parameters***//
+		NoiseEstimationAlgorithm estimationAlgo;
+		SpectralSubtractionAlgorithm subtractionAlgo;
 
 		unsigned int fftSize;
 		unsigned int spectrumSize;
@@ -80,15 +80,18 @@ class SubtractionConfiguration
 		double beta;
 		double alphawt;
 		double betawt;
-		int iterations;
+		unsigned int iterations;
 
 		double* data;
 		double* origdata;
 		unsigned int filesize;
 
 		bool useOLA; // recommended with GA
+		unsigned int ola_frame_increment;
+		unsigned int frame_increment;
 
 		//*** used inside algos ***///
+		// Arrays used for storing data
 		double *in;
 		double *windowed_in;
 		double *out;
@@ -99,13 +102,13 @@ class SubtractionConfiguration
 		double *noise_power;
 		double *noise_power_reest;
 
+		// FFTW plans
 		fftw_plan plan_fw;
 		fftw_plan plan_fw_windowed;
 		fftw_plan plan_bw;
 		fftw_plan plan_bw_temp;
 
-		unsigned int ola_frame_increment;
-		unsigned int frame_increment;
+
 
 };
 

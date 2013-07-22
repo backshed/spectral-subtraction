@@ -118,22 +118,22 @@ void SubtractionConfiguration::setIterations(int value)
 
 SubtractionConfiguration::NoiseEstimationAlgorithm SubtractionConfiguration::getNoiseEstimationAlgorithm() const
 {
-	return noiseEstimationAlgorithm;
+	return estimationAlgo;
 }
 
 void SubtractionConfiguration::setNoiseEstimationAlgorithm(const NoiseEstimationAlgorithm &value)
 {
-	noiseEstimationAlgorithm = value;
+	estimationAlgo = value;
 }
 
 SubtractionConfiguration::SpectralSubtractionAlgorithm SubtractionConfiguration::getSpectralSubtractionAlgorithm() const
 {
-	return spectralSubtractionAlgorithm;
+	return subtractionAlgo;
 }
 
 void SubtractionConfiguration::setSpectralSubtractionAlgorithm(const SpectralSubtractionAlgorithm &value)
 {
-	spectralSubtractionAlgorithm = value;
+	subtractionAlgo = value;
 }
 
 double *SubtractionConfiguration::getData()
