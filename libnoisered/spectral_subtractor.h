@@ -9,7 +9,7 @@
  * Written by Jean-Mickael Celerier
  * for the ASPL.
  *******************************/
-#include "fftw3.h"
+#include <fftw3.h>
 #include "defines.h"
 #include "cwt_noise_estimator.h"
 

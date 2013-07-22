@@ -1,5 +1,6 @@
 #include "area.h"
 #include <cmath>
+#include <iostream>
 
 Area::Area(Matrix &m):
 	m(m)
@@ -8,9 +9,9 @@ Area::Area(Matrix &m):
 
 void Area::removeArea(Matrix& m)
 {
-	for(unsigned int i = x0; i < x0 + length; ++i)
+	for(auto i = x0; i < x0 + length; ++i)
 	{
-		for(unsigned int j = pairList[i-x0].x-1; j < pairList[i-x0].y+1; ++j)
+		for(auto j = pairList[i-x0].x-1; j < pairList[i-x0].y+1; ++j)
 		{
 			m[i][j] = 0;
 			m.mask[i][j] = 0;
@@ -21,9 +22,9 @@ void Area::removeArea(Matrix& m)
 void Area::plotArea(Matrix& m)
 {
 	std::cout << "x0 " << x0 << "   length " << length << std::endl;
-	for(unsigned int i = 0; i < m.size(); ++i)
+	for(auto i = 0U; i < m.size(); ++i)
 	{
-		for(unsigned int j = 0; j < m[i].size(); ++j)
+		for(auto j = 0U; j < m[i].size(); ++j)
 		{
 			if(i >= x0 &&
 					(i < (x0 + length)) &&
@@ -70,7 +71,7 @@ void Area::plotContour(Matrix& m, unsigned int i, unsigned int j)
 		}
 	};
 
-	for(int k = 0; k < 2; ++k)
+	for(auto k = 0U; k < 2U; ++k)
 	{
 		while(m.mask[i][j] != UPPER_BORN)
 		{
@@ -92,7 +93,7 @@ void Area::plotContour(Matrix& m, unsigned int i, unsigned int j)
 void Area::computeParameters(Matrix& m)
 {
 
-	for(unsigned int i = x0 + 1; i < x0 + length - 1; ++i)
+	for(auto i = x0 + 1; i < x0 + length - 1; ++i)
 	{
 		for(unsigned int j = pairList[i-x0].x + 1; j < pairList[i-x0].y - 1; ++j)
 		{
@@ -110,19 +111,27 @@ void Area::printParameters()
 {
 	std::cout << "Parameters of the area" << std::endl;
 	std::cout << "Beginning:\t" << x0 << "\t\tLength: " << length << "\tHeight: " << verticalSize() << std::endl;
-	std::cout << "Mean:\t\t" << sumOfValues / numPixels << "\t\tMedian freq: " << getFreq() << std::endl;
+	std::cout << "Mean:\t\t" << sumOfValues / numPixels << "\t\tMedian pxl: " << getMedianHeight() << std::endl;
 }
 
-
-double Area::getFreq()
+int Area::getMedianHeight()
 {
-	return 259500.0 / (medianHeight - 2.0); // padding de deux pixels olol
+	return medianHeight - 2; // we cover for the 2 pixels displacement
 }
 
-int Area::getFFTBin()
+unsigned int Area::getLength() const
 {
-	static double f_per_bin = (SAMPLING_RATE / 2.0) / SPECTRUM_SIZE;
-	return std::max(10, std::min((int) std::round(getFreq() / f_per_bin), SPECTRUM_SIZE - 1)); // TODO 10 empirique
+	return length;
+}
+
+double Area::getSumOfValues() const
+{
+	return sumOfValues;
+}
+
+unsigned int Area::getNumPixels() const
+{
+	return numPixels;
 }
 
 int Area::verticalSize()

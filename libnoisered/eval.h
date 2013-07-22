@@ -12,9 +12,9 @@
  *******************************/
 
 // Computes noise-reduction rate
-double NRR(double* original, double* reduced, int length);
+double NRR(double* original, double* reduced, unsigned int length);
 
 // Computes speech distortion quantity
-double SDR(double* original, double* reduced, int fft_size);
+double SDR(double* original, double* reduced, unsigned int fft_size);
 
 #endif

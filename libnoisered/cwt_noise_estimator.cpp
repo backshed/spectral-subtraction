@@ -45,9 +45,9 @@ void CWTNoiseEstimator::writeFiles(QString dir, int file_no)
 {
 	QFile file(dir + QString("/%1.dat").arg(file_no));
 	file.open(QIODevice::WriteOnly);
-	for(unsigned int i = 0; i < wt->rows() + 2; i++)
+	for(auto i = 0U; i < wt->rows() + 2; i++)
 	{
-		for(unsigned int j = 0; j < wt->cols() + 2; j++)
+		for(auto j = 0U; j < wt->cols() + 2; j++)
 		{
 			file.write(QString(" %1").arg((*arr)[j][i]).toLatin1().data());
 		}
@@ -62,7 +62,7 @@ void CWTNoiseEstimator::computeCWT(double* signal)
 	ReDataProxy data = s->reData();
 
 	// remplir data
-	for(unsigned int i = 0; i < fftSize; ++i)
+	for(auto i = 0U; i < fftSize; ++i)
 	{
 		data[i] = signal[i];
 	}
@@ -89,7 +89,7 @@ void CWTNoiseEstimator::computeAreas()
 				{
 					Area* a = new Area((*arr));
 					a->plotContour((*arr), i, j);
-					if(a->length > 1)
+					if(a->getLength() > 1)
 					{
 						a->computeParameters((*arr));
 						//a->printParameters();
@@ -132,7 +132,7 @@ void CWTNoiseEstimator::estimate(double* signal_in, double* noise_power, bool co
 
 	// Apply ceiling
 	//TODO Get a good ceiling estimation
-	if(computeMax) ceil = 0.03;// maxi - 10.0 / FFT_SIZE;
+	if(computeMax) ceil = 0.03;// maxi - 10.0 / fftSize;
 	applyToArr({lowCeiling});
 
 	createFilterBinsSeparation();
@@ -152,7 +152,7 @@ void CWTNoiseEstimator::estimate(double* signal_in, double* noise_power, bool co
 void CWTNoiseEstimator::createFilterBinsSeparation()
 {
 	// TODO
-	//	for(int fbin = 0; fbin < SPECTRUM_SIZE; ++fbin)
+	//	for(int fbin = 0; fbin < spectrumSize; ++fbin)
 	//	{
 	//		int wbin = getWaveletBinFromFFTBin(fbin);
 	//		qDebug() << fbin << wbin;
@@ -167,11 +167,11 @@ void CWTNoiseEstimator::computeAreasParameters()
 	areaParams->clear();
 	for(Area* area : areas)
 	{
-		if(area->length >= 2 && area->numPixels > 4)
+		if(area->getLength() >= 2 && area->getNumPixels() > 4)
 		{
-			int bin = std::min(SPECTRUM_SIZE - 1, std::max(0, area->getFFTBin()));
+			int bin = std::min(spectrumSize - 1, std::max((unsigned int) 0, getFFTBin(area->getMedianHeight())));
 			(*areaParams)[bin].numAreas += 1;
-			(*areaParams)[bin].mean     += area->sumOfValues / area->numPixels;
+			(*areaParams)[bin].mean     += area->getSumOfValues() / area->getNumPixels();
 		}
 		delete area;
 	}
@@ -180,7 +180,7 @@ void CWTNoiseEstimator::computeAreasParameters()
 void CWTNoiseEstimator::reestimateNoise(double* noise_power)
 {
 	// Decrease of the power according to estimation
-	for(int i = 0; i < SPECTRUM_SIZE; ++i)
+	for(auto i = 0U; i < spectrumSize; ++i)
 	{
 		if((*areaParams)[i].numAreas != 0  && (*areaParams)[i].mean > 0 && (*areaParams)[i].mean < 1000)
 		{
@@ -216,5 +216,16 @@ void CWTNoiseEstimator::clearAreaParams()
 	std::fill_n(areaParams->begin(), areaParams->size(), areaParams_());
 }
 
+
+double CWTNoiseEstimator::getFreq(int pixel)
+{
+	return 259500.0 / (pixel - 2.0); // padding de deux pixels olol
+}
+
+unsigned int CWTNoiseEstimator::getFFTBin(int pixel)
+{
+	static double f_per_bin = (samplingRate / 2.0) / spectrumSize;
+	return std::max((unsigned int) 10, std::min((unsigned int) std::round(getFreq(pixel) / f_per_bin), spectrumSize - 1)); // TODO 10 empirique
+}
 
 CWTNoiseEstimator::areaParams_::areaParams_(): numAreas(0), mean(0) { }

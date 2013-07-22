@@ -80,7 +80,7 @@ void AudioManager::exec()
 
 	QDataStream stream(audioBuffer);
 	stream.setByteOrder(QDataStream::LittleEndian);
-	for(int i = 0; i < s_data->getSize(); ++i)
+	for(auto i = 0U; i < s_data->getSize(); ++i)
 	{
 		qint16 r = s_data->getData()[i] * 32768.;
 		stream << r;

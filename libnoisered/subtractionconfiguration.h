@@ -19,7 +19,7 @@ class SubtractionConfiguration
 		~SubtractionConfiguration();
 
 		double* getData();
-		int getSize();
+		unsigned int getSize();
 
 		double* getNoiseData();
 
@@ -104,8 +104,8 @@ class SubtractionConfiguration
 		fftw_plan plan_bw;
 		fftw_plan plan_bw_temp;
 
-		unsigned int ola_frame_increment = FFT_SIZE / 2;
-		unsigned int frame_increment = FFT_SIZE;
+		unsigned int ola_frame_increment;
+		unsigned int frame_increment;
 
 };
 

@@ -50,6 +50,9 @@ class CWTNoiseEstimator
 		uint fftSize;
 		uint spectrumSize;
 		uint samplingRate;
+
+		double getFreq(int pixel);
+		unsigned int getFFTBin(int pixel);
 };
 
 #endif // CWT_NOISE_ESTIMATOR_H

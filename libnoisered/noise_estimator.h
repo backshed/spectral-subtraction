@@ -1,6 +1,6 @@
 #ifndef NOISE_ESTIMATION_H
 #define NOISE_ESTIMATION_H
-#include "fftw3.h"
+#include <fftw3.h>
 #include "defines.h"
 #include "spectral_subtractor.h"
 /*

@@ -3,6 +3,7 @@
 
 #include <climits>
 #include "matrix.h"
+
 struct Area
 {
 	Area(Matrix& m);
@@ -14,12 +15,16 @@ struct Area
 	void computeParameters(Matrix& m);
 	void printParameters();
 
-
-	double getFreq();
-	int getFFTBin();
 	int verticalSize();
+	int getMedianHeight();
 
 
+	public:
+	unsigned int getLength() const;
+	double getSumOfValues() const;
+	unsigned int getNumPixels() const;
+
+	private:
 	Matrix& m;
 	unsigned int minHeight = INT_MAX, maxHeight = 0;
 
@@ -31,7 +36,6 @@ struct Area
 	unsigned int numPixels = 0;
 
 	unsigned int medianHeight = 0;
-
 
 
 };

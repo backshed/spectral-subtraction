@@ -2,8 +2,6 @@
 #define MATRIX_H
 
 #include <vector>
-#include <iostream>
-#define UPPER_BORN 2
 #include "point.h"
 #include "defines.h"
 

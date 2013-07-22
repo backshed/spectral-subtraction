@@ -146,7 +146,7 @@ double *SubtractionConfiguration::getNoiseData()
 	return origdata;
 }
 
-int SubtractionConfiguration::getSize()
+unsigned int SubtractionConfiguration::getSize()
 {
 	return filesize;
 }

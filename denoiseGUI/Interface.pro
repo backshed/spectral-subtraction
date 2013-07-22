@@ -18,8 +18,6 @@ SOURCES += main.cpp\
 	dataholder.cpp \
 		../libnoisered/eval.cpp \
 	batchprocessing.cpp \
-		../libnoisered/filters.cpp \
-		../libnoisered/window.cpp \
 	batchfileprocessing.cpp \
 	../libnoisered/area.cpp \
 	../libnoisered/matrix.cpp \
@@ -36,9 +34,7 @@ HEADERS  += mainwindow.h \
 	dataholder.h \
 		../libnoisered/eval.h \
 	batchprocessing.h \
-		../libnoisered/filters.h \
 		../libnoisered/defines.h \
-		../libnoisered/window.h \
 	batchfileprocessing.h \
 	../libnoisered/area.h \
 	../libnoisered/matrix.h \
@@ -54,17 +50,5 @@ FORMS    += mainwindow.ui \
 	batchprocessing.ui \
 	batchfileprocessing.ui
 
-unix:LIBS += -lfftw3
-win32:LIBS += -lfftw3-3
-
-
+LIBS += -lfftw3  -lcwt
 INCLUDEPATH += $$PWD/../libnoisered
-
-#!!! CWTLIB
-unix:!macx|win32: LIBS += -lcwt
-
-INCLUDEPATH += cwtlib/
-INCLUDEPATH += $$PWD/../cwtlib/cwtlib
-#DEPENDPATH += $$PWD/../cwtlib/cwtlib
-
-unix:!macx: PRE_TARGETDEPS += $$PWD/../cwtlib/libs/libcwt.a

@@ -9,8 +9,6 @@
 
 #include "spectral_subtractor.h"
 #include "defines.h"
-#include "filters.h"
-#include "window.h"
 #include "noise_estimator.h"
 #include "subtractionconfiguration.h"
 // Qt
