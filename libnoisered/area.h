@@ -1,7 +1,7 @@
 #ifndef AREA_H
 #define AREA_H
 
-#include <climits>
+
 #include "matrix.h"
 
 class Area
@@ -25,7 +25,8 @@ class Area
 
 	private:
 		Matrix& m;
-		unsigned int minHeight = INT_MAX, ;
+		unsigned int minHeight;
+		unsigned int maxHeight;
 		unsigned int x0 = 0;
 		unsigned int length = 0;
 		std::vector<Pair> pairList;

@@ -1,9 +1,11 @@
 #include "area.h"
 #include <cmath>
+#include <climits>
 #include <iostream>
 
 Area::Area(Matrix &m):
-	m(m)
+	m(m),
+	minHeight(INT_MAX)
 {
 }
 
@@ -14,7 +16,7 @@ void Area::removeArea(Matrix& m)
 		for(auto j = pairList[i-x0].x-1; j < pairList[i-x0].y+1; ++j)
 		{
 			m[i][j] = 0;
-			m.mask[i][j] = 0;
+			m.unmask(i, j);
 		}
 	}
 }
@@ -31,11 +33,11 @@ void Area::plotArea(Matrix& m)
 					(j >= pairList[i-x0].x) &&
 					(j < pairList[i-x0].y))
 			{
-				m.mask[i][j] = UPPER_BORN;
+				m.mask(i, j);
 			}
 			else
 			{
-				m[i][j] = 0;
+				m[i][j] = 0; //TODO why ?
 			}
 		}
 	}
@@ -44,7 +46,6 @@ void Area::plotArea(Matrix& m)
 void Area::plotContour(Matrix& m, unsigned int i, unsigned int j)
 {
 	int i_orig = i, j_orig = j;
-	double contour_val = UPPER_BORN;
 
 	this->x0 = i;
 	Point p;
@@ -73,26 +74,25 @@ void Area::plotContour(Matrix& m, unsigned int i, unsigned int j)
 
 	for(auto k = 0U; k < 2U; ++k)
 	{
-		while(m.mask[i][j] != UPPER_BORN)
+		while(!m.isMasked(i, j))
 		{
-			m.mask[i][j] = UPPER_BORN;
+			m.mask(i, j);
 			p = m.next_adjacent_to_zero(i, j, x0);
-			if(p.fuckedup) break;
+			if(p.notValid()) break;
 			add_point();
 		}
 
 		i = i_orig;
 		j = j_orig;
 		p = m.next_adjacent_to_zero(i, j, x0);
-		if(p.fuckedup) break;
+		if(p.notValid()) break;
 		add_point();
 	}
-	m.mask[i_orig][j_orig] = contour_val;
+	m.mask(i_orig, j_orig);
 }
 
 void Area::computeParameters(Matrix& m)
 {
-
 	for(auto i = x0 + 1; i < x0 + length - 1; ++i)
 	{
 		for(auto j = pairList[i-x0].x + 1; j < pairList[i-x0].y - 1; ++j)
@@ -138,5 +138,3 @@ int Area::verticalSize()
 {
 	return maxHeight - minHeight;
 }
-
-

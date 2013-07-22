@@ -4,9 +4,14 @@
 #include "pair.h"
 struct Point : public Pair
 {
-    Point();
-    Point(int x, int y, int fuckedup = false);
-    bool fuckedup;
+	Point();
+	Point(int x, int y, int invalid = false);
+
+	bool notValid() const;
+
+
+	private:
+	bool invalid;
 };
 
 #endif // POINT_H

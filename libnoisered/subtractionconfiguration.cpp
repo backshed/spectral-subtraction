@@ -1,6 +1,5 @@
 #include "subtractionconfiguration.h"
 #include <parallel/algorithm>
-#include <sys/stat.h>
 #include <fstream>
 
 #include <QDebug>
@@ -65,9 +64,6 @@ SubtractionConfiguration::~SubtractionConfiguration()
 }
 
 
-
-
-
 void SubtractionConfiguration::reinitData()
 {
 	std::copy(origdata, origdata + filesize, data);
@@ -81,6 +77,7 @@ void SubtractionConfiguration::setAlpha(double value)
 {
 	alpha = std::max(value, 0.000001);
 }
+
 double SubtractionConfiguration::getBeta() const
 {
 	return beta;
@@ -168,7 +165,7 @@ unsigned int SubtractionConfiguration::readFile(char* str)
 
 
 	// We have to get signal between -1 and 1
-	double normalizationFactor = pow(2.0, sizeof(short) * 8 - 1.0);
+	static const double normalizationFactor = pow(2.0, sizeof(short) * 8 - 1.0);
 
 	unsigned int pos = 0;
 	short sample;
@@ -186,14 +183,14 @@ unsigned int SubtractionConfiguration::readFile(char* str)
 void SubtractionConfiguration::copyInputSimple(int pos)
 {
 	// Data copying
-	if(fftSize > filesize - pos) // TODO last case *** INVERT FOR CACHE OPTIMISATION ***
+	if(fftSize <= filesize - pos) // TODO last case *** INVERT FOR CACHE OPTIMISATION ***
 	{
-		std::copy_n(data + pos, filesize - pos, in);
-		std::fill_n(in + filesize - pos, fftSize - (filesize - pos), 0);
+		std::copy_n(data + pos, fftSize, in);
 	}
 	else
 	{
-		std::copy_n(data + pos, fftSize, in);
+		std::copy_n(data + pos, filesize - pos, in);
+		std::fill_n(in + filesize - pos, fftSize - (filesize - pos), 0);
 	}
 }
 
@@ -210,15 +207,7 @@ void SubtractionConfiguration::copyOutputSimple(int pos)
 void SubtractionConfiguration::copyInputOLA(int pos)
 {
 	// Data copying
-	if(ola_frame_increment > filesize - pos) // last case
-	{
-		std::copy_n(data + pos, filesize - pos, in);
-		std::fill_n(in + filesize - pos, ola_frame_increment - (filesize - pos), 0);
-
-		std::copy_n(in, fftSize, windowed_in);
-		std::fill_n(data + pos, filesize - pos, 0);
-	}
-	else
+	if(ola_frame_increment <= filesize - pos) // last case
 	{
 		std::copy_n(data + pos, ola_frame_increment, in);
 		std::fill_n(in + ola_frame_increment, ola_frame_increment, 0);
@@ -226,7 +215,16 @@ void SubtractionConfiguration::copyInputOLA(int pos)
 		std::copy_n(in, fftSize, windowed_in);
 		std::fill_n(data + pos, ola_frame_increment, 0);
 	}
+	else
+	{
+		std::copy_n(data + pos, filesize - pos, in);
+		std::fill_n(in + filesize - pos, ola_frame_increment - (filesize - pos), 0);
+
+		std::copy_n(in, fftSize, windowed_in);
+		std::fill_n(data + pos, filesize - pos, 0);
+	}
 }
+
 void SubtractionConfiguration::copyOutputOLA(int pos)
 {
 	for(unsigned int j = 0; (j < fftSize) && (pos + j < filesize); ++j)

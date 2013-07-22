@@ -81,7 +81,7 @@ void CWTNoiseEstimator::computeAreas()
 		for(uint j = arr->getFirstRow(); j < arr->getNumRows(); ++j)
 			if((*arr)[i][j] > 0)
 			{
-				if(arr->mask[i][j] == UPPER_BORN) // already explored area
+				if(arr->isMasked(i, j)) // already explored area
 				{
 					while((*arr)[i][++j] > 0); // need to find more efficient way, by using Area* and jumping
 				}

@@ -3,7 +3,7 @@
 
 Matrix::Matrix(size_type cols, size_type rows):
 	std::vector<std::vector<double>>(cols, std::vector<double>(rows)),
-	mask(cols, std::vector<double>(rows))
+	_mask(cols, std::vector<double>(rows))
 {
 }
 
@@ -22,7 +22,7 @@ bool Matrix::is_adjacent_to_zero(int i, int j)
 			&&
 			(
 				at(i)[j] != 0 &&
-				mask[i][j] != UPPER_BORN
+				!isMasked(i, j)
 			)
 			;
 }
@@ -77,4 +77,19 @@ uint Matrix::getNumRows() const
 void Matrix::setNumRows(const uint &value)
 {
 	numRows = value;
+}
+
+bool Matrix::isMasked(unsigned int i, unsigned int j)
+{
+	return _mask[i][j] == mask_value;
+}
+
+void Matrix::mask(unsigned int i, unsigned int j)
+{
+	_mask[i][j] = mask_value;
+}
+
+void Matrix::unmask(unsigned int i, unsigned int j)
+{
+	_mask[i][j] = 0;
 }
