@@ -225,7 +225,8 @@ double CWTNoiseEstimator::getFreq(int pixel)
 unsigned int CWTNoiseEstimator::getFFTBin(int pixel)
 {
 	static double f_per_bin = (samplingRate / 2.0) / spectrumSize;
-	return std::max((unsigned int) 10, std::min((unsigned int) std::round(getFreq(pixel) / f_per_bin), spectrumSize - 1)); // TODO 10 empirique
+	return std::max((unsigned int) 10, std::min((unsigned int) std::round(getFreq(pixel) / f_per_bin), spectrumSize - 1));
+	// TODO 10 empirique, cf. Excel
 }
 
 CWTNoiseEstimator::areaParams_::areaParams_(): numAreas(0), mean(0) { }

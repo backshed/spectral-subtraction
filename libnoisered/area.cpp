@@ -95,7 +95,7 @@ void Area::computeParameters(Matrix& m)
 
 	for(auto i = x0 + 1; i < x0 + length - 1; ++i)
 	{
-		for(unsigned int j = pairList[i-x0].x + 1; j < pairList[i-x0].y - 1; ++j)
+		for(auto j = pairList[i-x0].x + 1; j < pairList[i-x0].y - 1; ++j)
 		{
 			numPixels++;
 			sumOfValues += m[i][j];

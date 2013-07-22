@@ -28,7 +28,6 @@ AudioManager::AudioManager(DataHolder *config, QWidget *parent) :
 
 	audioOut = new QAudioOutput(format, this);
 	connect(audioOut, SIGNAL(stateChanged(QAudio::State)), this, SLOT(handleStateChanged(QAudio::State)));
-
 }
 
 void AudioManager::exec()
@@ -66,8 +65,6 @@ void AudioManager::exec()
 			break;
 	}
 
-	s_data->reinitData();
-
 	s->execute(*s_data);
 
 	emit sNRR(QString("%1").arg(NRR(s_data->getNoiseData(), s_data->getData(), s_data->getSize())));
@@ -93,7 +90,7 @@ void AudioManager::loadSource(QString src)
 {
 	if(noiseFile != 0) delete noiseFile;
 	noiseFile = new QFile(src);
-	s_data->read_file(noiseFile->fileName().toLatin1().data());
+	s_data->readFile(noiseFile->fileName().toLatin1().data());
 	loaded = true;
 }
 

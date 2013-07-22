@@ -27,7 +27,7 @@ void NoiseEstimator::clean()
 // This functions computes the power and the phase vector of the in argument.
 void NoiseEstimator::compute_power_and_phase(fftw_complex* in, double* powoutput, double* phaseoutput)
 {
-	for(unsigned int i = 0; i < parent->spectrumSize; ++i)
+	for(auto i = 0U; i < parent->spectrumSize; ++i)
 	{
 		powoutput[i] = pow(in[i][0], 2) + pow(in[i][1], 2);
 		phaseoutput[i] = atan2(in[i][1], in[i][0]);
@@ -37,7 +37,7 @@ void NoiseEstimator::compute_power_and_phase(fftw_complex* in, double* powoutput
 // This functions computes the power of a given spectrum.
 void NoiseEstimator::compute_power(fftw_complex* in, double* powoutput)
 {
-	for(unsigned int i = 0; i < parent->spectrumSize; ++i)
+	for(auto i = 0U; i < parent->spectrumSize; ++i)
 	{
 		powoutput[i] = in[i][0] * in[i][0] + in[i][1] * in[i][1];
 	}
@@ -48,7 +48,7 @@ int NoiseEstimator::update_noise(fftw_complex* in, double* old_rms)
 {
 	// We estimate the RMS power and compare it to previous noise power
 	double current_rms = 0;
-	for(unsigned int i = 0; i < parent->spectrumSize; ++i)
+	for(auto i = 0U; i < parent->spectrumSize; ++i)
 		current_rms += pow(in[i][0], 2) + pow(in[i][1], 2);
 
 	current_rms = sqrt(current_rms / parent->spectrumSize);

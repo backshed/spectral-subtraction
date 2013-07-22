@@ -1,6 +1,9 @@
 #include "subtractionconfiguration.h"
 #include <parallel/algorithm>
 #include <sys/stat.h>
+#include <fstream>
+
+#include <QDebug>
 
 SubtractionConfiguration::SubtractionConfiguration(int fft_Size, int sampling_Rate)
 {
@@ -151,37 +154,31 @@ unsigned int SubtractionConfiguration::getSize()
 	return filesize;
 }
 
-
-// Refaire cette fonction en c++ PLIZ
-int SubtractionConfiguration::read_file(char* str)
+unsigned int SubtractionConfiguration::readFile(char* str)
 {
-	FILE* fp;
-	short buffer;
-	int i;
-	int pos = 0;
-
-	fp = fopen(str, "rb");
-	if(fp == NULL)
-	{
-		perror("fopen");
-		return -1;
-	}
-
-	struct stat sbuf;
-	stat(str, &sbuf);
+	std::ifstream ifile(str, std::ios_base::ate | std::ios_base::binary);
+	filesize = ifile.tellg() / (sizeof(short) / sizeof(char));
+	ifile.clear();
+	ifile.seekg(0, std::ios_base::beg);
 
 	if(origdata != 0) delete origdata;
 	if(data != 0) delete data;
-	origdata = new double[sbuf.st_size];
-	data = new double[sbuf.st_size];
+	origdata = new double[filesize];
+	data = new double[filesize];
 
-	while((i = fread(&buffer, sizeof(short), 1, fp)) != 0)
+
+	// We have to get signal between -1 and 1
+	double normalizationFactor = pow(2.0, sizeof(short) * 8 - 1.0);
+
+	unsigned int pos = 0;
+	short sample;
+	while(ifile.read((char*)&sample, sizeof(short)) && pos < filesize)
 	{
-		origdata[pos] = buffer / pow(2.0, sizeof(short) * 8 - 1.0);
-		++pos;
+		origdata[pos++] = sample / normalizationFactor;
 	}
-	filesize = pos;
-	return pos;
+
+	ifile.close();
+	return filesize;
 }
 
 

@@ -1,10 +1,11 @@
 // C headers
 #include <cmath>
-
 #include <clocale>
 
 // C++ headers
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <parallel/algorithm>
 
 #include "spectral_subtractor.h"
@@ -18,7 +19,7 @@
 // Does the main subtraction algorithm
 void SpectralSubtractor::subtraction(SubtractionConfiguration& config, fftw_complex *input_spectrum, double* noise_power)
 {
-	for(unsigned int i = 0; i < spectrumSize; ++i)
+	for(auto i = 0U; i < spectrumSize; ++i)
 	{
 		double Apower, Bpower, magnitude, phase, y;
 
@@ -37,7 +38,7 @@ void SpectralSubtractor::subtraction(SubtractionConfiguration& config, fftw_comp
 // Does the main subtraction algorithm
 void SpectralSubtractor::subtraction_el(SubtractionConfiguration &config, fftw_complex* input_spectrum, double* noise_power)
 {
-	for(unsigned int i = 0; i < spectrumSize; ++i)
+	for(auto i = 0U; i < spectrumSize; ++i)
 	{
 		double Apower, Bpower, magnitude, phase, y, alpha, beta;
 		alpha = config.alpha - config.alphawt * (loudness_contour[i] - 60);
@@ -65,15 +66,13 @@ void SpectralSubtractor::geom_algo(fftw_complex* input_spectrum, double* noise_p
 
 	double gammai, gamma, chi, h, ymag, xmag;
 
-	// TODO A CHANGER SI SPECTRUMSIZE CHANGE
-
 	if(firstcall)
 	{
-		for(unsigned int i = 0; i < spectrumSize; ++i)
+		for(auto i = 0U; i < spectrumSize; ++i)
 			prev_gamma[i] = prev_halfchi[i] = 1;
 	}
 
-	for(unsigned int i = 0; i < spectrumSize; ++i)
+	for(auto i = 0U; i < spectrumSize; ++i)
 	{
 		// 1) Magnitude spectrum
 		ymag = sqrt(pow(input_spectrum[i][0], 2.0) + pow(input_spectrum[i][1], 2.0));
@@ -148,15 +147,17 @@ void SpectralSubtractor::loadLoudnessContour(SubtractionConfiguration& config)
 	// refers to a spectrum with symmetrical coefficients
 	// but fftw only compute non-symmetric part, so we only have to read one half of the file.
 	// We choose to read the first half, hence it is in reverse order.
+
 	char path[30];
 	sprintf(path, "60phon/loudness_%d.data", config.fftSize);
-	FILE* ldata = fopen(path, "r");
-	loudness_contour = (double*) malloc(sizeof(double) * config.fftSize / 2 );
-	for(int i = config.fftSize / 2 - 1; i >= 0 ; --i)
+
+	std::ifstream ldata(path);
+	loudness_contour = new double[config.fftSize / 2];
+	for(auto i = 0U; i < config.fftSize / 2; ++i)
 	{
-		fscanf( ldata, "%lf\n", &loudness_contour[i] );
+		ldata >> loudness_contour[(config.fftSize / 2 - 1) - i];
 	}
-	fclose(ldata);
+	ldata.close();
 }
 
 SpectralSubtractor::~SpectralSubtractor()
@@ -196,6 +197,8 @@ void SpectralSubtractor::subtractionHandler(SubtractionConfiguration &config, bo
 
 void SpectralSubtractor::execute(SubtractionConfiguration &config)
 {
+	config.reinitData();
+
 	if(config.subtractionAlgo == SubtractionConfiguration::SpectralSubtractionAlgorithm::GeometricApproach)
 		config.useOLA = true;
 
@@ -203,9 +206,8 @@ void SpectralSubtractor::execute(SubtractionConfiguration &config)
 
 	for(auto iter = 0U; iter < config.iterations; ++iter)
 	{
-		for(unsigned int sample_n = 0; sample_n < config.filesize; sample_n += increment)
+		for(auto sample_n = 0U; sample_n < config.filesize; sample_n += increment)
 		{
-
 			// Data copying
 			if(config.useOLA)
 				config.copyInputOLA(sample_n);

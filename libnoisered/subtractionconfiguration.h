@@ -23,7 +23,7 @@ class SubtractionConfiguration
 
 		double* getNoiseData();
 
-		int read_file(char *str);
+		unsigned int readFile(char *str);
 
 		void reinitData();
 		double getAlpha() const;
