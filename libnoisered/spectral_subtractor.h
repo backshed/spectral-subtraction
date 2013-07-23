@@ -26,6 +26,7 @@ class SpectralSubtractor
 		void execute(SubtractionConfiguration& config);
 
 		void initialize(SubtractionConfiguration &config);
+		void outputNoiseSpectrum(SubtractionConfiguration &config);
 	private:
 		void subtraction(SubtractionConfiguration &config, fftw_complex* input_spectrum, double* noise_power);
 		void subtraction_el(SubtractionConfiguration &config, fftw_complex* input_spectrum, double* noise_power);

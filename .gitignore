@@ -18,3 +18,7 @@
 *.wav
 a.out
 *.user
+*.dat
+*.png
+*.bat
+*.txt

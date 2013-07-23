@@ -39,7 +39,7 @@ void NoiseEstimator::compute_power(fftw_complex* in, double* powoutput)
 {
 	for(auto i = 0U; i < parent->spectrumSize; ++i)
 	{
-		powoutput[i] = in[i][0] * in[i][0] + in[i][1] * in[i][1];
+		powoutput[i] = pow(in[i][0], 2) + pow(in[i][1], 2);
 	}
 }
 
@@ -477,6 +477,7 @@ bool NoiseEstimator::waveletEstimation(SubtractionConfiguration& config, bool re
 		}
 
 		fftw_execute(config.plan_bw_temp);
+
 		// 3° Compute CWT and reestimate noise
 		cwt_noise_estimator.estimate(config.tmp_out, config.noise_power_reest, computeMax);
 		computeMax = false;

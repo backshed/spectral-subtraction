@@ -17,6 +17,7 @@ class CWTNoiseEstimator
 		void writeSimpleCWT(double *signal_in);
 		void initialize(SubtractionConfiguration& config);
 		void clean();
+
 	private:
 		int getFFTBinFromFrequency(double freq);
 		double getFrequencyFromFFTBin(int bin);

@@ -3,6 +3,6 @@
 
 #define UPPER_BORN 2
 
-//#define PLOT_CWT
+#define PLOT_CWT
 typedef unsigned int uint;
 #endif // DEFINES_H

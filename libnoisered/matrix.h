@@ -14,6 +14,7 @@ class Matrix : public std::vector<std::vector<double>>
 		bool is_adjacent_to_zero(int i, int j);
 		Point next_adjacent_to_zero(unsigned int i, unsigned int j, unsigned int x0);
 
+		const std::vector<std::vector<double> > &getMask() const;
 
 
 		uint getFirstCol() const;

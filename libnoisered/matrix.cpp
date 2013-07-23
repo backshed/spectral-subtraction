@@ -42,6 +42,12 @@ Point Matrix::next_adjacent_to_zero(unsigned int i, unsigned int j, unsigned int
 	// std::cout << "bad things happens next_adjacent_to_zero\n";
 	return(Point(0, 0, true));
 }
+
+const std::vector<std::vector<double>>& Matrix::getMask() const
+{
+	return _mask;
+}
+
 uint Matrix::getFirstCol() const
 {
 	return firstCol;

@@ -24,7 +24,8 @@ void SpectralSubtractor::subtraction(SubtractionConfiguration& config, fftw_comp
 		double Apower, Bpower, magnitude, phase, y;
 
 		y = pow(input_spectrum[i][0], 2) + pow(input_spectrum[i][1], 2);
-		Apower = y - config.alpha * noise_power[i]; // subtraction
+
+		Apower = y - config.alpha * noise_power[i];
 		Bpower = config.beta * y;
 
 		magnitude = sqrt((Apower > Bpower)? Apower : Bpower);
@@ -45,7 +46,8 @@ void SpectralSubtractor::subtraction_el(SubtractionConfiguration &config, fftw_c
 		beta  = config.beta  - config.betawt  * (loudness_contour[i] - 60);
 
 		y = pow(input_spectrum[i][0], 2) + pow(input_spectrum[i][1], 2);
-		Apower = y - alpha * noise_power[i]; // subtraction
+
+		Apower = y - alpha * noise_power[i];
 		Bpower = beta * y;
 
 		magnitude =  sqrt((Apower > Bpower)? Apower : Bpower);
@@ -56,6 +58,19 @@ void SpectralSubtractor::subtraction_el(SubtractionConfiguration &config, fftw_c
 	}
 }
 
+// Debug function
+void SpectralSubtractor::outputNoiseSpectrum(SubtractionConfiguration& config)
+{
+	std::ofstream out("spectrumList.txt", std::ios_base::app);
+	for(auto i = 0U; i < config.spectrumSize; ++i)
+		out << config.noise_power[i] << "\n";
+	out << std::endl;
+	for(auto i = 0U; i < config.spectrumSize; ++i)
+		out << config.noise_power_reest[i] << "\n";
+	out << std::endl;
+	out.close();
+
+}
 
 // Geometric Approach Algorithm
 void SpectralSubtractor::geom_algo(fftw_complex* input_spectrum, double* noise_power, bool firstcall)
@@ -85,7 +100,6 @@ void SpectralSubtractor::geom_algo(fftw_complex* input_spectrum, double* noise_p
 		prev_gamma[i] = gamma;
 
 		// 4) compute Chi
-
 		chi = geom_alpha * prev_halfchi[i] + (1.0 - geom_alpha) * pow(sqrt(gamma) - 1.0, 2.0);
 		chi = (twentysixdb > chi)? twentysixdb : chi;
 
@@ -140,7 +154,8 @@ void SpectralSubtractor::loadLoudnessContour(SubtractionConfiguration& config)
 {
 	// loading data for loudness contour algo
 #ifdef __linux__
-	setlocale(LC_ALL, "POSIX"); // THANK YOU LINUX
+	setlocale(LC_ALL, "POSIX");
+	// Because on french OS linux will try to read numbers with commas instead of dots
 #endif
 
 	// NOTE : the loudnes_xxx (ex. : xxx = 512)
@@ -165,7 +180,6 @@ SpectralSubtractor::~SpectralSubtractor()
 	delete[] prev_gamma;
 	delete[] prev_halfchi;
 
-	/***/
 	delete estimator;
 	delete[] loudness_contour;
 }
@@ -208,7 +222,7 @@ void SpectralSubtractor::execute(SubtractionConfiguration &config)
 	{
 		for(auto sample_n = 0U; sample_n < config.filesize; sample_n += increment)
 		{
-			// Data copying
+			// Data copying from input
 			if(config.useOLA)
 				config.copyInputOLA(sample_n);
 			else
@@ -217,14 +231,15 @@ void SpectralSubtractor::execute(SubtractionConfiguration &config)
 			// FFT
 			fftw_execute(config.plan_fw);
 
-			//Noise estimation
+			// Noise estimation
 			estimator->estimationHandler(config, sample_n == 0);
-
 			//Spectral subtraction
 			subtractionHandler(config, sample_n == 0);
 
-			//**** Result output ****//
+			// IFFT
 			fftw_execute(config.plan_bw);
+
+			// Data copying to output
 			if(config.useOLA)
 				config.copyOutputOLA(sample_n);
 			else

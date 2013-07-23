@@ -50,6 +50,7 @@ void CWTNoiseEstimator::writeFiles(QString dir, int file_no)
 		for(auto j = 0U; j < wt->cols() + 2; j++)
 		{
 			file.write(QString(" %1").arg((*arr)[j][i]).toLatin1().data());
+//			file.write(QString(" %1").arg((arr->getMask())[j][i]).toLatin1().data());
 		}
 		file.write("\n");
 	}
@@ -92,8 +93,7 @@ void CWTNoiseEstimator::computeAreas()
 					if(a->getLength() > 1)
 					{
 						a->computeParameters((*arr));
-						//a->printParameters();
-						if(a->verticalSize() < 100)
+						if(a->verticalSize() < 100) // Limiting the frequency span of an area
 						{
 							areas.push_back(a);
 						}
@@ -130,10 +130,12 @@ void CWTNoiseEstimator::estimate(double* signal_in, double* noise_power, bool co
 	else
 		applyToArr({*copyFromWT});
 
+
 	// Apply ceiling
 	//TODO Get a good ceiling estimation
-	if(computeMax) ceil = 0.03;// maxi - 10.0 / fftSize;
+	if(computeMax) ceil = 0.03;// maxi - 10.0 / fftSize; // 0.03;
 	applyToArr({lowCeiling});
+
 
 	createFilterBinsSeparation();
 	computeAreas();
@@ -169,9 +171,11 @@ void CWTNoiseEstimator::computeAreasParameters()
 	{
 		if(area->getLength() >= 2 && area->getNumPixels() > 4)
 		{
-			int bin = std::min(spectrumSize - 1, std::max((unsigned int) 0, getFFTBin(area->getMedianHeight())));
+//			int bin = std::min(spectrumSize - 1, std::max((unsigned int) 0, getFFTBin(area->getMedianHeight())));
+			int bin = std::min(spectrumSize - 1, std::max((unsigned int) 0, getFFTBin(area->getMax().y - 2)));
 			(*areaParams)[bin].numAreas += 1;
-			(*areaParams)[bin].mean     += area->getSumOfValues() / area->getNumPixels();
+//			(*areaParams)[bin].mean     += area->getSumOfValues() / area->getNumPixels();
+			(*areaParams)[bin].mean     += area->getMax().val;
 		}
 		delete area;
 	}
@@ -185,6 +189,7 @@ void CWTNoiseEstimator::reestimateNoise(double* noise_power)
 		if((*areaParams)[i].numAreas != 0  && (*areaParams)[i].mean > 0 && (*areaParams)[i].mean < 1000)
 		{
 			//TODO get a good power estimation
+			qDebug() << "noise_power[" << i << "] =" << noise_power[i] << "  subtracted= " << (*areaParams)[i].mean / (*areaParams)[i].numAreas;
 			noise_power[i] = std::max(0.0, noise_power[i] -  pow((*areaParams)[i].mean, 2.0) / (*areaParams)[i].numAreas);
 		}
 	}
@@ -219,7 +224,7 @@ void CWTNoiseEstimator::clearAreaParams()
 
 double CWTNoiseEstimator::getFreq(int pixel)
 {
-	return 259500.0 / (pixel - 2.0); // padding de deux pixels olol
+	return 259500.0 / (pixel - 2.0); // two pixel padding
 }
 
 unsigned int CWTNoiseEstimator::getFFTBin(int pixel)

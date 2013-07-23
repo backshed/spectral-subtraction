@@ -2,7 +2,7 @@
 #include <cmath>
 #include <climits>
 #include <iostream>
-
+#include <QDebug>
 Area::Area(Matrix &m):
 	m(m),
 	minHeight(INT_MAX)
@@ -47,29 +47,30 @@ void Area::plotContour(Matrix& m, unsigned int i, unsigned int j)
 {
 	int i_orig = i, j_orig = j;
 
-	this->x0 = i;
+	x0 = i;
 	Point p;
 
 	auto add_point = [&] ()
 	{
 		i = p.x;
 		j = p.y;
-		if(i >= this->x0 + this->length)
+		if(i >= x0 + length)
 		{
-			this->pairList.push_back(Pair(j, j));
-			++this->length;
+			pairList.push_back(Pair(j, j));
+			++length;
 		}
 		else
 		{
-			if(j < this->pairList[i-this->x0].x)
+			if(j < pairList[i-x0].x)
 			{
-				this->pairList[i-this->x0].x = j;
+				pairList[i-x0].x = j;
 			}
-			else if(j > this->pairList[i-this->x0].y)
+			else if(j > pairList[i-x0].y)
 			{
-				this->pairList[i-this->x0].y = j;
+				pairList[i-x0].y = j;
 			}
 		}
+		;
 	};
 
 	for(auto k = 0U; k < 2U; ++k)
@@ -99,6 +100,12 @@ void Area::computeParameters(Matrix& m)
 		{
 			numPixels++;
 			sumOfValues += m[i][j];
+			if(max_pt.val < m[i][j])
+			{
+				max_pt.val = m[i][j];
+				max_pt.x = i;
+				max_pt.y = j;
+			}
 		}
 		medianHeight += (pairList[i-x0].x + pairList[i-x0].y) / 2;
 		if(pairList[i-x0].x < minHeight) minHeight = pairList[i-x0].x;
@@ -112,6 +119,7 @@ void Area::printParameters()
 	std::cout << "Parameters of the area" << std::endl;
 	std::cout << "Beginning:\t" << x0 << "\t\tLength: " << length << "\tHeight: " << verticalSize() << std::endl;
 	std::cout << "Mean:\t\t" << sumOfValues / numPixels << "\t\tMedian pxl: " << getMedianHeight() << std::endl;
+	std::cout << "Max:  Val: " << max_pt.val << "\t\t (x, y) : (" << max_pt.x << ", " << max_pt.y << ")" << std::endl;
 }
 
 int Area::getMedianHeight()
@@ -132,6 +140,11 @@ double Area::getSumOfValues() const
 unsigned int Area::getNumPixels() const
 {
 	return numPixels;
+}
+
+const Point Area::getMax() const
+{
+	return max_pt;
 }
 
 int Area::verticalSize()

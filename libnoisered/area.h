@@ -23,10 +23,13 @@ class Area
 		double getSumOfValues() const;
 		unsigned int getNumPixels() const;
 
+		const Point getMax() const;
+
 	private:
 		Matrix& m;
+		Point max_pt;
 		unsigned int minHeight;
-		unsigned int maxHeight;
+		unsigned int maxHeight = 0;
 		unsigned int x0 = 0;
 		unsigned int length = 0;
 		std::vector<Pair> pairList;

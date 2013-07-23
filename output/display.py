@@ -35,7 +35,8 @@ def animateAfter(i):
 	clf()
 
 b = 0
-for i in range(b, b + 12):
-#	animateBefore(i)
-	animateAfter(i)
+bmax = 248
+for i in range(b, bmax):
+	animateBefore(i)
+	#animateAfter(i)
 
