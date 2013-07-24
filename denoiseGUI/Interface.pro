@@ -26,7 +26,8 @@ SOURCES += main.cpp\
 	../libnoisered/cwt_noise_estimator.cpp \
 	../libnoisered/subtractionconfiguration.cpp \
 	../libnoisered/noise_estimator.cpp \
-	../libnoisered/spectral_subtractor.cpp
+	../libnoisered/spectral_subtractor.cpp \
+	../libnoisered/sarsa.cpp
 
 HEADERS  += mainwindow.h \
 	filemanager.h \
@@ -43,7 +44,8 @@ HEADERS  += mainwindow.h \
 	../libnoisered/cwt_noise_estimator.h \
 	../libnoisered/subtractionconfiguration.h \
 	../libnoisered/noise_estimator.h \
-	../libnoisered/spectral_subtractor.h
+	../libnoisered/spectral_subtractor.h \
+	../libnoisered/sarsa.h
 
 
 FORMS    += mainwindow.ui \
