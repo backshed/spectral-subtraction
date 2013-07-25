@@ -27,7 +27,10 @@ SOURCES += main.cpp\
 	../libnoisered/subtractionconfiguration.cpp \
 	../libnoisered/noise_estimator.cpp \
 	../libnoisered/spectral_subtractor.cpp \
-	../libnoisered/sarsa.cpp
+	../libnoisered/learning/sarsa.cpp \
+    ../libnoisered/learning/standardssstate.cpp \
+    ../libnoisered/learning/standardssaction.cpp \
+    ../libnoisered/learning/realaction.cpp
 
 HEADERS  += mainwindow.h \
 	filemanager.h \
@@ -45,7 +48,13 @@ HEADERS  += mainwindow.h \
 	../libnoisered/subtractionconfiguration.h \
 	../libnoisered/noise_estimator.h \
 	../libnoisered/spectral_subtractor.h \
-	../libnoisered/sarsa.h
+    ../libnoisered/learning/state.hpp \
+    ../libnoisered/learning/action.hpp \
+    ../libnoisered/learning/realstate.hpp \
+    ../libnoisered/learning/standardssstate.hpp \
+    ../libnoisered/learning/realaction.hpp \
+    ../libnoisered/learning/sarsa.hpp \
+    ../libnoisered/learning/standardssaction.hpp
 
 
 FORMS    += mainwindow.ui \
@@ -53,4 +62,4 @@ FORMS    += mainwindow.ui \
 	batchfileprocessing.ui
 
 LIBS += -lfftw3  -lcwt
-INCLUDEPATH += $$PWD/../libnoisered
+INCLUDEPATH += $$PWD/../libnoisered $$PWD/../libnoisered/learning

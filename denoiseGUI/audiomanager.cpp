@@ -10,14 +10,22 @@ AudioManager::AudioManager(DataHolder *config, QWidget *parent) :
 	QWidget(parent)
 {
 	s = new SpectralSubtractor();
+
 	s_data = new SubtractionConfiguration(512, 16000);
+
 	loaded = false;
 	noiseFile = 0;
 	origFile = 0;
+	origData = nullptr;
 	audioBuffer = new QBuffer();
 	data = config;
 
 	s->initialize(*s_data);
+
+//	int *tlo = new int[10];
+//	for(int i = 0; i < 10; ++i) tlo[i] = i;
+//	qDebug() << tlo[0] << tlo[1];
+//	s_data->readBuffer(tlo, 7);
 
 	format.setSampleRate(16000);
 	format.setChannelCount(1);
@@ -68,8 +76,10 @@ void AudioManager::exec()
 	s->execute(*s_data);
 
 	emit sNRR(QString("%1").arg(NRR(s_data->getNoiseData(), s_data->getData(), s_data->getSize())));
-	emit sSDR(QString("%1").arg(SDR(origData, s_data->getData(), s_data->getSize())));
-
+	if(origData != nullptr)
+	{
+		emit sSDR(QString("%1").arg(SDR(origData, s_data->getData(), s_data->getSize())));
+	}
 
 	audioOut->stop();
 	audioBuffer->open(QBuffer::WriteOnly);

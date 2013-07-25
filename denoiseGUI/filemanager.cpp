@@ -15,7 +15,7 @@ void FileManager::open()
 	QString filename = QFileDialog::getOpenFileName(this, "", "", "RAW Audio (*.raw)");
 	if(!filename.isNull())
 	{
-		static_cast<MainWindow*>(parent())->audioManager->loadSource(filename);
+		qobject_cast<MainWindow*>(parent())->audioManager->loadSource(filename);
 		loaded = true;
 
 		emit noisyLoaded(true);
@@ -28,7 +28,7 @@ void FileManager::openOriginal()
 	QString filename = QFileDialog::getOpenFileName(this, "", "", "RAW Audio (*.raw)");
 	if(!filename.isNull())
 	{
-		static_cast<MainWindow*>(parent())->audioManager->loadOriginal(filename);
+		qobject_cast<MainWindow*>(parent())->audioManager->loadOriginal(filename);
 		loaded = true;
 
 		emit originalLoaded(true);

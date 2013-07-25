@@ -1,8 +1,9 @@
 #include "subtractionconfiguration.h"
-#include <parallel/algorithm>
+#include <algorithm>
 #include <fstream>
-
+#include <functional>
 #include <QDebug>
+#include <iostream>
 
 SubtractionConfiguration::SubtractionConfiguration(int fft_Size, int sampling_Rate)
 {
@@ -39,6 +40,18 @@ void SubtractionConfiguration::initStructs()
 	plan_fw_windowed = fftw_plan_dft_r2c_1d ( fftSize, windowed_in, windowed_spectrum, FFTW_ESTIMATE );
 	plan_bw = fftw_plan_dft_c2r_1d ( fftSize, spectrum, out, FFTW_ESTIMATE );
 	plan_bw_temp = fftw_plan_dft_c2r_1d ( fftSize, tmp_spectrum, tmp_out, FFTW_ESTIMATE );
+}
+
+double SubtractionConfiguration::IntToDouble(int x)
+{
+	static const double normalizationFactor = 1.0 / pow(2.0, sizeof(short) * 8 - 1.0);
+	return x * normalizationFactor;
+}
+
+int SubtractionConfiguration::DoubleToInt(double x)
+{
+	static const double denormalizationFactor = pow(2.0, sizeof(short) * 8 - 1.0);
+	return x * denormalizationFactor;
 }
 
 void SubtractionConfiguration::clean()
@@ -158,11 +171,10 @@ unsigned int SubtractionConfiguration::readFile(char* str)
 	ifile.clear();
 	ifile.seekg(0, std::ios_base::beg);
 
-	if(origdata != 0) delete origdata;
-	if(data != 0) delete data;
+	if(origdata != nullptr) delete origdata;
+	if(data != nullptr) delete data;
 	origdata = new double[filesize];
 	data = new double[filesize];
-
 
 	// We have to get signal between -1 and 1
 	static const double normalizationFactor = pow(2.0, sizeof(short) * 8 - 1.0);
@@ -179,11 +191,24 @@ unsigned int SubtractionConfiguration::readFile(char* str)
 }
 
 
+unsigned int SubtractionConfiguration::readBuffer(int *buffer, int length)
+{
+	if(origdata != nullptr) delete origdata;
+	if(data != nullptr) delete data;
+	origdata = new double[filesize];
+	data = new double[filesize];
+
+	std::transform(buffer, buffer + length, origdata, &SubtractionConfiguration::IntToDouble);
+
+	return length;
+}
+
+
 
 void SubtractionConfiguration::copyInputSimple(int pos)
 {
 	// Data copying
-	if(fftSize <= filesize - pos) // TODO last case *** INVERT FOR CACHE OPTIMISATION ***
+	if(fftSize <= filesize - pos)
 	{
 		std::copy_n(data + pos, fftSize, in);
 	}
@@ -196,11 +221,14 @@ void SubtractionConfiguration::copyInputSimple(int pos)
 
 void SubtractionConfiguration::copyOutputSimple(int pos)
 {
-	for(unsigned int j = 0;
-		(j < fftSize) && (pos + j < filesize);
-		++j)
+	auto normalizeFFT = [&] (double x) { return x / fftSize; };
+	if(fftSize <= filesize - pos)
 	{
-		data[pos+j] = out[j] / fftSize;
+		std::transform(out, out + fftSize, data + pos, normalizeFFT);
+	}
+	else //fileSize - pos < fftSize
+	{
+		std::transform(out, out + filesize - pos, data + pos, normalizeFFT);
 	}
 }
 
@@ -227,10 +255,14 @@ void SubtractionConfiguration::copyInputOLA(int pos)
 
 void SubtractionConfiguration::copyOutputOLA(int pos)
 {
+	// Lock here
+	//ola_mutex.lock();
 	for(unsigned int j = 0; (j < fftSize) && (pos + j < filesize); ++j)
 	{
 		data[pos+j] += out[j] / fftSize;
 	}
+	// Unlock here
+	//ola_mutex.unlock();
 }
 unsigned int SubtractionConfiguration::getSamplingRate() const
 {
@@ -256,7 +288,6 @@ void SubtractionConfiguration::setFftSize(unsigned int value)
 	clean();
 	initStructs();
 }
-
 
 unsigned int SubtractionConfiguration::getSpectrumSize() const
 {

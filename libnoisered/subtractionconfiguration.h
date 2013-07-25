@@ -3,6 +3,7 @@
 
 #include <fftw3.h>
 #include "defines.h"
+#include <mutex>
 
 class SpectralSubtractor;
 class NoiseEstimator;
@@ -24,6 +25,7 @@ class SubtractionConfiguration
 		double* getNoiseData();
 
 		unsigned int readFile(char *str);
+		unsigned int readBuffer(int *buffer, int length);
 
 		void reinitData();
 		double getAlpha() const;
@@ -59,6 +61,11 @@ class SubtractionConfiguration
 	private:
 		void clean();
 		void initStructs();
+
+//		auto intToDouble;
+//		auto doubleToInt;
+		static inline double IntToDouble(int x);
+		static inline int DoubleToInt(double x);
 
 		//*** Data copying algorithms ***//
 		void copyInputSimple(int pos);
@@ -108,6 +115,8 @@ class SubtractionConfiguration
 		fftw_plan plan_bw;
 		fftw_plan plan_bw_temp;
 
+		//*** For threading ***//
+		std::mutex ola_mutex;
 
 
 };

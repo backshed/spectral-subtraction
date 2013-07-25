@@ -34,7 +34,7 @@ void customMessageHandler(QtMsgType type,  const QMessageLogContext &, const QSt
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
-	qInstallMessageHandler(customMessageHandler);
+	//qInstallMessageHandler(customMessageHandler);
 	MainWindow w;
 	w.show();
 
