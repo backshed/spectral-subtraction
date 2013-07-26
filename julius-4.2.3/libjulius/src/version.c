@@ -28,7 +28,7 @@
 
 #include <julius/julius.h>
 
-#define CC "gcc-4.8" ///< Used compiler
+#define CC "gcc" ///< Used compiler
 #define CFLAGS "-O3 -march=native" ///< Used flags for compilation
 
 /** 

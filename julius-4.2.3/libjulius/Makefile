@@ -16,7 +16,7 @@ SHELL=/bin/sh
 
 LIBSENT=../libsent
 
-CC=gcc-4.8
+CC=gcc
 CFLAGS=-O3 -march=native
 CPPFLAGS=-Iinclude -I$(LIBSENT)/include  `$(LIBSENT)/libsent-config --cflags`
 LDFLAGS= -ldl  -lpthread -L$(LIBSENT) `$(LIBSENT)/libsent-config --libs` 

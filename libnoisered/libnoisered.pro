@@ -11,7 +11,7 @@ TEMPLATE = lib
 CONFIG += staticlib c++11
 DESTDIR = $$PWD/../output
 LIBS += -lcwt -lfftw3
-
+QMAKE_CXXFLAGS_RELEASE += -fopenmp -O3 -march=native -D_GLIBCXX_PARALLEL
 SOURCES += \
 	subtractionconfiguration.cpp \
 	spectral_subtractor.cpp \

@@ -10,6 +10,8 @@ DESTDIR = $$PWD/../output
 TARGET = Interface
 TEMPLATE = app
 CONFIG += c++11
+QMAKE_CXXFLAGS_RELEASE += -fopenmp -O3 -march=native -D_GLIBCXX_PARALLEL
+QMAKE_LFLAGS_RELEASE += -fopenmp
 
 SOURCES += main.cpp\
 		mainwindow.cpp \

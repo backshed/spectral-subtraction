@@ -63,8 +63,8 @@ s%@host_alias@%x86_64-unknown-linux%g
 s%@host_cpu@%x86_64%g
 s%@host_vendor@%unknown%g
 s%@host_os@%linux%g
-s%@CC@%gcc-4.8%g
-s%@CPP@%gcc-4.8 -E%g
+s%@CC@%gcc%g
+s%@CPP@%gcc -E%g
 s%@INSTALL_PROGRAM@%${INSTALL}%g
 s%@INSTALL_SCRIPT@%${INSTALL_PROGRAM}%g
 s%@INSTALL_DATA@%${INSTALL} -m 644%g

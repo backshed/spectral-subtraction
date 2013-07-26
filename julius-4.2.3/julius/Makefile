@@ -16,15 +16,13 @@ SHELL=/bin/sh
 
 LIBSENT=../libsent
 LIBJULIUS=../libjulius
-CC=gcc-4.8
+CC=gcc
 CFLAGS=-O3 -march=native
 CPPFLAGS=-I. -I$(LIBJULIUS)/include -I$(LIBSENT)/include  `$(LIBSENT)/libsent-config --cflags` `$(LIBJULIUS)/libjulius-config --cflags`
-LDFLAGS= -L$(LIBJULIUS) `$(LIBJULIUS)/libjulius-config --libs` -L$(LIBSENT) `$(LIBSENT)/libsent-config --libs`
+LDFLAGS= -L$(LIBJULIUS) `$(LIBJULIUS)/libjulius-config --libs` -L$(LIBSENT) `$(LIBSENT)/libsent-config --libs` 
 GTK_CFLAGS=
 GTK_LIBS=
 RM=/bin/rm -f
-AR=/usr/bin/ar r
-RANLIB=ranlib
 
 ## install
 prefix=/usr/local
@@ -39,11 +37,11 @@ INSTALL_PROGRAM=${INSTALL}
 
 ############################################################
 
-TARGET = libjls.a
+TARGET = julius
 INSTALLTARGET = julius
 
 OBJ = \
-submain.o \
+main.o \
 recogloop.o \
 module.o \
 output_module.o \
@@ -56,11 +54,8 @@ charconv.o charconv_iconv.o
 
 all: $(TARGET)
 
-#~ $(TARGET): $(LIBSENT)/libsent.a $(LIBJULIUS)/libjulius.a $(OBJ)
-	#~ $(CC) $(CFLAGS) $(CPPFLAGS) -o $@ $(OBJ) $(LDFLAGS) $(GTK_LIBS)
 $(TARGET): $(LIBSENT)/libsent.a $(LIBJULIUS)/libjulius.a $(OBJ)
-	$(AR) $@ $?
-	$(RANLIB) $@
+	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ $(OBJ) $(LDFLAGS) $(GTK_LIBS)
 
 ############################################################
 

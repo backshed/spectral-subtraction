@@ -2,6 +2,8 @@
 
 #include <functional>
 #include <algorithm>
+#include <iostream>
+#include <fstream>
 #include "cwt_noise_estimator.h"
 
 #define AMIN 0                  /* A min  */
@@ -41,6 +43,17 @@ void CWTNoiseEstimator::initialize(SubtractionConfiguration& config)
 
 void CWTNoiseEstimator::writeFiles(std::string dir, int file_no)
 {
+	std::ofstream file(std::string(dir + "/" + std::to_string(file_no) + ".dat"));
+	for(auto i = 0U; i < wt->rows() + 2; i++)
+	{
+		for(auto j = 0U; j < wt->cols() + 2; j++)
+		{
+			std::string s = std::string(" " + std::to_string((*arr)[j][i]));
+			file.write(s.c_str(), s.length());
+		}
+		file.write(std::string("\n").c_str(), 1);
+	}
+	file.close();
 #ifdef QT_VERSION
 
 	QFile file(QString(dir) + QString("/%1.dat").arg(file_no));

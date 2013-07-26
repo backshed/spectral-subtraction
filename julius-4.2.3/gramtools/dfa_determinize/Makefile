@@ -11,7 +11,7 @@ SHELL=/bin/sh
 	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ -c $<
 
 LIBSENT=../../libsent
-CC=gcc-4.8
+CC=gcc
 CFLAGS=-O3 -march=native
 CPPFLAGS=  -DHAVE_MALLOC_H=1  -I$(LIBSENT)/include `$(LIBSENT)/libsent-config --cflags`
 LDFLAGS=  -L$(LIBSENT) `$(LIBSENT)/libsent-config --libs`

@@ -14,7 +14,7 @@ SHELL=/bin/sh
 
 LIBSENT=../libsent
 LIBJULIUS=../libjulius
-CC=gcc-4.8
+CC=gcc
 CFLAGS=-O3 -march=native
 CPPFLAGS=-I. -I$(LIBJULIUS)/include -I$(LIBSENT)/include  `$(LIBSENT)/libsent-config --cflags` `$(LIBJULIUS)/libjulius-config --cflags`
 LDFLAGS= -L$(LIBJULIUS) `$(LIBJULIUS)/libjulius-config --libs` -L$(LIBSENT) `$(LIBSENT)/libsent-config --libs`

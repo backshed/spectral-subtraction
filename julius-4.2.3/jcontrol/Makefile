@@ -12,7 +12,7 @@ SHELL=/bin/sh
 .c.o:
 	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ -c $<
 
-CC=gcc-4.8
+CC=gcc
 CFLAGS=-O3 -march=native
 CPPFLAGS=  
 LDFLAGS= 

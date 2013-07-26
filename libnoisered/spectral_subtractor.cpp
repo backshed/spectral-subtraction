@@ -6,7 +6,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <parallel/algorithm>
+#include <algorithm>
 
 #include "spectral_subtractor.h"
 #include "defines.h"
