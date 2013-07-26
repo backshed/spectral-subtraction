@@ -2,7 +2,7 @@
 #include <cmath>
 #include <climits>
 #include <iostream>
-#include <QDebug>
+
 Area::Area(Matrix &m):
 	m(m),
 	minHeight(INT_MAX)

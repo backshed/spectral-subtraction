@@ -13,7 +13,6 @@
 #include "noise_estimator.h"
 #include "subtractionconfiguration.h"
 // Qt
-#include <QDebug>
 
 
 // Does the main subtraction algorithm
@@ -220,7 +219,7 @@ void SpectralSubtractor::execute(SubtractionConfiguration &config)
 
 	for(auto iter = 0U; iter < config.iterations; ++iter)
 	{
-		for(auto sample_n = 0U; sample_n < config.filesize; sample_n += increment)
+		for(auto sample_n = 0U; sample_n < config.tab_length; sample_n += increment)
 		{
 			// Data copying from input
 			if(config.useOLA)

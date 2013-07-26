@@ -2,14 +2,13 @@
 #include <algorithm>
 #include <fstream>
 #include <functional>
-#include <QDebug>
 #include <iostream>
 
 SubtractionConfiguration::SubtractionConfiguration(int fft_Size, int sampling_Rate)
 {
 	data = nullptr;
 	origdata = nullptr;
-	filesize = 0;
+	tab_length = 0;
 
 	fftSize = fft_Size;
 	spectrumSize = fft_Size / 2 + 1;
@@ -42,13 +41,13 @@ void SubtractionConfiguration::initStructs()
 	plan_bw_temp = fftw_plan_dft_c2r_1d ( fftSize, tmp_spectrum, tmp_out, FFTW_ESTIMATE );
 }
 
-double SubtractionConfiguration::IntToDouble(int x)
+double SubtractionConfiguration::ShortToDouble(short x)
 {
 	static const double normalizationFactor = 1.0 / pow(2.0, sizeof(short) * 8 - 1.0);
 	return x * normalizationFactor;
 }
 
-int SubtractionConfiguration::DoubleToInt(double x)
+short SubtractionConfiguration::DoubleToShort(double x)
 {
 	static const double denormalizationFactor = pow(2.0, sizeof(short) * 8 - 1.0);
 	return x * denormalizationFactor;
@@ -79,7 +78,7 @@ SubtractionConfiguration::~SubtractionConfiguration()
 
 void SubtractionConfiguration::reinitData()
 {
-	std::copy(origdata, origdata + filesize, data);
+	std::copy(origdata, origdata + tab_length, data);
 }
 double SubtractionConfiguration::getAlpha() const
 {
@@ -154,88 +153,92 @@ double *SubtractionConfiguration::getData()
 	return data;
 }
 
-double *SubtractionConfiguration::getNoiseData()
+double *SubtractionConfiguration::getNoisyData()
 {
 	return origdata;
 }
 
 unsigned int SubtractionConfiguration::getSize()
 {
-	return filesize;
+	return tab_length;
 }
 
 unsigned int SubtractionConfiguration::readFile(char* str)
 {
 	std::ifstream ifile(str, std::ios_base::ate | std::ios_base::binary);
-	filesize = ifile.tellg() / (sizeof(short) / sizeof(char));
+	tab_length = ifile.tellg() / (sizeof(short) / sizeof(char));
 	ifile.clear();
 	ifile.seekg(0, std::ios_base::beg);
 
 	if(origdata != nullptr) delete origdata;
 	if(data != nullptr) delete data;
-	origdata = new double[filesize];
-	data = new double[filesize];
+	origdata = new double[tab_length];
+	data = new double[tab_length];
 
 	// We have to get signal between -1 and 1
 	static const double normalizationFactor = pow(2.0, sizeof(short) * 8 - 1.0);
 
 	unsigned int pos = 0;
 	short sample;
-	while(ifile.read((char*)&sample, sizeof(short)) && pos < filesize)
+	while(ifile.read((char*)&sample, sizeof(short)) && pos < tab_length)
 	{
 		origdata[pos++] = sample / normalizationFactor;
 	}
 
 	ifile.close();
-	return filesize;
+	return tab_length;
 }
 
 
-unsigned int SubtractionConfiguration::readBuffer(int *buffer, int length)
+unsigned int SubtractionConfiguration::readBuffer(short *buffer, int length)
 {
+	tab_length = length;
 	if(origdata != nullptr) delete origdata;
 	if(data != nullptr) delete data;
-	origdata = new double[filesize];
-	data = new double[filesize];
+	origdata = new double[tab_length];
+	data = new double[tab_length];
 
-	std::transform(buffer, buffer + length, origdata, &SubtractionConfiguration::IntToDouble);
+	std::transform(buffer, buffer + tab_length, origdata, &SubtractionConfiguration::ShortToDouble);
 
-	return length;
+	return tab_length;
 }
 
-
+void SubtractionConfiguration::writeBuffer(short* buffer, int length)
+{
+	std::transform(data, data + tab_length, buffer, &SubtractionConfiguration::DoubleToShort);
+}
 
 void SubtractionConfiguration::copyInputSimple(int pos)
 {
 	// Data copying
-	if(fftSize <= filesize - pos)
+	if(fftSize <= tab_length - pos)
 	{
 		std::copy_n(data + pos, fftSize, in);
 	}
 	else
 	{
-		std::copy_n(data + pos, filesize - pos, in);
-		std::fill_n(in + filesize - pos, fftSize - (filesize - pos), 0);
+		std::copy_n(data + pos, tab_length - pos, in);
+		std::fill_n(in + tab_length - pos, fftSize - (tab_length - pos), 0);
 	}
 }
 
 void SubtractionConfiguration::copyOutputSimple(int pos)
 {
 	auto normalizeFFT = [&] (double x) { return x / fftSize; };
-	if(fftSize <= filesize - pos)
+	if(fftSize <= tab_length - pos)
 	{
 		std::transform(out, out + fftSize, data + pos, normalizeFFT);
 	}
 	else //fileSize - pos < fftSize
 	{
-		std::transform(out, out + filesize - pos, data + pos, normalizeFFT);
+		std::transform(out, out + tab_length - pos, data + pos, normalizeFFT);
 	}
 }
 
 void SubtractionConfiguration::copyInputOLA(int pos)
 {
 	// Data copying
-	if(ola_frame_increment <= filesize - pos) // last case
+	if(ola_frame_increment <= tab_length - pos) // last case
 	{
 		std::copy_n(data + pos, ola_frame_increment, in);
 		std::fill_n(in + ola_frame_increment, ola_frame_increment, 0);
@@ -245,11 +248,11 @@ void SubtractionConfiguration::copyInputOLA(int pos)
 	}
 	else
 	{
-		std::copy_n(data + pos, filesize - pos, in);
-		std::fill_n(in + filesize - pos, ola_frame_increment - (filesize - pos), 0);
+		std::copy_n(data + pos, tab_length - pos, in);
+		std::fill_n(in + tab_length - pos, ola_frame_increment - (tab_length - pos), 0);
 
 		std::copy_n(in, fftSize, windowed_in);
-		std::fill_n(data + pos, filesize - pos, 0);
+		std::fill_n(data + pos, tab_length - pos, 0);
 	}
 }
 
@@ -257,7 +260,7 @@ void SubtractionConfiguration::copyOutputOLA(int pos)
 {
 	// Lock here
 	//ola_mutex.lock();
-	for(unsigned int j = 0; (j < fftSize) && (pos + j < filesize); ++j)
+	for(unsigned int j = 0; (j < fftSize) && (pos + j < tab_length); ++j)
 	{
 		data[pos+j] += out[j] / fftSize;
 	}

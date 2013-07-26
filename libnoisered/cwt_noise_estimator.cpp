@@ -1,9 +1,7 @@
 #include "defines.h"
-#include <QFile>
 
-#include <QDebug>
 #include <functional>
-#include <parallel/algorithm>
+#include <algorithm>
 #include "cwt_noise_estimator.h"
 
 #define AMIN 0                  /* A min  */
@@ -41,9 +39,11 @@ void CWTNoiseEstimator::initialize(SubtractionConfiguration& config)
 	copyFromWT = new ArrayValueFilter([&] (uint i, uint j) { (*arr)[i][j] = wt->mag(j, i) / fftSize; });
 }
 
-void CWTNoiseEstimator::writeFiles(QString dir, int file_no)
+void CWTNoiseEstimator::writeFiles(std::string dir, int file_no)
 {
-	QFile file(dir + QString("/%1.dat").arg(file_no));
+#ifdef QT_VERSION
+
+	QFile file(QString(dir) + QString("/%1.dat").arg(file_no));
 	file.open(QIODevice::WriteOnly);
 	for(auto i = 0U; i < wt->rows() + 2; i++)
 	{
@@ -55,6 +55,7 @@ void CWTNoiseEstimator::writeFiles(QString dir, int file_no)
 		file.write("\n");
 	}
 	file.close();
+#endif
 }
 
 
@@ -189,7 +190,7 @@ void CWTNoiseEstimator::reestimateNoise(double* noise_power)
 		if((*areaParams)[i].numAreas != 0  && (*areaParams)[i].mean > 0 && (*areaParams)[i].mean < 1000)
 		{
 			//TODO get a good power estimation
-			qDebug() << "noise_power[" << i << "] =" << noise_power[i] << "  subtracted= " << (*areaParams)[i].mean / (*areaParams)[i].numAreas;
+//			qDebug() << "noise_power[" << i << "] =" << noise_power[i] << "  subtracted= " << (*areaParams)[i].mean / (*areaParams)[i].numAreas;
 			noise_power[i] = std::max(0.0, noise_power[i] -  pow((*areaParams)[i].mean, 2.0) / (*areaParams)[i].numAreas);
 		}
 	}

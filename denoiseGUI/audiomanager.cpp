@@ -22,11 +22,6 @@ AudioManager::AudioManager(DataHolder *config, QWidget *parent) :
 
 	s->initialize(*s_data);
 
-//	int *tlo = new int[10];
-//	for(int i = 0; i < 10; ++i) tlo[i] = i;
-//	qDebug() << tlo[0] << tlo[1];
-//	s_data->readBuffer(tlo, 7);
-
 	format.setSampleRate(16000);
 	format.setChannelCount(1);
 	format.setSampleSize(16);
@@ -75,7 +70,7 @@ void AudioManager::exec()
 
 	s->execute(*s_data);
 
-	emit sNRR(QString("%1").arg(NRR(s_data->getNoiseData(), s_data->getData(), s_data->getSize())));
+	emit sNRR(QString("%1").arg(NRR(s_data->getNoisyData(), s_data->getData(), s_data->getSize())));
 	if(origData != nullptr)
 	{
 		emit sSDR(QString("%1").arg(SDR(origData, s_data->getData(), s_data->getSize())));

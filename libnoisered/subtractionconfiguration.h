@@ -22,10 +22,12 @@ class SubtractionConfiguration
 		double* getData();
 		unsigned int getSize();
 
-		double* getNoiseData();
+		double* getNoisyData();
 
 		unsigned int readFile(char *str);
-		unsigned int readBuffer(int *buffer, int length);
+
+		unsigned int readBuffer(short *buffer, int length);
+		void writeBuffer(short *buffer, int length);
 
 		void reinitData();
 		double getAlpha() const;
@@ -58,14 +60,15 @@ class SubtractionConfiguration
 		void setSamplingRate(unsigned int value);
 
 
+
 	private:
 		void clean();
 		void initStructs();
 
 //		auto intToDouble;
 //		auto doubleToInt;
-		static inline double IntToDouble(int x);
-		static inline int DoubleToInt(double x);
+		static inline double ShortToDouble(short x);
+		static inline short DoubleToShort(double x);
 
 		//*** Data copying algorithms ***//
 		void copyInputSimple(int pos);
@@ -91,7 +94,7 @@ class SubtractionConfiguration
 
 		double* data;
 		double* origdata;
-		unsigned int filesize;
+		unsigned int tab_length;
 
 		bool useOLA; // recommended with GA
 		unsigned int ola_frame_increment;

@@ -2,7 +2,6 @@
 #define CWT_NOISE_ESTIMATOR_H
 
 #include <vector>
-#include <QString>
 #include <cwtlib>
 #include "area.h"
 #include "subtractionconfiguration.h"
@@ -38,7 +37,7 @@ class CWTNoiseEstimator
 		WTransform* wt;
 		Matrix *arr;
 		std::vector<Area*> areas;
-		void writeFiles(QString dir, int file_no);
+		void writeFiles(std::string dir, int file_no);
 		void computeCWT(double *signal);
 		void computeAreas();
 		void applyToArr(std::initializer_list<ArrayValueFilter> funs);

@@ -6,7 +6,7 @@
 #include <functional>
 #include <numeric>
 #include "subtractionconfiguration.h"
-#include <QDebug>
+
 using namespace std;
 
 void NoiseEstimator::initialize(SubtractionConfiguration& config)
