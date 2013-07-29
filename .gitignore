@@ -30,3 +30,4 @@ a.out
 *.log
 *.cache
 *.status
+Makefile
