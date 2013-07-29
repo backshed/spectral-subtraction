@@ -2,21 +2,23 @@
 #define PAIR_H
 // x for upper, y for lower
 /**
- * @brief
+ * @brief Represents a pair of ints.
+ *
+ *TODO replace with std::pair ?
  *
  */
 struct Pair
 {
-/**
- * @brief
- *
- * @param x
- * @param y
- */
+	/**
+	 * @brief Constructor.
+	 *
+	 * @param x
+	 * @param y
+	 */
 	Pair(int x, int y);
 	unsigned int x, y; /**< TODO */
 	/**
-	 * @brief
+	 * @brief Debug : displays the value of the point on stdout.
 	 *
 	 */
 	void display();

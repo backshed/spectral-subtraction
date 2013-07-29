@@ -25,7 +25,7 @@ class StandardSSState : public RealState
 		 */
 		virtual double get(unsigned int parameter) final override
 		{
-			switch(parameter)
+			switch (parameter)
 			{
 				case Alpha:
 					return alpha;
@@ -44,7 +44,7 @@ class StandardSSState : public RealState
 		 */
 		virtual void increase(unsigned int parameter) final override
 		{
-			switch(parameter)
+			switch (parameter)
 			{
 				case Alpha:
 					alpha = std::min(alpha + alpha_increment, alpha_max);
@@ -62,7 +62,7 @@ class StandardSSState : public RealState
 		 */
 		virtual void decrease(unsigned int parameter) final override
 		{
-			switch(parameter)
+			switch (parameter)
 			{
 				case Alpha:
 					alpha = std::max(alpha - alpha_increment, alpha_min);

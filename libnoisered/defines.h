@@ -1,11 +1,10 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
-#define UPPER_BORN 2
 
 #define PLOT_CWT
 /**
- * @brief
+ * @brief typedef for unsigned int. Should not be used.
  *
  */
 typedef unsigned int uint;

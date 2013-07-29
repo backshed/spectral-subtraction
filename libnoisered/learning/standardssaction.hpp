@@ -21,10 +21,10 @@ class StandardSSAction : public RealAction
 		 * @param s
 		 * @return StandardSSState
 		 */
-		virtual StandardSSState execute(StandardSSState& s)
+		virtual StandardSSState execute(StandardSSState &s)
 		{
 			StandardSSState s2(s);
-			if(direction)
+			if (direction)
 				s2.increase(parameter);
 			else
 				s2.decrease(parameter);

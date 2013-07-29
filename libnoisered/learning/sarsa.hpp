@@ -38,7 +38,7 @@ class Sarsa
 		 *
 		 * @return Action
 		 */
-		Action& epsilonGreedy()
+		Action &epsilonGreedy()
 		{
 
 		}
@@ -50,7 +50,7 @@ class Sarsa
 		 * @param action
 		 * @return double
 		 */
-		double reward(State& state, Action& action)
+		double reward(State &state, Action &action)
 		{
 			// Effectuer SS
 
@@ -68,10 +68,10 @@ class Sarsa
 
 		double eps = 0.2; /**< TODO */
 		double x, y; /**< TODO */
-//		Q
-//		gamma
-//		alpha42
-//		maxReward
+		//      Q
+		//      gamma
+		//      alpha42
+		//      maxReward
 };
 
 #endif // SARSA_H

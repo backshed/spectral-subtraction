@@ -49,7 +49,7 @@ class SubtractionConfiguration
 		 *
 		 * @return double Pointer to the modified buffer.
 		 */
-		double* getData();
+		double *getData();
 
 		/**
 		 * @brief Returns the size of the internal buffer / audio file.
@@ -63,7 +63,7 @@ class SubtractionConfiguration
 		 *
 		 * @return double Pointer to the original buffer.
 		 */
-		double* getNoisyData();
+		double *getNoisyData();
 
 		/**
 		 * @brief Reads a file into the internal buffer.
@@ -333,8 +333,8 @@ class SubtractionConfiguration
 		double betawt; /**< TODO */
 		unsigned int iterations; /**< TODO */
 
-		double* data; /**< TODO */
-		double* origdata; /**< TODO */
+		double *data; /**< TODO */
+		double *origdata; /**< TODO */
 		unsigned int tab_length; /**< TODO */
 
 		bool useOLA; // recommended with GA /**< TODO */

@@ -13,24 +13,30 @@
 
 // Computes noise-reduction rate
 /**
- * @brief
+ * @brief Computes noise-reduction rate.
  *
- * @param original
- * @param reduced
- * @param length
- * @return double
+ * Cf. paper on EL-SS.
+ *
+ * @param original Array that holds the noisy signal.
+ * @param reduced Array that holds the subtracted signal.
+ * @param length Length of the array.
+ *
+ * @return double NRR.
  */
-double NRR(double* original, double* reduced, unsigned int length);
+double NRR(double *original, double *reduced, unsigned int length);
 
 // Computes speech distortion quantity
 /**
- * @brief
+ * @brief Computes Speech distortion ratio.
  *
- * @param original
- * @param reduced
- * @param fft_size
- * @return double
+ * Cf. paper on EL-SS.
+ *
+ * @param original Array that holds the noiseless original signal.
+ * @param reduced Array that holds the subtracted signal.
+ * @param length Length of the array.
+ *
+ * @return double SDR.
  */
-double SDR(double* original, double* reduced, unsigned int fft_size);
+double SDR(double *original, double *reduced, unsigned int length);
 
 #endif

@@ -3,31 +3,42 @@
 
 #include "pair.h"
 /**
- * @brief
+ * @brief Represents a point in a 2D space.
+ *
+ * The point can be valid or not. It also is real-valued.
  *
  */
 struct Point : public Pair
 {
-	Point();
-/**
- * @brief
- *
- * @param x
- * @param y
- * @param invalid
- */
-	Point(int x, int y, int invalid = false);
+		/**
+		 * @brief Basic constructor.
+		 *
+		 * Initializes a valid point at (0, 0).
+		 */
+		Point();
 
-	/**
-	 * @brief
-	 *
-	 * @return bool
-	 */
-	bool notValid() const;
-	double val = 0; /**< TODO */
+		/**
+		 * @brief Constructor.
+		 *
+		 * Parameters are explicit.
+		 *
+		 * @param x
+		 * @param y
+		 * @param invalid
+		 */
+		Point(int x, int y, int invalid = false);
+
+		/**
+		 * @brief Checks validity.
+		 *
+		 * @return bool True if point is invalid.
+		 */
+		bool notValid() const;
+
+		double val = 0; /**< TODO */
 
 	private:
-	bool invalid; /**< TODO */
+		bool invalid; /**< TODO */
 
 };
 

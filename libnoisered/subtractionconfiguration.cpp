@@ -36,10 +36,10 @@ void SubtractionConfiguration::initStructs()
 	noise_power_reest = new double[fftSize];
 
 	// Initialize the fftw plans (so.. FAAAST)
-	plan_fw = fftw_plan_dft_r2c_1d ( fftSize, in, spectrum, FFTW_ESTIMATE );
-	plan_fw_windowed = fftw_plan_dft_r2c_1d ( fftSize, windowed_in, windowed_spectrum, FFTW_ESTIMATE );
-	plan_bw = fftw_plan_dft_c2r_1d ( fftSize, spectrum, out, FFTW_ESTIMATE );
-	plan_bw_temp = fftw_plan_dft_c2r_1d ( fftSize, tmp_spectrum, tmp_out, FFTW_ESTIMATE );
+	plan_fw = fftw_plan_dft_r2c_1d(fftSize, in, spectrum, FFTW_ESTIMATE);
+	plan_fw_windowed = fftw_plan_dft_r2c_1d(fftSize, windowed_in, windowed_spectrum, FFTW_ESTIMATE);
+	plan_bw = fftw_plan_dft_c2r_1d(fftSize, spectrum, out, FFTW_ESTIMATE);
+	plan_bw_temp = fftw_plan_dft_c2r_1d(fftSize, tmp_spectrum, tmp_out, FFTW_ESTIMATE);
 }
 
 double SubtractionConfiguration::ShortToDouble(short x)
@@ -166,15 +166,15 @@ unsigned int SubtractionConfiguration::getSize()
 	return tab_length;
 }
 
-unsigned int SubtractionConfiguration::readFile(char* str)
+unsigned int SubtractionConfiguration::readFile(char *str)
 {
 	std::ifstream ifile(str, std::ios_base::ate | std::ios_base::binary);
 	tab_length = ifile.tellg() / (sizeof(short) / sizeof(char));
 	ifile.clear();
 	ifile.seekg(0, std::ios_base::beg);
 
-	if(origdata != nullptr) delete origdata;
-	if(data != nullptr) delete data;
+	if (origdata != nullptr) delete origdata;
+	if (data != nullptr) delete data;
 	origdata = new double[tab_length];
 	data = new double[tab_length];
 
@@ -183,7 +183,7 @@ unsigned int SubtractionConfiguration::readFile(char* str)
 
 	unsigned int pos = 0;
 	short sample;
-	while(ifile.read((char*)&sample, sizeof(short)) && pos < tab_length)
+	while (ifile.read((char *)&sample, sizeof(short)) && pos < tab_length)
 	{
 		origdata[pos++] = sample / normalizationFactor;
 	}
@@ -196,8 +196,8 @@ unsigned int SubtractionConfiguration::readFile(char* str)
 unsigned int SubtractionConfiguration::readBuffer(short *buffer, int length)
 {
 	tab_length = length;
-	if(origdata != nullptr) delete origdata;
-	if(data != nullptr) delete data;
+	if (origdata != nullptr) delete origdata;
+	if (data != nullptr) delete data;
 	origdata = new double[tab_length];
 	data = new double[tab_length];
 
@@ -206,7 +206,7 @@ unsigned int SubtractionConfiguration::readBuffer(short *buffer, int length)
 	return tab_length;
 }
 
-void SubtractionConfiguration::writeBuffer(short* buffer)
+void SubtractionConfiguration::writeBuffer(short *buffer)
 {
 	std::transform(data, data + tab_length, buffer, &SubtractionConfiguration::DoubleToShort);
 }
@@ -214,7 +214,7 @@ void SubtractionConfiguration::writeBuffer(short* buffer)
 void SubtractionConfiguration::copyInputSimple(int pos)
 {
 	// Data copying
-	if(fftSize <= tab_length - pos)
+	if (fftSize <= tab_length - pos)
 	{
 		std::copy_n(data + pos, fftSize, in);
 	}
@@ -227,8 +227,8 @@ void SubtractionConfiguration::copyInputSimple(int pos)
 
 void SubtractionConfiguration::copyOutputSimple(int pos)
 {
-	auto normalizeFFT = [&] (double x) { return x / fftSize; };
-	if(fftSize <= tab_length - pos)
+	auto normalizeFFT = [&](double x) { return x / fftSize; };
+	if (fftSize <= tab_length - pos)
 	{
 		std::transform(out, out + fftSize, data + pos, normalizeFFT);
 	}
@@ -241,7 +241,7 @@ void SubtractionConfiguration::copyOutputSimple(int pos)
 void SubtractionConfiguration::copyInputOLA(int pos)
 {
 	// Data copying
-	if(ola_frame_increment <= tab_length - pos) // last case
+	if (ola_frame_increment <= tab_length - pos) // last case
 	{
 		std::copy_n(data + pos, ola_frame_increment, in);
 		std::fill_n(in + ola_frame_increment, ola_frame_increment, 0);
@@ -263,9 +263,9 @@ void SubtractionConfiguration::copyOutputOLA(int pos)
 {
 	// Lock here
 	//ola_mutex.lock();
-	for(unsigned int j = 0; (j < fftSize) && (pos + j < tab_length); ++j)
+	for (unsigned int j = 0; (j < fftSize) && (pos + j < tab_length); ++j)
 	{
-		data[pos+j] += out[j] / fftSize;
+		data[pos + j] += out[j] / fftSize;
 	}
 	// Unlock here
 	//ola_mutex.unlock();
@@ -322,12 +322,12 @@ void SubtractionConfiguration::readParametersFromFile()
 	f >> alg;
 	f.close();
 
-	if(noise_est.find(noise_alg) != noise_est.end())
+	if (noise_est.find(noise_alg) != noise_est.end())
 		estimationAlgo = noise_est.at(noise_alg);
 	else
 		std::cerr << "Invalid noise estimation algorithm";
 
-	if(algo.find(alg) != algo.end())
+	if (algo.find(alg) != algo.end())
 		subtractionAlgo = algo.at(alg);
 	else
 		std::cerr << "Invalid subtraction algorithm";

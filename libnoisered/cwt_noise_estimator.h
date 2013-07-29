@@ -8,129 +8,135 @@
 
 using namespace cwtlib;
 /**
- * @brief
+ * @brief Type for functions that are applied on arr.
  *
+ * Basically, these functions should only do very simple operations,
+ * like void f(uint i, uint j) { arr[i][j] += 1; }.
+ * These operations should be applied only on the given coordinates.
  */
 typedef std::function<void (uint, uint)> ArrayValueFilter;
+
 /**
- * @brief
+ * @brief This class performs the proposed musical tone reduction method using wavelet transform.
  *
  */
 class CWTNoiseEstimator
 {
 	public:
-		CWTNoiseEstimator();
 		/**
-		 * @brief
+		 * @brief Constructor.
+		 */
+		CWTNoiseEstimator();
+
+		/**
+		 * @brief Performs musical tones estimation.
 		 *
-		 * @param signal_in
-		 * @param noise_power
-		 * @param computeMax
+		 * @param signal_in Input signal
+		 * @param noise_power Output noise power.
+		 * @param computeMax Set to true if the max has to be computed (on a new frame for instance)
 		 */
 		void estimate(double *signal_in, double *noise_power, bool computeMax);
+
 		/**
-		 * @brief
+		 * @brief Debug function.
 		 *
-		 * @param signal_in
+		 * Writes a CWT result to a file.
+		 *
+		 * @param signal_in Input signal.
 		 */
 		void writeSimpleCWT(double *signal_in);
+
 		/**
-		 * @brief
+		 * @brief Initializes some inner data.
 		 *
-		 * @param config
+		 * @param config Configuration.
 		 */
-		void initialize(SubtractionConfiguration& config);
+		void initialize(SubtractionConfiguration &config);
+
 		/**
-		 * @brief
+		 * @brief Cleanup some inner data.
+		 *
+		 * Called by the destructor.
 		 *
 		 */
 		void clean();
 
 	private:
 		/**
-		 * @brief
-		 *
-		 * @param freq
-		 * @return int
-		 */
-		int getFFTBinFromFrequency(double freq);
-		/**
-		 * @brief
-		 *
-		 * @param bin
-		 * @return double
-		 */
-		double getFrequencyFromFFTBin(int bin);
-		/**
-		 * @brief
-		 *
-		 * @param fftbin
-		 * @return int
-		 */
-		int getWaveletBinFromFFTBin(int fftbin);
-
-		/**
-		 * @brief
+		 * @brief Contains parameters used into an algorithm.
 		 *
 		 */
+		//TODO put this in s_data to enable threading.
 		struct areaParams_
 		{
-				areaParams_();
-				int numAreas; /**< TODO */ /**< TODO */
-				double mean; /**< TODO */
+			areaParams_();
+			int numAreas; /**< Number of areas */
+			double mean; /**< Mean value of these areas */
 		};
-		std::vector<CWTNoiseEstimator::areaParams_>* areaParams; /**< TODO */
+		std::vector<CWTNoiseEstimator::areaParams_> *areaParams; /**< TODO */
+
 		/**
-		 * @brief
+		 * @brief Clear area parameters.
 		 *
 		 */
 		inline void clearAreaParams();
 
 		//**** For CWTLib ****//
 		Signal *s; /**< TODO */
-		LinearRangeFunctor* scales; /**< TODO */
-		WTransform* wt; /**< TODO */
+		LinearRangeFunctor *scales; /**< TODO */
+		WTransform *wt; /**< TODO */
 		Matrix *arr; /**< TODO */
-		std::vector<Area*> areas; /**< TODO */
+		std::vector<Area *> areas; /**< TODO */
+
 		/**
-		 * @brief
+		 * @brief Debug function.
 		 *
-		 * @param dir
-		 * @param file_no
+		 * Write wavelet transform on disk.
+		 *
+		 * @param dir Directory on which the files must be written.
+		 * @param file_no Current file number. (Genreally the number of the wt)
 		 */
 		void writeFiles(std::string dir, int file_no);
+
 		/**
-		 * @brief
+		 * @brief Core algorithm that computes the wavelet transform.
 		 *
-		 * @param signal
+		 * @param signal Input signal.
 		 */
 		void computeCWT(double *signal);
+
 		/**
-		 * @brief
+		 * @brief Computes the areas of a WT.
 		 *
 		 */
 		void computeAreas();
+
 		/**
-		 * @brief
+		 * @brief Apply a list of functions / lambda expressions to the array.
 		 *
-		 * @param funs
+		 * @param funs List of functions.
 		 */
 		void applyToArr(std::initializer_list<ArrayValueFilter> funs);
+
 		/**
-		 * @brief
+		 * @brief Computes the parameters of the areas.
+		 *
+		 * Fills areaParams.
 		 *
 		 */
 		void computeAreasParameters();
+
 		/**
-		 * @brief
+		 * @brief Reestimates the noise power according to the computed musical tone parameters.
 		 *
-		 * @param noise_power
+		 * @param noise_power In-place modified noise power array.
 		 */
 		void reestimateNoise(double *noise_power);
 
 		ArrayValueFilter *copyFromWT; /**< TODO */
+
 		/**
-		 * @brief
+		 * @brief Unused.
 		 *
 		 */
 		void createFilterBinsSeparation();
@@ -140,17 +146,18 @@ class CWTNoiseEstimator
 		uint samplingRate; /**< TODO */
 
 		/**
-		 * @brief
+		 * @brief Gets frequency from a vertical pixel in the WT.
 		 *
-		 * @param pixel
-		 * @return double
+		 * @param pixel Input pixel.
+		 * @return double Approximate frequency.
 		 */
 		double getFreq(int pixel);
+
 		/**
-		 * @brief
+		 * @brief Gets the FFT bin corresponding to a pixel in the WT.
 		 *
-		 * @param pixel
-		 * @return unsigned int
+		 * @param pixel Vertical position of a pixel in the WT.
+		 * @return unsigned int Corresponding FFT bin.
 		 */
 		unsigned int getFFTBin(int pixel);
 };

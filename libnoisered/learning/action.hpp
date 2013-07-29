@@ -14,7 +14,7 @@ class Action
 		 *
 		 * @param s
 		 */
-		virtual void execute(State& s) = 0;
+		virtual void execute(State &s) = 0;
 		/**
 		 * @brief
 		 *

@@ -5,93 +5,113 @@
 #include "matrix.h"
 
 /**
- * @brief
+ * @brief Represents an area in a Matrix. Used for CWT MT reduction algorithm.
+ * The area is delimited by a vertical pair of points. (i.e. lowest and highest point at a given column).
+ *
+ * It is written in the matrix mask.
+ *
+ * For every function, the m parameter corresponds to the matrix the area is linked to.
  *
  */
 class Area
 {
 	public:
-		Area(Matrix& m);
 		/**
-		 * @brief
+		 * @brief Constructor.
 		 *
-		 * @param m
+		 * @param m Matrix on which this area applies.
 		 */
-		/**
-		 * @brief
-		 *
-		 * @param m
-		 */
-		void removeArea(Matrix& m);
-		/**
-		 * @brief
-		 *
-		 * @param m
-		 */
-		void plotArea(Matrix& m);
+		Area(Matrix &m);
 
 		/**
-		 * @brief
+		 * @brief Removes the area from the mask.
 		 *
 		 * @param m
-		 * @param i
-		 * @param j
 		 */
-		void plotContour(Matrix& m, unsigned int i, unsigned int j);
+		void removeArea(Matrix &m);
 
 		/**
-		 * @brief
+		 * @brief Fills the area on the mask.
+		 *
+		 * Used for debug purposes.
 		 *
 		 * @param m
 		 */
-		void computeParameters(Matrix& m);
+		void plotArea(Matrix &m);
+
 		/**
-		 * @brief
+		 * @brief Detects and plots the contour of the area on the mask of the matrix.
+		 *
+		 * This function is called when searching for areas after applying a ceiling operation.
+		 * Every time a non-zero pixel is found, it is called and plots the countour of the corresponding area.
+		 *
+		 * @param m
+		 * @param i Column.
+		 * @param j Line.
+		 */
+		void plotContour(Matrix &m, unsigned int i, unsigned int j);
+
+		/**
+		 * @brief Computes useful parameters from the values in the matrix.
+		 *
+		 * Computes : number of pixels, median pixel, sum of values.
+		 *
+		 * @param m
+		 */
+		void computeParameters(Matrix &m);
+
+		/**
+		 * @brief Prints the parameters to stdout.
 		 *
 		 */
 		void printParameters();
 
 		/**
-		 * @brief
+		 * @brief Returns the biggest vertical size of the area.
 		 *
-		 * @return int
+		 * @return int Biggest height.
 		 */
 		int verticalSize();
+
 		/**
-		 * @brief
+		 * @brief Returns the median height pixel.
 		 *
-		 * @return int
+		 * @return int Median height.
 		 */
 		int getMedianHeight();
 
 		/**
-		 * @brief
+		 * @brief Returns the biggest horizontal size of the area.
 		 *
-		 * @return unsigned int
+		 * @return unsigned int Biggest width.
 		 */
-		unsigned int getLength() const;
+		unsigned int getWidth() const;
+
 		/**
-		 * @brief
+		 * @brief Returns the sum of the values in the area.
 		 *
-		 * @return double
+		 * Used for computing mean power.
+		 *
+		 * @return double Sum of values.
 		 */
 		double getSumOfValues() const;
+
 		/**
-		 * @brief
+		 * @brief Returns the number of pixels in the area.
 		 *
-		 * @return unsigned int
+		 * @return unsigned int Number of pixels.
 		 */
 		unsigned int getNumPixels() const;
 
 		/**
-		 * @brief
+		 * @brief Returns the point which yields the biggest value in the area.
 		 *
-		 * @return const Point
+		 * @return const Point Point with the max. value in the area.
 		 */
 		const Point getMax() const;
 
 	private:
-		Matrix& m; /**< TODO */
+		Matrix &m; /**< TODO */
 		Point max_pt; /**< TODO */
 		unsigned int minHeight; /**< TODO */
 		unsigned int maxHeight = 0; /**< TODO */
