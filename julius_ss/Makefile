@@ -7,3 +7,6 @@ LDFLAGS= -L../output/ -lnoisered -L.  -L$(LIBJULIUS) -L$(LIBJLS) `$(LIBJULIUS)/l
 
 all:
 	g++-4.8 $(CPPFLAGS) subWrapper.cpp main.cpp -o ../output/juliusSub $(LDFLAGS)
+
+clean:
+	rm ../output/juliusSub

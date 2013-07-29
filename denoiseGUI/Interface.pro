@@ -10,8 +10,23 @@ DESTDIR = $$PWD/../output
 TARGET = Interface
 TEMPLATE = app
 CONFIG += c++11
+QMAKE_CXX = g++-4.8
 QMAKE_CXXFLAGS_RELEASE += -fopenmp -O3 -march=native -D_GLIBCXX_PARALLEL
 QMAKE_LFLAGS_RELEASE += -fopenmp
+
+BASEPATH = ../build/denoiseGUI
+
+
+CONFIG(debug, debug|release) {
+	BUILDDIR = $${BASEPATH}/debug
+} else {
+	BUILDDIR = $${BASEPATH}/release
+}
+OBJECTS_DIR = $${BUILDDIR}/obj
+MOC_DIR = $${BUILDDIR}/moc
+RCC_DIR = $${BUILDDIR}/rcc
+UI_DIR = $${BUILDDIR}/ui
+
 
 SOURCES += main.cpp\
 		mainwindow.cpp \

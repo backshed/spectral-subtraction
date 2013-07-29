@@ -12,18 +12,21 @@ CONFIG += staticlib c++11
 DESTDIR = $$PWD/../output
 LIBS += -lcwt -lfftw3
 QMAKE_CXXFLAGS_RELEASE += -fopenmp -O3 -march=native -D_GLIBCXX_PARALLEL
+QMAKE_CXX = g++-4.8
+BASEPATH = ../build/libnoisered
 
-release:DESTDIR = ../build/libnoisered/release
-release:OBJECTS_DIR = $${DESTDIR}/.obj
-release:MOC_DIR = $${DESTDIR}/.moc
-release:RCC_DIR = $${DESTDIR}/.rcc
-release:UI_DIR = $${DESTDIR}/.ui
 
-Debug:DESTDIR = ../build/libnoisered/debug
-Debug:OBJECTS_DIR = $${DESTDIR}/.obj
-Debug:MOC_DIR = $${DESTDIR}/.moc
-Debug:RCC_DIR = $${DESTDIR}/.rcc
-Debug:UI_DIR = $${DESTDIR}/.ui
+CONFIG(debug, debug|release) {
+	BUILDDIR = $${BASEPATH}/debug
+} else {
+	BUILDDIR = $${BASEPATH}/release
+}
+OBJECTS_DIR = $${BUILDDIR}/obj
+MOC_DIR = $${BUILDDIR}/moc
+RCC_DIR = $${BUILDDIR}/rcc
+UI_DIR = $${BUILDDIR}/ui
+
+
 
 
 SOURCES += \
