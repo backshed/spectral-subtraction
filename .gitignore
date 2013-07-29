@@ -22,3 +22,11 @@ a.out
 *.png
 *.bat
 *.txt
+*.html
+*.css
+*.htm
+*Interface
+*juliusSub
+*.log
+*.cache
+*.status

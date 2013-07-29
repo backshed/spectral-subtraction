@@ -72,6 +72,7 @@ void SpectralSubtractor::outputNoiseSpectrum(SubtractionConfiguration& config)
 }
 
 // Geometric Approach Algorithm
+// TODO passer prev_gamma et prev_halfchi dans s_data
 void SpectralSubtractor::geom_algo(fftw_complex* input_spectrum, double* noise_power, bool firstcall)
 {
 	static const double geom_alpha = 0.98, geom_beta = 0.98;
@@ -214,6 +215,8 @@ void SpectralSubtractor::execute(SubtractionConfiguration &config)
 
 	if(config.subtractionAlgo == SubtractionConfiguration::SpectralSubtractionAlgorithm::GeometricApproach)
 		config.useOLA = true;
+	else
+		config.useOLA = false;
 
 	const int increment = config.useOLA? config.ola_frame_increment : config.frame_increment;
 

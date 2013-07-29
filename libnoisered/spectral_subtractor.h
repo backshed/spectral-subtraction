@@ -15,37 +15,113 @@
 
 class NoiseEstimator;
 class SubtractionConfiguration;
+
+/**
+ * @brief Performs spectral subtraction on a SubtractionConfiguration object.
+ *
+ * This class only implements algorithms, all the data is contained into s_data.
+ * However, some arrays are
+ *
+ */
 class SpectralSubtractor
 {
 		friend class NoiseEstimator;
 
 	public:
+		/**
+		 * @brief Constructor.
+		 *
+		 */
 		SpectralSubtractor();
+
+		/**
+		 * @brief Destructor.
+		 *
+		 */
 		~SpectralSubtractor();
 
+		/**
+		 * @brief Executes a given configuration.
+		 *
+		 * @param config
+		 */
 		void execute(SubtractionConfiguration& config);
 
+		/**
+		 * @brief Initializes some inner data needed for processing (should be removed when everything is on s_data).
+		 *
+		 * In particular, initializes arrays and constants whose size and values are relative to fft size, sampling rate, etc...
+		 *
+		 * @param config Configuration from which initialization must take place.
+		 */
 		void initialize(SubtractionConfiguration &config);
-		void outputNoiseSpectrum(SubtractionConfiguration &config);
+
+		/**
+		 * @brief Debug function.
+		 *
+		 * Outputs the specturm data in spectrumList.txt
+		 *
+		 * @param config Configuration.
+		 */
+		void outputNoiseSpectrum(SubtractionConfiguration &config); /**< TODO */
 	private:
+
+		/**** Algorithms ****/
+		/**
+		 * @brief Performs spectral subtraction, standard algorithm.
+		 *
+		 * @param config Configuration.
+		 * @param input_spectrum Input spectrum.
+		 * @param noise_power Estimated noise power.
+		 */
 		void subtraction(SubtractionConfiguration &config, fftw_complex* input_spectrum, double* noise_power);
+
+		/**
+		 * @brief Performs spectral subtraction, equal-loudness algorithm.
+		 *
+		 * @param config Configuration.
+		 * @param input_spectrum Input spectrum.
+		 * @param noise_power Estimated noise power.
+		 */
 		void subtraction_el(SubtractionConfiguration &config, fftw_complex* input_spectrum, double* noise_power);
-		void geom_algo(fftw_complex* in, double* noise_power, bool firstcall);
 
-	private:
-		/*** For geom algo ***/
-		double* prev_gamma;
-		double* prev_halfchi;
+		/**
+		 * @brief Performs spectral subtraction, geometric algorithm.
+		 *
+		 * @param input_spectrum Input spectrum.
+		 * @param noise_power Estimated noise power.
+		 * @param firstcall Reinitializes some inner static data if set to true.
+		 */
+		void geom_algo(fftw_complex* input_spectrum, double* noise_power, bool firstcall);
 
-		/***/
-		NoiseEstimator* estimator;
-		double* loudness_contour;
+		/**** General stuf ****/
+		/**
+		 * @brief Calls the right subtraction algorithm.
+		 *
+		 * @param config Configuration.
+		 * @param reinit Reinitializes some inner static data if set to true.
+		 */
 		void subtractionHandler(SubtractionConfiguration &config, bool reinit);
+
+		/**
+		 * @brief Loads corresponding loudness contour data, for EL-SS.
+		 *
+		 * @param config Configuration.
+		 */
 		void loadLoudnessContour(SubtractionConfiguration& config);
 
-		uint fftSize;
-		uint spectrumSize;
-		uint samplingRate;
+
+		/*** For geom algo ***/
+		double* prev_gamma; /**< TODO */
+		double* prev_halfchi; /**< TODO */
+
+		/***/
+		NoiseEstimator* estimator; /**< TODO */
+		double* loudness_contour; /**< TODO */
+
+		uint fftSize; /**< TODO */
+		uint spectrumSize; /**< TODO */
+		uint samplingRate; /**< TODO */
 };
 
 

@@ -4,11 +4,25 @@
 #include "realstate.hpp"
 #include <parallel/algorithm>
 
+/**
+ * @brief
+ *
+ */
 class StandardSSState : public RealState
 {
 	public:
+		/**
+		 * @brief
+		 *
+		 */
 		enum Parameter { Alpha, Beta };
 
+		/**
+		 * @brief
+		 *
+		 * @param parameter
+		 * @return double
+		 */
 		virtual double get(unsigned int parameter) final override
 		{
 			switch(parameter)
@@ -23,6 +37,11 @@ class StandardSSState : public RealState
 
 		}
 
+		/**
+		 * @brief
+		 *
+		 * @param parameter
+		 */
 		virtual void increase(unsigned int parameter) final override
 		{
 			switch(parameter)
@@ -36,6 +55,11 @@ class StandardSSState : public RealState
 			}
 		}
 
+		/**
+		 * @brief
+		 *
+		 * @param parameter
+		 */
 		virtual void decrease(unsigned int parameter) final override
 		{
 			switch(parameter)
@@ -50,16 +74,16 @@ class StandardSSState : public RealState
 		}
 
 	private:
-		double alpha;
-		double beta;
+		double alpha; /**< TODO */
+		double beta; /**< TODO */
 
-		double alpha_increment = 0.1;
-		double beta_increment = 0.01;
+		double alpha_increment = 0.1; /**< TODO */
+		double beta_increment = 0.01; /**< TODO */
 
-		double alpha_min = 0.1;
-		double alpha_max = 100;
+		double alpha_min = 0.1; /**< TODO */
+		double alpha_max = 100; /**< TODO */
 
-		double beta_min = 0.01;
-		double beta_max = 1;
+		double beta_min = 0.01; /**< TODO */
+		double beta_max = 1; /**< TODO */
 };
 #endif // STANDARDSSSTATE_HPP

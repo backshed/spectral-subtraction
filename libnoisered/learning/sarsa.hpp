@@ -9,27 +9,47 @@
 
 #include <random>
 #include <chrono>
+/**
+ * @brief
+ *
+ */
 class Sarsa
 {
 	public:
 		Sarsa():
 			dist(0, 1)
 		{
-			auto time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+			auto time = /**< TODO */ std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
 			rng.seed(time);
 		}
 
+		/**
+		 * @brief
+		 *
+		 */
 		void exec()
 		{
 
 
 		}
 
+		/**
+		 * @brief
+		 *
+		 * @return Action
+		 */
 		Action& epsilonGreedy()
 		{
 
 		}
 
+		/**
+		 * @brief
+		 *
+		 * @param state
+		 * @param action
+		 * @return double
+		 */
 		double reward(State& state, Action& action)
 		{
 			// Effectuer SS
@@ -43,11 +63,11 @@ class Sarsa
 		}
 
 	private:
-		std::mt19937 rng;
-		std::uniform_real_distribution<double> dist;
+		std::mt19937 rng; /**< TODO */
+		std::uniform_real_distribution<double> dist; /**< TODO */
 
-		double eps = 0.2;
-		double x, y;
+		double eps = 0.2; /**< TODO */
+		double x, y; /**< TODO */
 //		Q
 //		gamma
 //		alpha42

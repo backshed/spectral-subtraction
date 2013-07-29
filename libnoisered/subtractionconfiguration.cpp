@@ -67,13 +67,14 @@ void SubtractionConfiguration::clean()
 	delete[] noise_power;
 	delete[] noise_power_reest;
 
-	delete data;
-	delete origdata;
 }
 
 SubtractionConfiguration::~SubtractionConfiguration()
 {
 	clean();
+
+	delete data;
+	delete origdata;
 }
 
 
@@ -81,6 +82,7 @@ void SubtractionConfiguration::reinitData()
 {
 	std::copy(origdata, origdata + tab_length, data);
 }
+
 double SubtractionConfiguration::getAlpha() const
 {
 	return alpha;

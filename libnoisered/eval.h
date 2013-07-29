@@ -12,9 +12,25 @@
  *******************************/
 
 // Computes noise-reduction rate
+/**
+ * @brief
+ *
+ * @param original
+ * @param reduced
+ * @param length
+ * @return double
+ */
 double NRR(double* original, double* reduced, unsigned int length);
 
 // Computes speech distortion quantity
+/**
+ * @brief
+ *
+ * @param original
+ * @param reduced
+ * @param fft_size
+ * @return double
+ */
 double SDR(double* original, double* reduced, unsigned int fft_size);
 
 #endif

@@ -6,11 +6,21 @@
 // Une pour augmenter beta, une pour diminuer beta
 #include "realaction.hpp"
 #include "standardssstate.hpp"
+/**
+ * @brief
+ *
+ */
 class StandardSSAction : public RealAction
 {
 	public:
 		StandardSSAction(State::Parameter parameter, bool direction);
 
+		/**
+		 * @brief
+		 *
+		 * @param s
+		 * @return StandardSSState
+		 */
 		virtual StandardSSState execute(StandardSSState& s)
 		{
 			StandardSSState s2(s);
