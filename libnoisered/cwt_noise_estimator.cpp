@@ -83,17 +83,15 @@ void CWTNoiseEstimator::computeCWT(double *signal)
 	}
 
 	wt = CWTalgorithm::cwtft(*s, *scales, ComplexMorlet(), "NOPE");
-	arr->setFirstCol(2);
-	arr->setFirstRow(2);
-	arr->setNumCols(wt->cols());
-	arr->setNumRows(wt->rows());
+	arr->setColPadding(2);
+	arr->setRowPadding(2);
 }
 
 void CWTNoiseEstimator::computeAreas()
 {
 	areas.clear();
-	for (uint i = arr->getFirstCol(); i < arr->getNumCols(); ++i)
-		for (uint j = arr->getFirstRow(); j < arr->getNumRows(); ++j)
+	for (uint i = arr->getColPadding(); i < wt->cols(); ++i)
+		for (uint j = arr->getRowPadding(); j < wt->rows(); ++j)
 			if ((*arr)[i][j] > 0)
 			{
 				if (arr->isMasked(i, j)) // already explored area
@@ -211,8 +209,8 @@ void CWTNoiseEstimator::reestimateNoise(double *noise_power)
 
 void CWTNoiseEstimator::applyToArr(std::initializer_list<ArrayValueFilter> funs)
 {
-	for (uint i = arr->getFirstCol(); i < arr->getNumCols(); ++i)
-		for (uint j = arr->getFirstRow(); j < arr->getNumRows(); ++j)
+	for (uint i = arr->getColPadding(); i < wt->cols(); ++i)
+		for (uint j = arr->getRowPadding(); j < wt->rows(); ++j)
 			for (auto f : funs)
 				f(i, j);
 }

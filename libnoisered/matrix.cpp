@@ -5,6 +5,8 @@ Matrix::Matrix(size_type cols, size_type rows):
 	std::vector<std::vector<double>>(cols, std::vector<double>(rows)),
 								  _mask(cols, std::vector<double>(rows))
 {
+	_tmp_cols = cols;
+	_tmp_rows = rows;
 }
 
 bool Matrix::is_adjacent_to_zero(int i, int j)
@@ -48,35 +50,25 @@ const std::vector<std::vector<double>> &Matrix::getMask() const
 	return _mask;
 }
 
-uint Matrix::getFirstCol() const
+uint Matrix::getColPadding() const
 {
-	return firstCol;
+	return _colPadding;
 }
 
-void Matrix::setFirstCol(const uint &value)
+void Matrix::setColPadding(const uint &value)
 {
-	firstCol = value;
-}
-uint Matrix::getNumCols() const
-{
-	return numCols;
+	_colPadding = value;
 }
 
-
-uint Matrix::getFirstRow() const
+uint Matrix::getRowPadding() const
 {
-	return firstRow;
+	return _rowPadding;
 }
 
-void Matrix::setFirstRow(const uint &value)
+void Matrix::setRowPadding(const uint &value)
 {
-	firstRow = value;
+	_rowPadding = value;
 }
-uint Matrix::getNumRows() const
-{
-	return numRows;
-}
-
 
 bool Matrix::isMasked(unsigned int i, unsigned int j)
 {

@@ -44,7 +44,7 @@ void NoiseEstimator::compute_power(fftw_complex *in, double *powoutput)
 }
 
 // Function to check whether there is noise in the signal
-int NoiseEstimator::update_noise(fftw_complex *in, double *old_rms)
+bool NoiseEstimator::update_noise(fftw_complex *in, double *old_rms)
 {
 	// We estimate the RMS power and compare it to previous noise power
 	double current_rms = 0;
@@ -58,9 +58,9 @@ int NoiseEstimator::update_noise(fftw_complex *in, double *old_rms)
 		|| (current_rms >= *old_rms && current_rms <= *old_rms * 1.02))
 	{
 		*old_rms = current_rms;
-		return 1;
+		return true;
 	}
-	return 0;
+	return false;
 }
 
 bool NoiseEstimator::simpleEstimation(fftw_complex *spectrum, double *noise_power, bool reinit)

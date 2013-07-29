@@ -64,22 +64,14 @@ class Matrix : public std::vector<std::vector<double>>
 		 *
 		 * @return uint Column.
 		 */
-		uint getFirstCol() const;
+		uint getColPadding() const;
 
 		/**
 		 * @brief Sets the column at which the data starts.
 		 *
 		 * @param value Column.
 		 */
-		void setFirstCol(const uint &value);
-
-		/**
-		 * @brief Return the number of columns.
-		 *
-		 * @return uint Number of columns.
-		 */
-		uint getNumCols() const;
-
+		void setColPadding(const uint &value);
 
 		/**
 		 * @brief Returns the row at which the data starts.
@@ -88,22 +80,14 @@ class Matrix : public std::vector<std::vector<double>>
 		 *
 		 * @return uint Row.
 		 */
-		uint getFirstRow() const;
+		uint getRowPadding() const;
 
 		/**
 		 * @brief Sets the row at which the data starts.
 		 *
 		 * @param value Row.
 		 */
-		void setFirstRow(const uint &value);
-
-		/**
-		 * @brief Return the number of rows.
-		 *
-		 * @return uint Number of rows.
-		 */
-		uint getNumRows() const;
-
+		void setRowPadding(const uint &value);
 
 		const unsigned int mask_value = 2; /**< TODO */
 
@@ -135,10 +119,12 @@ class Matrix : public std::vector<std::vector<double>>
 		void unmask(unsigned int i, unsigned int j);
 
 	private:
-		uint firstCol; /**< TODO */
+		uint _colPadding; /**< TODO */
 		uint numCols; /**< TODO */
-		uint firstRow; /**< TODO */
+		uint _rowPadding; /**< TODO */
 		uint numRows; /**< TODO */
+		uint _tmp_cols;
+		uint _tmp_rows;
 
 		std::vector<std::vector<double>> _mask; /**< TODO */
 };
