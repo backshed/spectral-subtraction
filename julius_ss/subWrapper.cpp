@@ -15,8 +15,7 @@ extern "C"
 	{
 		s_data->readBuffer(buffer, len);
 		s->execute(*s_data);
-
-		s_data->writeBuffer(buffer, len);
+		s_data->writeBuffer(buffer);
 	}
 #ifdef __cplusplus
 }

@@ -27,7 +27,7 @@ class SubtractionConfiguration
 		unsigned int readFile(char *str);
 
 		unsigned int readBuffer(short *buffer, int length);
-		void writeBuffer(short *buffer, int length);
+		void writeBuffer(short *buffer);
 
 		void reinitData();
 		double getAlpha() const;
@@ -59,7 +59,7 @@ class SubtractionConfiguration
 		unsigned int getSamplingRate() const;
 		void setSamplingRate(unsigned int value);
 
-
+		void readParametersFromFile();
 
 	private:
 		void clean();

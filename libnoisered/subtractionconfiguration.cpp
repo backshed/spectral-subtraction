@@ -3,6 +3,7 @@
 #include <fstream>
 #include <functional>
 #include <iostream>
+#include <map>
 
 SubtractionConfiguration::SubtractionConfiguration(int fft_Size, int sampling_Rate)
 {
@@ -203,7 +204,7 @@ unsigned int SubtractionConfiguration::readBuffer(short *buffer, int length)
 	return tab_length;
 }
 
-void SubtractionConfiguration::writeBuffer(short* buffer, int length)
+void SubtractionConfiguration::writeBuffer(short* buffer)
 {
 	std::transform(data, data + tab_length, buffer, &SubtractionConfiguration::DoubleToShort);
 }
@@ -277,6 +278,58 @@ void SubtractionConfiguration::setSamplingRate(unsigned int value)
 	samplingRate = value;
 	clean();
 	initStructs();
+}
+
+/*
+ * File syntax :
+ * alpha
+ * beta
+ * alphawt
+ * betawt
+ * iterations
+ * noise algo (std / martin / wavelets)
+ * algo (std / el / ga)
+*/
+void SubtractionConfiguration::readParametersFromFile()
+{
+	static const std::map<std::string, NoiseEstimationAlgorithm> noise_est
+	{
+		std::make_pair("std", NoiseEstimationAlgorithm::Simple),
+		std::make_pair("martin", NoiseEstimationAlgorithm::Martin),
+		std::make_pair("wavelets", NoiseEstimationAlgorithm::Wavelets)
+	};
+	static const std::map<std::string, SpectralSubtractionAlgorithm> algo
+	{
+		std::make_pair("std", SpectralSubtractionAlgorithm::Standard),
+		std::make_pair("el", SpectralSubtractionAlgorithm::EqualLoudness),
+		std::make_pair("ga", SpectralSubtractionAlgorithm::GeometricApproach)
+	};
+
+	std::ifstream f("subtraction.conf");
+	std::string noise_alg, alg;
+
+	// Class members
+	f >> alpha;
+	f >> beta;
+	f >> alphawt;
+	f >> betawt;
+	f >> iterations;
+
+	// Local stuff
+	f >> noise_alg;
+	f >> alg;
+	f.close();
+
+	if(noise_est.find(noise_alg) != noise_est.end())
+		estimationAlgo = noise_est.at(noise_alg);
+	else
+		std::cerr << "Invalid noise estimation algorithm";
+
+	if(algo.find(alg) != algo.end())
+		subtractionAlgo = algo.at(alg);
+	else
+		std::cerr << "Invalid subtraction algorithm";
+
 }
 
 unsigned int SubtractionConfiguration::getFftSize() const
