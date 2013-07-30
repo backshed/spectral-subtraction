@@ -8,7 +8,7 @@ all:
 
 	(export CC="gcc-4.8" && export CFLAGS="-O3 -march=native" && cd julius-4.2.3 && ./configure)
 	$(MAKE) -C julius-4.2.3/
-	$(MAKE) -C julius-4.2.3/julius
+	$(MAKE) -C julius-4.2.3/julius -f MakefileJLS
 	$(MAKE) -C julius_ss
 
 clean:
@@ -16,5 +16,7 @@ clean:
 	-rm -rf output/juliusSub
 	-rm -rf output/libnoisered.a
 	-rm -rf output/Interface
+	-rm -rf output/libjls.a
+
 	-$(MAKE) clean -C julius-4.2.3
 	-$(MAKE) clean -C julius_ss
