@@ -43,7 +43,7 @@
 #define JULIUS_SETUP "fast"
 
 /// Compilation host information 
-#define JULIUS_HOSTINFO "x86_64-unknown-linux"
+#define JULIUS_HOSTINFO "armv7l-unknown-linux"
 
 
 /* Define to empty if the keyword does not work.  */
