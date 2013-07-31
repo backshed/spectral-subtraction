@@ -18,15 +18,19 @@ namespace ApplyNoiseToAudio
 
         public AudioManager()
         {
-            FileStream ftimit = File.OpenRead(@"D:\TIMIT_norm.wav");
-            WaveReader wavetimit = new WaveReader(ftimit);
-            timit_raw_L = IntToDouble(wavetimit.Data[0]);
+            string[] files = System.IO.Directory.GetFiles(@"E:\JNAS\wav\");
+            foreach (string filename in files)
+            {
+                FileStream ftimit = File.OpenRead(filename);
+                WaveReader wavetimit = new WaveReader(ftimit);
+                timit_raw_L = IntToDouble(wavetimit.Data[0]);
 
-
-            TraverseTree(@"D:\noise\");
+                // Apply all the noises for all the SNR to the file.
+                TraverseTree(@"E:\cleannoise\", filename);
+            }
         }
 
-        public void computeFile(String path)
+        public void computeFile(String path, String filename)
         {
             // Read a sample noise file
             byte[] someBytes = File.ReadAllBytes(path);
@@ -45,13 +49,23 @@ namespace ApplyNoiseToAudio
                 short[] outShorts = DoubleToShort(output);
                 byte[] outBytes = new byte[2 * outShorts.Length];
                 Buffer.BlockCopy(outShorts, 0, outBytes, 0, 2 * outShorts.Length);
+                
+                String tmpfilename = filename.Remove(0, 12);  // Remove the path from filename
+                tmpfilename = tmpfilename.Remove(tmpfilename.Length - 3, 3);
+                tmpfilename += "raw";
 
                 tmppath = tmppath.Remove(tmppath.Length - 4, 4);
                 tmppath = tmppath.Remove(0, 3);
-                tmppath = String.Concat(@"D:\ProcessedAudio\", tmppath);
-                tmppath = String.Concat(tmppath, String.Concat("_", i.ToString(), "db.raw"));
+                tmppath = String.Concat(@"E:\EvalNoise\", tmppath);
+                tmppath = String.Concat(tmppath, String.Concat("_", i.ToString(), @"db\"));
+                String file_fullpath = String.Concat(tmppath, tmpfilename);
 
-                File.WriteAllBytes(tmppath, outBytes);
+                Console.WriteLine(tmppath);
+                if (!Directory.Exists(tmppath))
+                {
+                    Directory.CreateDirectory(tmppath);
+                }
+                File.WriteAllBytes(file_fullpath, outBytes);
             }
 
         }
@@ -127,7 +141,7 @@ namespace ApplyNoiseToAudio
             return normalize(tab);
         }
 
-        public void TraverseTree(string root)
+        public void TraverseTree(string root, String filename)
         {
             Stack<string> dirs = new Stack<string>(20);
 
@@ -183,8 +197,8 @@ namespace ApplyNoiseToAudio
                         System.IO.FileInfo fi = new System.IO.FileInfo(file);
                         if (fi.Extension == ".raw")
                         {
-                            Console.WriteLine("Computing: {0}", file);
-                            computeFile(fi.FullName);
+                            //Console.WriteLine("Computing: {0}", file);
+                            computeFile(fi.FullName, filename);
                         }
                     }
                     catch (System.IO.FileNotFoundException e)

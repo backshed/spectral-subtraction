@@ -31,3 +31,9 @@ a.out
 *.cache
 *.status
 Makefile
+
+# C# stuff
+*.config
+*.pdb
+*.manifest
+TemporaryGeneratedFile_*
