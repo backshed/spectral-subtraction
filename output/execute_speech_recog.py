@@ -20,21 +20,24 @@ from compute_word_rate import *
 # 1. Load the original sentences
 original = open("/media/doom/Data/JNAS/Vol. 1/ORG_TEXT/KANJI/NP/001.KAN", "r", encoding='iso-2022-jp')
 orig_sents = [re.findall(r"[\w']+", l.split(' ', 3)[3][:-1]) for l in original.readlines()[0:20]]
+original.close()
 
-
-
+output_results = open("complete_results", "w")
 # for each folder in speech_eval/noisy
 	# Generate filelist > wavlist
 
-	# apply Julius
+	print("name of noise", file=output_results)
+	# for each noise_red algorithm
+		# Call julius with good SS configuration ?
+		# ./juliusSub -C ~/stuff/japanese-models/jconf/standard.jconf -charconv EUC-JP iso-2022-jp -filelist ~/JAIST/wavlist -nolog > plain_results
 
-	# ./juliusSub -C ~/stuff/japanese-models/jconf/standard.jconf -charconv EUC-JP iso-2022-jp -filelist ~/JAIST/wavlist -nolog > plain_results
+		# Extract sentences and words
+		results = open("plain_results", "r", encoding='iso-2022-jp')
+		res_sents = [re.findall(r"[\w']+", l[12:-1]) for l in results.readlines() if l.startswith("sentence1:")]
+		results.close()
 
-	# 1. Only take the lines that begin wtih "sentence1"
-	results = open("plain_results", "r", encoding='iso-2022-jp')
-	res_sents = [re.findall(r"[\w']+", l[12:-1]) for l in results.readlines() if l.startswith("sentence1:")]
-	results.close()
+		WRR = ComputeWRR(orig_sents, res_sents)
+		print("\t" + str(WRR), file=output_results)
 
-	WRR = ComputeWRR(orig_sents, res_sents)
-
-original.close()
+	print("\n", file=output_results)
+output_results.close()
