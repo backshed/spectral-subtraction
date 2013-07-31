@@ -192,6 +192,10 @@ unsigned int SubtractionConfiguration::readFile(char *str)
 	return tab_length;
 }
 
+short swap_int16(short val )
+{
+	return (val << 8) | ((val >> 8) & 0xFF);
+}
 
 unsigned int SubtractionConfiguration::readBuffer(short *buffer, int length)
 {
@@ -201,7 +205,9 @@ unsigned int SubtractionConfiguration::readBuffer(short *buffer, int length)
 	origdata = new double[tab_length];
 	data = new double[tab_length];
 
+	//std::transform(buffer, buffer + tab_length, buffer, swap_int16); // Needed for Julius
 	std::transform(buffer, buffer + tab_length, origdata, &SubtractionConfiguration::ShortToDouble);
+	std::transform(buffer, buffer + tab_length, data, &SubtractionConfiguration::ShortToDouble);
 
 	return tab_length;
 }
@@ -209,6 +215,7 @@ unsigned int SubtractionConfiguration::readBuffer(short *buffer, int length)
 void SubtractionConfiguration::writeBuffer(short *buffer)
 {
 	std::transform(data, data + tab_length, buffer, &SubtractionConfiguration::DoubleToShort);
+	//std::transform(buffer, buffer + tab_length, buffer, swap_int16); // Needed for Julius
 }
 
 void SubtractionConfiguration::copyInputSimple(int pos)

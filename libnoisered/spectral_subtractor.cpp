@@ -213,6 +213,7 @@ void SpectralSubtractor::subtractionHandler(SubtractionConfiguration &config, bo
 
 void SpectralSubtractor::execute(SubtractionConfiguration &config)
 {
+	static bool reestimate_noise=true;
 	config.reinitData();
 
 	if (config.subtractionAlgo == SubtractionConfiguration::SpectralSubtractionAlgorithm::GeometricApproach)
@@ -236,9 +237,11 @@ void SpectralSubtractor::execute(SubtractionConfiguration &config)
 			fftw_execute(config.plan_fw);
 
 			// Noise estimation
-			estimator->estimationHandler(config, sample_n == 0);
+			// estimator->estimationHandler(config, sample_n == 0);
+			estimator->estimationHandler(config, reestimate_noise);
 			//Spectral subtraction
-			subtractionHandler(config, sample_n == 0);
+			// subtractionHandler(config, sample_n == 0);
+			subtractionHandler(config, reestimate_noise);
 
 			// IFFT
 			fftw_execute(config.plan_bw);
@@ -248,6 +251,8 @@ void SpectralSubtractor::execute(SubtractionConfiguration &config)
 				config.copyOutputOLA(sample_n);
 			else
 				config.copyOutputSimple(sample_n);
+
+			reestimate_noise = false;
 
 		}
 	}

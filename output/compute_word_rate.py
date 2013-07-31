@@ -8,6 +8,7 @@ def ComputeWRR(words_origin, words_result):
 	'''Parameters are the twenty sentences cut in words only'''
 	max_inc = 3
 	WRR = 0
+
 	for i in range(0, 20):
 		N = len(words_origin[i])
 		S = 0
@@ -15,6 +16,8 @@ def ComputeWRR(words_origin, words_result):
 		I = 0
 		C = 0
 
+		if(len(words_result[i]) < 2):
+			return 1
 		#~ print(words_origin[i])
 		#~ print(words_result[i])
 
