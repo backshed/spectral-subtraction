@@ -141,7 +141,7 @@
 /* #undef HAVE_ESD_H */
 
 /* Define if <pulse/simple.h> exist  */
-/* #undef HAVE_PULSE_SIMPLE_H */
+#define HAVE_PULSE_SIMPLE_H 1
 
 /* Define if enable alsa */
 #define HAS_ALSA 1
@@ -150,7 +150,7 @@
 #define HAS_OSS 1
 
 /* Define if enable pulseaudio */
-/* #undef HAS_PULSEAUDIO */
+#define HAS_PULSEAUDIO 1
 
 /* Define if enable esd */
 /* #undef HAS_ESD */

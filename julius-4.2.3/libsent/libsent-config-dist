@@ -20,7 +20,7 @@
 #
 
 sound_inc=""
-sound_libs=" -lasound  -lz -lsndfile"
+sound_libs=" -lpulse-simple -lpulse -lasound  -lz -lsndfile"
 version="\
 Julius/Julian libsent library rev.4.2.3"
 info="\
@@ -29,7 +29,7 @@ Julius/Julian libsent library rev.4.2.3:
 
 - Audio I/O
     primary mic device API   : alsa (Advanced Linux Sound Architecture)
-    available mic device API : alsa oss
+    available mic device API : pulseaudio alsa oss
     supported audio format   : various formats by libsndfile ver.1
     NetAudio support         : no
 - Language Modeling

@@ -85,10 +85,9 @@ submain(int argc, char *argv[])
   Recog *recog;
   Jconf *jconf;
 
-  /* inihibit system log output (default: stdout) */
-  //jlog_set_output(NULL);
-  /* output system log to a file */
-  // FILE *fp = fopen(logfile, "w"); jlog_set_output(fp);
+  j_disable_debug_message ();
+  j_disable_verbose_message ();
+
 
   /* if no option argument, output julius usage and exit */
   if (argc == 1) {
@@ -206,22 +205,7 @@ submain(int argc, char *argv[])
   /* output system information to log */
   //j_recog_info(recog);
   callback_add_adin(recog, CALLBACK_ADIN_CAPTURED, modifyAudioCallback, NULL);
-  j_disable_debug_message ();
-  j_disable_verbose_message ();
 
-#ifdef VISUALIZE
-  /* Visualize: initialize GTK */
-  visual_init(recog);
-  callback_add(recog, CALLBACK_EVENT_RECOGNITION_END, visual_show, NULL);
-  callback_add(recog, CALLBACK_EVENT_PASS2_BEGIN, visual2_init, NULL);
-  callback_add(recog, CALLBACK_DEBUG_PASS2_POP, visual2_popped, NULL);
-  callback_add(recog, CALLBACK_DEBUG_PASS2_PUSH, visual2_next_word, NULL);
-  /* below should be called at result */
-  visual2_best(now, winfo);
-  /* 音声取り込みはコールバックで新規作成 */
-  /* 第2パスで認識結果出力時に以下を実行 */
-  visual2_best(now, recog->model->winfo);
-#endif
 
   /* if no grammar specified on startup, start with pause status */
   {
