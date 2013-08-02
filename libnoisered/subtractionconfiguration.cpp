@@ -5,6 +5,8 @@
 #include <iostream>
 #include <map>
 
+#include <climits>
+
 SubtractionConfiguration::SubtractionConfiguration(int fft_Size, int sampling_Rate)
 {
 	data = nullptr;
@@ -12,17 +14,48 @@ SubtractionConfiguration::SubtractionConfiguration(int fft_Size, int sampling_Ra
 	tab_length = 0;
 
 	fftSize = fft_Size;
-	spectrumSize = fft_Size / 2 + 1;
+
 	samplingRate = sampling_Rate;
 
-	ola_frame_increment = fftSize / 2;
-	frame_increment = fftSize;
-
 	initStructs();
+	initializeAlgorithmData();
 }
+
+
+
+// TODO C++ PLIZ
+void SubtractionConfiguration::loadLoudnessContour()
+{
+	// loading data for loudness contour algo
+#ifdef __linux__
+	setlocale(LC_ALL, "POSIX");
+	// Because on french OS linux will try to read numbers with commas instead of dots
+#endif
+
+	// NOTE : the loudnes_xxx (ex. : xxx = 512)
+	// refers to a spectrum with symmetrical coefficients
+	// but fftw only compute non-symmetric part, so we only have to read one half of the file.
+	// We choose to read the first half, hence it is in reverse order.
+
+	char path[30];
+	sprintf(path, "60phon/loudness_%d.data", fftSize);
+
+	std::ifstream ldata(path);
+	loudness_contour = new double[fftSize / 2];
+	for (auto i = 0U; i < fftSize / 2; ++i)
+	{
+		ldata >> loudness_contour[(fftSize / 2 - 1) - i];
+	}
+	ldata.close();
+}
+
 
 void SubtractionConfiguration::initStructs()
 {
+	spectrumSize = fftSize / 2 + 1;
+	ola_frame_increment = fftSize / 2;
+	frame_increment = fftSize;
+
 	in = fftw_alloc_real(fftSize);
 	windowed_in = fftw_alloc_real(fftSize);
 	out = fftw_alloc_real(fftSize);
@@ -35,11 +68,17 @@ void SubtractionConfiguration::initStructs()
 	noise_power = new double[fftSize];
 	noise_power_reest = new double[fftSize];
 
+	prev_gamma = new double[spectrumSize];
+	prev_halfchi = new double[spectrumSize];
+
 	// Initialize the fftw plans (so.. FAAAST)
 	plan_fw = fftw_plan_dft_r2c_1d(fftSize, in, spectrum, FFTW_ESTIMATE);
 	plan_fw_windowed = fftw_plan_dft_r2c_1d(fftSize, windowed_in, windowed_spectrum, FFTW_ESTIMATE);
 	plan_bw = fftw_plan_dft_c2r_1d(fftSize, spectrum, out, FFTW_ESTIMATE);
 	plan_bw_temp = fftw_plan_dft_c2r_1d(fftSize, tmp_spectrum, tmp_out, FFTW_ESTIMATE);
+
+	loadLoudnessContour();
+
 }
 
 double SubtractionConfiguration::ShortToDouble(short x)
@@ -67,6 +106,9 @@ void SubtractionConfiguration::clean()
 	delete[] noise_power;
 	delete[] noise_power_reest;
 
+	delete[] prev_gamma;
+	delete[] prev_halfchi;
+	delete[] loudness_contour;
 }
 
 SubtractionConfiguration::~SubtractionConfiguration()
@@ -78,7 +120,7 @@ SubtractionConfiguration::~SubtractionConfiguration()
 }
 
 
-void SubtractionConfiguration::reinitData()
+void SubtractionConfiguration::initDataArray()
 {
 	std::copy(origdata, origdata + tab_length, data);
 }
@@ -189,33 +231,39 @@ unsigned int SubtractionConfiguration::readFile(char *str)
 	}
 
 	ifile.close();
+	datasource = DataSource::File;
 	return tab_length;
-}
-
-short swap_int16(short val )
-{
-	return (val << 8) | ((val >> 8) & 0xFF);
 }
 
 unsigned int SubtractionConfiguration::readBuffer(short *buffer, int length)
 {
+	if(subtractionAlgo == SpectralSubtractionAlgorithm::Bypass) return length;
+
 	tab_length = length;
 	if (origdata != nullptr) delete origdata;
 	if (data != nullptr) delete data;
 	origdata = new double[tab_length];
 	data = new double[tab_length];
 
-	//std::transform(buffer, buffer + tab_length, buffer, swap_int16); // Needed for Julius
-	std::transform(buffer, buffer + tab_length, origdata, &SubtractionConfiguration::ShortToDouble);
-	std::transform(buffer, buffer + tab_length, data, &SubtractionConfiguration::ShortToDouble);
+	// Julius accepts only big-endian raw files but it seems internal buffers
+	// are little-endian so no need to convert.
+	// std::transform(buffer, buffer + tab_length, buffer,
+	//                [] (short val) {return (val << 8) | ((val >> 8) & 0xFF)});
 
+	std::transform(buffer, buffer + tab_length, origdata, &SubtractionConfiguration::ShortToDouble);
+	initDataArray();
+
+	datasource = DataSource::Buffer;
 	return tab_length;
 }
 
 void SubtractionConfiguration::writeBuffer(short *buffer)
 {
 	std::transform(data, data + tab_length, buffer, &SubtractionConfiguration::DoubleToShort);
-	//std::transform(buffer, buffer + tab_length, buffer, swap_int16); // Needed for Julius
+	// Julius accepts only big-endian raw files but it seems internal buffers
+	// are little-endian so no need to convert.
+	// std::transform(buffer, buffer + tab_length, buffer,
+	//                [] (short val) {return (val << 8) | ((val >> 8) & 0xFF)});
 }
 
 void SubtractionConfiguration::copyInputSimple(int pos)
@@ -311,7 +359,8 @@ void SubtractionConfiguration::readParametersFromFile()
 	{
 		std::make_pair("std", SpectralSubtractionAlgorithm::Standard),
 		std::make_pair("el", SpectralSubtractionAlgorithm::EqualLoudness),
-		std::make_pair("ga", SpectralSubtractionAlgorithm::GeometricApproach)
+		std::make_pair("ga", SpectralSubtractionAlgorithm::GeometricApproach),
+		std::make_pair("bypass", SpectralSubtractionAlgorithm::Bypass)
 	};
 
 	std::ifstream f("subtraction.conf");
@@ -349,7 +398,6 @@ unsigned int SubtractionConfiguration::getFftSize() const
 void SubtractionConfiguration::setFftSize(unsigned int value)
 {
 	fftSize = value;
-	spectrumSize = value / 2 + 1;
 	clean();
 	initStructs();
 }
@@ -357,4 +405,12 @@ void SubtractionConfiguration::setFftSize(unsigned int value)
 unsigned int SubtractionConfiguration::getSpectrumSize() const
 {
 	return spectrumSize;
+}
+
+
+void SubtractionConfiguration::initializeAlgorithmData()
+{
+	std::fill_n(prev_gamma, spectrumSize, 1);
+	std::fill_n(prev_halfchi, spectrumSize, 1);
+
 }

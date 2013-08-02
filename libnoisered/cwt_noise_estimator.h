@@ -1,20 +1,11 @@
 #ifndef CWT_NOISE_ESTIMATOR_H
 #define CWT_NOISE_ESTIMATOR_H
 
-#include <vector>
-#include <cwtlib>
-#include "area.h"
+
 #include "subtractionconfiguration.h"
 
 using namespace cwtlib;
-/**
- * @brief Type for functions that are applied on arr.
- *
- * Basically, these functions should only do very simple operations,
- * like void f(uint i, uint j) { arr[i][j] += 1; }.
- * These operations should be applied only on the given coordinates.
- */
-typedef std::function<void (uint, uint)> ArrayValueFilter;
+
 
 /**
  * @brief This class performs the proposed musical tone reduction method using wavelet transform.
@@ -35,7 +26,7 @@ class CWTNoiseEstimator
 		 * @param noise_power Output noise power.
 		 * @param computeMax Set to true if the max has to be computed (on a new frame for instance)
 		 */
-		void estimate(double *signal_in, double *noise_power, bool computeMax);
+		void estimate(SubtractionConfiguration &config, double *signal_in, double *noise_power, bool computeMax);
 
 		/**
 		 * @brief Debug function.
@@ -44,7 +35,7 @@ class CWTNoiseEstimator
 		 *
 		 * @param signal_in Input signal.
 		 */
-		void writeSimpleCWT(double *signal_in);
+		void writeSimpleCWT(SubtractionConfiguration &config, double *signal_in);
 
 		/**
 		 * @brief Initializes some inner data.
@@ -59,34 +50,26 @@ class CWTNoiseEstimator
 		 * Called by the destructor.
 		 *
 		 */
-		void clean();
+		void clean(SubtractionConfiguration &config);
 
 	private:
+		/**
+		 * @brief Clear area parameters.
+		 *
+		 */
+		inline void clearAreaParams(SubtractionConfiguration &config);
+
 		/**
 		 * @brief Contains parameters used into an algorithm.
 		 *
 		 */
 		//TODO put this in s_data to enable threading.
-		struct areaParams_
-		{
-			areaParams_();
-			int numAreas; /**< Number of areas */
-			double mean; /**< Mean value of these areas */
-		};
-		std::vector<CWTNoiseEstimator::areaParams_> *areaParams; /**< TODO */
 
-		/**
-		 * @brief Clear area parameters.
-		 *
-		 */
-		inline void clearAreaParams();
+
+
 
 		//**** For CWTLib ****//
-		Signal *s; /**< TODO */
-		LinearRangeFunctor *scales; /**< TODO */
-		WTransform *wt; /**< TODO */
-		Matrix *arr; /**< TODO */
-		std::vector<Area *> areas; /**< TODO */
+
 
 		/**
 		 * @brief Debug function.
@@ -96,27 +79,27 @@ class CWTNoiseEstimator
 		 * @param dir Directory on which the files must be written.
 		 * @param file_no Current file number. (Genreally the number of the wt)
 		 */
-		void writeFiles(std::string dir, int file_no);
+		void writeFiles(SubtractionConfiguration &config, std::string dir, int file_no);
 
 		/**
 		 * @brief Core algorithm that computes the wavelet transform.
 		 *
 		 * @param signal Input signal.
 		 */
-		void computeCWT(double *signal);
+		void computeCWT(SubtractionConfiguration &config, double *signal);
 
 		/**
 		 * @brief Computes the areas of a WT.
 		 *
 		 */
-		void computeAreas();
+		void computeAreas(SubtractionConfiguration &config);
 
 		/**
 		 * @brief Apply a list of functions / lambda expressions to the array.
 		 *
 		 * @param funs List of functions.
 		 */
-		void applyToArr(std::initializer_list<ArrayValueFilter> funs);
+		void applyToArr(SubtractionConfiguration &config, std::initializer_list<ArrayValueFilter> funs);
 
 		/**
 		 * @brief Computes the parameters of the areas.
@@ -124,22 +107,24 @@ class CWTNoiseEstimator
 		 * Fills areaParams.
 		 *
 		 */
-		void computeAreasParameters();
+		void computeAreasParameters(SubtractionConfiguration &config);
 
 		/**
 		 * @brief Reestimates the noise power according to the computed musical tone parameters.
 		 *
 		 * @param noise_power In-place modified noise power array.
 		 */
-		void reestimateNoise(double *noise_power);
-
-		ArrayValueFilter *copyFromWT; /**< TODO */
+		void reestimateNoise(SubtractionConfiguration &config, double *noise_power);
 
 		/**
 		 * @brief Unused.
 		 *
 		 */
 		void createFilterBinsSeparation();
+
+
+
+
 
 		uint fftSize; /**< TODO */
 		uint spectrumSize; /**< TODO */

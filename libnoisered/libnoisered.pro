@@ -35,6 +35,7 @@ SOURCES += \
 	point.cpp \
 	pair.cpp \
 	noise_estimator.cpp \
+	noiseestimatordataholder.cpp \
 	matrix.cpp \
 	eval.cpp \
 	cwt_noise_estimator.cpp \
@@ -50,6 +51,7 @@ HEADERS += \
 	point.h \
 	pair.h \
 	noise_estimator.h \
+	noiseestimatordataholder.h \
 	matrix.h \
 	eval.h \
 	defines.h \

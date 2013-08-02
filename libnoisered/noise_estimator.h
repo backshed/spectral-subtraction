@@ -26,7 +26,7 @@ class NoiseEstimator
 		 *
 		 * @param signal Raw audio signal.
 		 */
-		void writeSimpleCWT(double *signal);
+		void writeSimpleCWT(SubtractionConfiguration &config, double *signal);
 
 		/**
 		 * @brief Calls the right noise estimation algorithm.
@@ -47,7 +47,7 @@ class NoiseEstimator
 		 * @brief Cleans some internal arrays, used by destructor.
 		 *
 		 */
-		void clean();
+		void clean(SubtractionConfiguration &config);
 
 	private:
 
@@ -68,7 +68,7 @@ class NoiseEstimator
 		 * @param reinit Set to true when inner parameters need to be reinitialized.
 		 * @return bool True if a reestimation was performed.
 		 */
-		bool simpleEstimation(fftw_complex *spectrum, double *noise_power, bool reinit);
+		bool simpleEstimation(SubtractionConfiguration &config, fftw_complex *spectrum, double *noise_power);
 
 		/**
 		 * @brief Performs a noise estimation according to the Martin noise estimation algorithm.
@@ -93,7 +93,7 @@ class NoiseEstimator
 		 * @param tinc Frame increment.
 		 * @param reinit True if need to reinit.
 		 */
-		void martinEstimation(fftw_complex *in, int nrf, double *x, double tinc, bool reinit);
+		void martinEstimation(SubtractionConfiguration &config, fftw_complex *input_spectrum, double *noise_power);
 
 		/**
 		 * @brief Computes power and phase array from the magnitude spectrum.
@@ -114,7 +114,7 @@ class NoiseEstimator
 		 * @param old_rms Previous RMS value.
 		 * @return bool True if the noise power estimation changed.
 		 */
-		bool update_noise(fftw_complex *in, double *old_rms);
+		bool update_noise(SubtractionConfiguration &config, fftw_complex *in);
 
 		/**
 		 * @brief Computes power array from the magnitude spectrum.

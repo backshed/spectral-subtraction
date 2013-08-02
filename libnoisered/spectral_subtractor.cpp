@@ -41,8 +41,8 @@ void SpectralSubtractor::subtraction_el(SubtractionConfiguration &config, fftw_c
 	for (auto i = 0U; i < spectrumSize; ++i)
 	{
 		double Apower, Bpower, magnitude, phase, y, alpha, beta;
-		alpha = config.alpha - config.alphawt * (loudness_contour[i] - 60);
-		beta  = config.beta  - config.betawt  * (loudness_contour[i] - 60);
+		alpha = config.alpha - config.alphawt * (config.loudness_contour[i] - 60);
+		beta  = config.beta  - config.betawt  * (config.loudness_contour[i] - 60);
 
 		y = pow(input_spectrum[i][0], 2) + pow(input_spectrum[i][1], 2);
 
@@ -71,9 +71,7 @@ void SpectralSubtractor::outputNoiseSpectrum(SubtractionConfiguration &config)
 
 }
 
-// Geometric Approach Algorithm
-// TODO passer prev_gamma et prev_halfchi dans s_data
-void SpectralSubtractor::geom_algo(fftw_complex *input_spectrum, double *noise_power, bool firstcall)
+void SpectralSubtractor::geom_algo(SubtractionConfiguration &config, fftw_complex *input_spectrum, double *noise_power)
 {
 	// OK
 	static const double geom_alpha = 0.98, geom_beta = 0.98;
@@ -82,26 +80,20 @@ void SpectralSubtractor::geom_algo(fftw_complex *input_spectrum, double *noise_p
 
 	double gammai, gamma, chi, h, ymag, xmag;
 
-	if (firstcall)
-	{
-		for (auto i = 0U; i < spectrumSize; ++i)
-			prev_gamma[i] = prev_halfchi[i] = 1;
-	}
-
 	for (auto i = 0U; i < spectrumSize; ++i)
 	{
 		// 1) Magnitude spectrum
 		ymag = sqrt(pow(input_spectrum[i][0], 2.0) + pow(input_spectrum[i][1], 2.0));
 
 		// 3) compute Gamma
-		gammai = pow(ymag, 2.0) / noise_power[i];
+		gammai = pow(ymag, 2.0) / noise_power[i]; //todo max(thirdeendb, expr)
 		gammai = (thirteendb > gammai) ? thirteendb : gammai;
 
-		gamma = geom_beta * prev_gamma[i] + (1.0 - geom_beta) * gammai;
-		prev_gamma[i] = gamma;
+		gamma = geom_beta * config.prev_gamma[i] + (1.0 - geom_beta) * gammai;
+		config.prev_gamma[i] = gamma;
 
 		// 4) compute Chi
-		chi = geom_alpha * prev_halfchi[i] + (1.0 - geom_alpha) * pow(sqrt(gamma) - 1.0, 2.0);
+		chi = geom_alpha * config.prev_halfchi[i] + (1.0 - geom_alpha) * pow(sqrt(gamma) - 1.0, 2.0);
 		chi = (twentysixdb > chi) ? twentysixdb : chi;
 
 		// 5) compute gain
@@ -110,7 +102,7 @@ void SpectralSubtractor::geom_algo(fftw_complex *input_spectrum, double *noise_p
 
 		// 6) compute enhanced magnitude spectrum
 		xmag = h * ymag;
-		prev_halfchi[i] = pow(xmag, 2.0) / noise_power[i];
+		config.prev_halfchi[i] = pow(xmag, 2.0) / noise_power[i];
 
 		// 7) reverse FFT
 		double orig_phase = atan2(input_spectrum[i][1], input_spectrum[i][0]);
@@ -122,13 +114,8 @@ void SpectralSubtractor::geom_algo(fftw_complex *input_spectrum, double *noise_p
 
 
 
-
-
 SpectralSubtractor::SpectralSubtractor():
-	prev_gamma(nullptr),
-	prev_halfchi(nullptr),
-	estimator(new NoiseEstimator(this)),
-	loudness_contour(nullptr)
+	estimator(new NoiseEstimator(this))
 {
 
 }
@@ -139,53 +126,21 @@ void SpectralSubtractor::initialize(SubtractionConfiguration &config)
 	spectrumSize = config.spectrumSize;
 	fftSize = config.fftSize;
 
-	if (loudness_contour != nullptr) delete loudness_contour;
-	loadLoudnessContour(config);
 
-	if (prev_gamma != nullptr) delete prev_gamma;
-	if (prev_halfchi != nullptr) delete prev_halfchi;
-	prev_gamma = new double[config.spectrumSize];
-	prev_halfchi = new double[config.spectrumSize];
-	estimator->clean();
+
+
+	estimator->clean(config);
 	estimator->initialize(config);
 }
 
-// TODO C++ PLIZ
-void SpectralSubtractor::loadLoudnessContour(SubtractionConfiguration &config)
-{
-	// loading data for loudness contour algo
-#ifdef __linux__
-	setlocale(LC_ALL, "POSIX");
-	// Because on french OS linux will try to read numbers with commas instead of dots
-#endif
 
-	// NOTE : the loudnes_xxx (ex. : xxx = 512)
-	// refers to a spectrum with symmetrical coefficients
-	// but fftw only compute non-symmetric part, so we only have to read one half of the file.
-	// We choose to read the first half, hence it is in reverse order.
-
-	char path[30];
-	sprintf(path, "60phon/loudness_%d.data", config.fftSize);
-
-	std::ifstream ldata(path);
-	loudness_contour = new double[config.fftSize / 2];
-	for (auto i = 0U; i < config.fftSize / 2; ++i)
-	{
-		ldata >> loudness_contour[(config.fftSize / 2 - 1) - i];
-	}
-	ldata.close();
-}
 
 SpectralSubtractor::~SpectralSubtractor()
 {
-	delete[] prev_gamma;
-	delete[] prev_halfchi;
-
 	delete estimator;
-	delete[] loudness_contour;
 }
 
-void SpectralSubtractor::subtractionHandler(SubtractionConfiguration &config, bool reinit)
+void SpectralSubtractor::subtractionHandler(SubtractionConfiguration &config)
 {
 	double *effective_power_estimation = 0;
 	if (config.estimationAlgo == SubtractionConfiguration::NoiseEstimationAlgorithm::Wavelets)
@@ -200,12 +155,15 @@ void SpectralSubtractor::subtractionHandler(SubtractionConfiguration &config, bo
 		case SubtractionConfiguration::SpectralSubtractionAlgorithm::Standard:
 			subtraction(config, config.spectrum, effective_power_estimation);
 			break;
+
 		case SubtractionConfiguration::SpectralSubtractionAlgorithm::EqualLoudness:
 			subtraction_el(config, config.spectrum, effective_power_estimation);
 			break;
+
 		case SubtractionConfiguration::SpectralSubtractionAlgorithm::GeometricApproach:
-			geom_algo(config.spectrum, effective_power_estimation, reinit);
+			geom_algo(config, config.spectrum, effective_power_estimation);
 			break;
+
 		default:
 			throw "critical";
 	}
@@ -213,20 +171,33 @@ void SpectralSubtractor::subtractionHandler(SubtractionConfiguration &config, bo
 
 void SpectralSubtractor::execute(SubtractionConfiguration &config)
 {
-	static bool reestimate_noise=true;
-	config.reinitData();
+	// Some configuration and cleaning according to the parameters used
+	static bool reinit_noise = true;
+	if(config.subtractionAlgo == SubtractionConfiguration::SpectralSubtractionAlgorithm::Bypass) return;
+	if(config.datasource == SubtractionConfiguration::DataSource::File)
+	{
+		config.initDataArray();
+		reinit_noise = true;
+	}
 
-	if (config.subtractionAlgo == SubtractionConfiguration::SpectralSubtractionAlgorithm::GeometricApproach)
-		config.useOLA = true;
-	else
-		config.useOLA = false;
-
+	// Maybe make people able to choose by themselves ?
+	config.useOLA = config.subtractionAlgo == SubtractionConfiguration::SpectralSubtractionAlgorithm::GeometricApproach;
 	const int increment = config.useOLA ? config.ola_frame_increment : config.frame_increment;
 
+
+
+	// Execution of the algortihm
 	for (auto iter = 0U; iter < config.iterations; ++iter)
 	{
 		for (auto sample_n = 0U; sample_n < config.tab_length; sample_n += increment)
 		{
+			// Reinit inner algorithm parameters
+			if(reinit_noise || (config.datasource == SubtractionConfiguration::DataSource::File && sample_n == 0) )
+			{
+				config.noise_est_cfg.reinitialize(config);
+				config.initializeAlgorithmData();
+			}
+
 			// Data copying from input
 			if (config.useOLA)
 				config.copyInputOLA(sample_n);
@@ -236,12 +207,15 @@ void SpectralSubtractor::execute(SubtractionConfiguration &config)
 			// FFT
 			fftw_execute(config.plan_fw);
 
+			// TODO : do something good when working on buffers for local data.
 			// Noise estimation
-			// estimator->estimationHandler(config, sample_n == 0);
-			estimator->estimationHandler(config, reestimate_noise);
+			if(config.datasource == SubtractionConfiguration::DataSource::File)
+				estimator->estimationHandler(config, sample_n == 0);
+			else
+				estimator->estimationHandler(config, reinit_noise);
+
 			//Spectral subtraction
-			// subtractionHandler(config, sample_n == 0);
-			subtractionHandler(config, reestimate_noise);
+			subtractionHandler(config);
 
 			// IFFT
 			fftw_execute(config.plan_bw);
@@ -252,8 +226,7 @@ void SpectralSubtractor::execute(SubtractionConfiguration &config)
 			else
 				config.copyOutputSimple(sample_n);
 
-			reestimate_noise = false;
-
+			reinit_noise = false;
 		}
 	}
 }

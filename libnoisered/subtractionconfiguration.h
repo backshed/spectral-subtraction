@@ -4,6 +4,7 @@
 #include <fftw3.h>
 #include "defines.h"
 #include <mutex>
+#include "noiseestimatordataholder.h"
 
 class SpectralSubtractor;
 class NoiseEstimator;
@@ -17,6 +18,7 @@ class SubtractionConfiguration
 		friend class SpectralSubtractor;
 		friend class CWTNoiseEstimator;
 		friend class NoiseEstimator;
+		friend class NoiseEstimatorDataHolder;
 	public:
 		/**
 		 * @brief Algorithm used to estimate noise.
@@ -28,7 +30,7 @@ class SubtractionConfiguration
 		 * @brief Algorithm used to perform subtraction.
 		 *
 		 */
-		enum class SpectralSubtractionAlgorithm { Standard, EqualLoudness, GeometricApproach};
+		enum class SpectralSubtractionAlgorithm { Standard, EqualLoudness, GeometricApproach, Bypass};
 
 		/**
 		 * @brief Constructor
@@ -93,7 +95,7 @@ class SubtractionConfiguration
 		 * @brief Undoes all change on the audio data.
 		 *
 		 */
-		void reinitData();
+		void initDataArray();
 
 		/**
 		 * @brief Returns alpha.
@@ -251,6 +253,15 @@ class SubtractionConfiguration
 		 */
 		void readParametersFromFile();
 
+		/**
+		 * @brief Initializes some data used inside algorithms.
+		 *
+		 * Needs to be called when a new file is loaded, or if the environment changes completely for instance
+		 *
+		 * @param config Configuration.
+		 */
+		void initializeAlgorithmData();
+
 	private:
 		/**
 		 * @brief Deletes most of the arrays.
@@ -317,7 +328,14 @@ class SubtractionConfiguration
 		 */
 		void copyOutputOLA(int pos);
 
+		/**
+		 * @brief Loads corresponding loudness contour data, for EL-SS.
+		 *
+		 * @param config Configuration.
+		 */
+		void loadLoudnessContour();
 
+		enum DataSource { File, Buffer } datasource;
 
 		//*** Subtraction "main" parameters***//
 		NoiseEstimationAlgorithm estimationAlgo; /**< TODO */
@@ -343,15 +361,15 @@ class SubtractionConfiguration
 
 		//*** used inside algos ***///
 		// Arrays used for storing data
-		double *in; /**< TODO */
-		double *windowed_in; /**< TODO */
-		double *out; /**< TODO */
-		double *tmp_out; /**< TODO */
-		fftw_complex *spectrum; /**< TODO */
-		fftw_complex *tmp_spectrum; /**< TODO */
-		fftw_complex *windowed_spectrum; /**< TODO */
-		double *noise_power; /**< TODO */
-		double *noise_power_reest; /**< TODO */
+		double *in = nullptr; /**< TODO */
+		double *windowed_in = nullptr; /**< TODO */
+		double *out = nullptr; /**< TODO */
+		double *tmp_out = nullptr; /**< TODO */
+		fftw_complex *spectrum = nullptr; /**< TODO */
+		fftw_complex *tmp_spectrum = nullptr; /**< TODO */
+		fftw_complex *windowed_spectrum = nullptr; /**< TODO */
+		double *noise_power = nullptr; /**< TODO */
+		double *noise_power_reest = nullptr; /**< TODO */
 
 		// FFTW plans
 		fftw_plan plan_fw; /**< TODO */
@@ -359,6 +377,15 @@ class SubtractionConfiguration
 		fftw_plan plan_bw; /**< TODO */
 		fftw_plan plan_bw_temp; /**< TODO */
 
+		/*** For geom algo ***/
+		double *prev_gamma = nullptr; /**< TODO */
+		double *prev_halfchi = nullptr; /**< TODO */
+
+		/*** For EL algo ***/
+		double *loudness_contour = nullptr; /**< TODO */
+
+		/*** Noise estimation data ***/
+		NoiseEstimatorDataHolder noise_est_cfg;
 		//*** For threading ***//
 		std::mutex ola_mutex; /**< TODO */
 

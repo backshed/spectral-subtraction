@@ -68,6 +68,7 @@ void AudioManager::exec()
 			break;
 	}
 
+	s_data->initDataArray();
 	s->execute(*s_data);
 
 	emit sNRR(QString("%1").arg(NRR(s_data->getNoisyData(), s_data->getData(), s_data->getSize())));

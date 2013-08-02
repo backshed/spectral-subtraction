@@ -56,6 +56,7 @@ class SpectralSubtractor
 		 */
 		void initialize(SubtractionConfiguration &config);
 
+
 		/**
 		 * @brief Debug function.
 		 *
@@ -64,6 +65,8 @@ class SpectralSubtractor
 		 * @param config Configuration.
 		 */
 		void outputNoiseSpectrum(SubtractionConfiguration &config); /**< TODO */
+
+
 	private:
 
 		/**** Algorithms ****/
@@ -92,7 +95,7 @@ class SpectralSubtractor
 		 * @param noise_power Estimated noise power.
 		 * @param firstcall Reinitializes some inner static data if set to true.
 		 */
-		void geom_algo(fftw_complex *input_spectrum, double *noise_power, bool firstcall);
+		void geom_algo(SubtractionConfiguration &config, fftw_complex *input_spectrum, double *noise_power);
 
 		/**** General stuf ****/
 		/**
@@ -101,23 +104,16 @@ class SpectralSubtractor
 		 * @param config Configuration.
 		 * @param reinit Reinitializes some inner static data if set to true.
 		 */
-		void subtractionHandler(SubtractionConfiguration &config, bool reinit);
-
-		/**
-		 * @brief Loads corresponding loudness contour data, for EL-SS.
-		 *
-		 * @param config Configuration.
-		 */
-		void loadLoudnessContour(SubtractionConfiguration &config);
+		void subtractionHandler(SubtractionConfiguration &config);
 
 
-		/*** For geom algo ***/
-		double *prev_gamma; /**< TODO */
-		double *prev_halfchi; /**< TODO */
+
+
+
 
 		/***/
-		NoiseEstimator *estimator; /**< TODO */
-		double *loudness_contour; /**< TODO */
+		NoiseEstimator *estimator = nullptr; /**< TODO */
+
 
 		uint fftSize; /**< TODO */
 		uint spectrumSize; /**< TODO */
