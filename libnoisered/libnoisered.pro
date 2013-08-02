@@ -34,8 +34,6 @@ SOURCES += \
 	spectral_subtractor.cpp \
 	point.cpp \
 	pair.cpp \
-	noise_estimator.cpp \
-	noiseestimatordataholder.cpp \
 	matrix.cpp \
 	eval.cpp \
 	cwt_noise_estimator.cpp \
@@ -43,15 +41,22 @@ SOURCES += \
 	learning/standardssstate.cpp \
 	learning/standardssaction.cpp \
 	learning/sarsa.cpp \
-	learning/realaction.cpp
+	learning/realaction.cpp \
+    simple_ss.cpp \
+    el_ss.cpp \
+    geometric_ss.cpp \
+    estimation_algorithm.cpp \
+    subtraction_algorithm.cpp \
+    simple_estimation.cpp \
+    martin_estimation.cpp \
+    util.cpp \
+    wavelet_estimation.cpp
 
 HEADERS += \
 	subtractionconfiguration.h \
 	spectral_subtractor.h \
 	point.h \
 	pair.h \
-	noise_estimator.h \
-	noiseestimatordataholder.h \
 	matrix.h \
 	eval.h \
 	defines.h \
@@ -63,4 +68,13 @@ HEADERS += \
 	learning/sarsa.hpp \
 	learning/realstate.hpp \
 	learning/realaction.hpp \
-	learning/action.hpp
+	learning/action.hpp \
+    simple_ss.h \
+    el_ss.h \
+    geometric_ss.h \
+    estimation_algorithm.h \
+    subtraction_algorithm.h \
+    simple_estimation.h \
+    martin_estimation.h \
+    util.h \
+    wavelet_estimation.h

@@ -7,15 +7,21 @@
 
 #include <climits>
 
+
+#include "el_ss.h"
+#include "simple_ss.h"
+#include "geometric_ss.h"
+
+
 SubtractionConfiguration::SubtractionConfiguration(int fft_Size, int sampling_Rate)
 {
 	data = nullptr;
 	origdata = nullptr;
 	tab_length = 0;
 
-	fftSize = fft_Size;
+	_fftSize = fft_Size;
 
-	samplingRate = sampling_Rate;
+	_samplingRate = sampling_Rate;
 
 	initStructs();
 	initializeAlgorithmData();
@@ -23,61 +29,35 @@ SubtractionConfiguration::SubtractionConfiguration(int fft_Size, int sampling_Ra
 
 
 
-// TODO C++ PLIZ
-void SubtractionConfiguration::loadLoudnessContour()
-{
-	// loading data for loudness contour algo
-#ifdef __linux__
-	setlocale(LC_ALL, "POSIX");
-	// Because on french OS linux will try to read numbers with commas instead of dots
-#endif
-
-	// NOTE : the loudnes_xxx (ex. : xxx = 512)
-	// refers to a spectrum with symmetrical coefficients
-	// but fftw only compute non-symmetric part, so we only have to read one half of the file.
-	// We choose to read the first half, hence it is in reverse order.
-
-	char path[30];
-	sprintf(path, "60phon/loudness_%d.data", fftSize);
-
-	std::ifstream ldata(path);
-	loudness_contour = new double[fftSize / 2];
-	for (auto i = 0U; i < fftSize / 2; ++i)
-	{
-		ldata >> loudness_contour[(fftSize / 2 - 1) - i];
-	}
-	ldata.close();
-}
 
 
 void SubtractionConfiguration::initStructs()
 {
-	spectrumSize = fftSize / 2 + 1;
-	ola_frame_increment = fftSize / 2;
-	frame_increment = fftSize;
+	_spectrumSize = _fftSize / 2 + 1;
+	ola_frame_increment = _fftSize / 2;
+	frame_increment = _fftSize;
 
-	in = fftw_alloc_real(fftSize);
-	windowed_in = fftw_alloc_real(fftSize);
-	out = fftw_alloc_real(fftSize);
-	tmp_out = fftw_alloc_real(fftSize);
+	in = fftw_alloc_real(_fftSize);
+	windowed_in = fftw_alloc_real(_fftSize);
+	out = fftw_alloc_real(_fftSize);
 
-	spectrum = fftw_alloc_complex(spectrumSize);
-	tmp_spectrum = fftw_alloc_complex(spectrumSize);
-	windowed_spectrum = fftw_alloc_complex(spectrumSize);
 
-	noise_power = new double[fftSize];
-	noise_power_reest = new double[fftSize];
+	spectrum = fftw_alloc_complex(_spectrumSize);
 
-	prev_gamma = new double[spectrumSize];
-	prev_halfchi = new double[spectrumSize];
+	windowed_spectrum = fftw_alloc_complex(_spectrumSize);
+
+
+
+
+
 
 	// Initialize the fftw plans (so.. FAAAST)
-	plan_fw = fftw_plan_dft_r2c_1d(fftSize, in, spectrum, FFTW_ESTIMATE);
-	plan_fw_windowed = fftw_plan_dft_r2c_1d(fftSize, windowed_in, windowed_spectrum, FFTW_ESTIMATE);
-	plan_bw = fftw_plan_dft_c2r_1d(fftSize, spectrum, out, FFTW_ESTIMATE);
-	plan_bw_temp = fftw_plan_dft_c2r_1d(fftSize, tmp_spectrum, tmp_out, FFTW_ESTIMATE);
+	plan_fw = fftw_plan_dft_r2c_1d(_fftSize, in, spectrum, FFTW_ESTIMATE);
+	plan_fw_windowed = fftw_plan_dft_r2c_1d(_fftSize, windowed_in, windowed_spectrum, FFTW_ESTIMATE);
+	plan_bw = fftw_plan_dft_c2r_1d(_fftSize, spectrum, out, FFTW_ESTIMATE);
 
-	loadLoudnessContour();
+
+
 
 }
 
@@ -98,22 +78,21 @@ void SubtractionConfiguration::clean()
 	fftw_free(in);
 	fftw_free(windowed_in);
 	fftw_free(out);
-	fftw_free(tmp_out);
-	fftw_free(tmp_spectrum);
+
 	fftw_free(spectrum);
 	fftw_free(windowed_spectrum);
 
-	delete[] noise_power;
-	delete[] noise_power_reest;
 
-	delete[] prev_gamma;
-	delete[] prev_halfchi;
-	delete[] loudness_contour;
+
+
+
 }
 
 SubtractionConfiguration::~SubtractionConfiguration()
 {
 	clean();
+
+	delete subtraction;
 
 	delete data;
 	delete origdata;
@@ -125,77 +104,26 @@ void SubtractionConfiguration::initDataArray()
 	std::copy(origdata, origdata + tab_length, data);
 }
 
-double SubtractionConfiguration::getAlpha() const
+int SubtractionConfiguration::iterations() const
 {
-	return alpha;
-}
-
-void SubtractionConfiguration::setAlpha(double value)
-{
-	alpha = std::max(value, 0.000001);
-}
-
-double SubtractionConfiguration::getBeta() const
-{
-	return beta;
-}
-
-void SubtractionConfiguration::setBeta(double value)
-{
-	beta = std::max(value, 0.000001);
-}
-double SubtractionConfiguration::getAlphawt() const
-{
-	return alphawt;
-}
-
-void SubtractionConfiguration::setAlphawt(double value)
-{
-	alphawt = std::max(value, 0.000001);
-}
-double SubtractionConfiguration::getBetawt() const
-{
-	return betawt;
-}
-
-void SubtractionConfiguration::setBetawt(double value)
-{
-	betawt = std::max(value, 0.000001);
-}
-
-int SubtractionConfiguration::getIterations() const
-{
-	return iterations;
+	return _iterations;
 }
 
 void SubtractionConfiguration::setIterations(int value)
 {
-	iterations = std::max(value, 1);
+	_iterations = std::max(value, 1);
 }
 
-SubtractionConfiguration::NoiseEstimationAlgorithm SubtractionConfiguration::getNoiseEstimationAlgorithm() const
-{
-	return estimationAlgo;
-}
-
-void SubtractionConfiguration::setNoiseEstimationAlgorithm(const NoiseEstimationAlgorithm &value)
-{
-	estimationAlgo = value;
-}
-
-SubtractionConfiguration::SpectralSubtractionAlgorithm SubtractionConfiguration::getSpectralSubtractionAlgorithm() const
-{
-	return subtractionAlgo;
-}
-
-void SubtractionConfiguration::setSpectralSubtractionAlgorithm(const SpectralSubtractionAlgorithm &value)
-{
-	subtractionAlgo = value;
-}
 
 double *SubtractionConfiguration::getData()
 {
 	return data;
+}
+
+void SubtractionConfiguration::prepare()
+{
+	//Bof
+
 }
 
 double *SubtractionConfiguration::getNoisyData()
@@ -237,7 +165,7 @@ unsigned int SubtractionConfiguration::readFile(char *str)
 
 unsigned int SubtractionConfiguration::readBuffer(short *buffer, int length)
 {
-	if(subtractionAlgo == SpectralSubtractionAlgorithm::Bypass) return length;
+	if(subtraction->algorithm == SubtractionAlgorithm::Algorithm::Bypass) return length;
 
 	tab_length = length;
 	if (origdata != nullptr) delete origdata;
@@ -269,23 +197,23 @@ void SubtractionConfiguration::writeBuffer(short *buffer)
 void SubtractionConfiguration::copyInputSimple(int pos)
 {
 	// Data copying
-	if (fftSize <= tab_length - pos)
+	if (_fftSize <= tab_length - pos)
 	{
-		std::copy_n(data + pos, fftSize, in);
+		std::copy_n(data + pos, _fftSize, in);
 	}
 	else
 	{
 		std::copy_n(data + pos, tab_length - pos, in);
-		std::fill_n(in + tab_length - pos, fftSize - (tab_length - pos), 0);
+		std::fill_n(in + tab_length - pos, _fftSize - (tab_length - pos), 0);
 	}
 }
 
 void SubtractionConfiguration::copyOutputSimple(int pos)
 {
-	auto normalizeFFT = [&](double x) { return x / fftSize; };
-	if (fftSize <= tab_length - pos)
+	auto normalizeFFT = [&](double x) { return x / _fftSize; };
+	if (_fftSize <= tab_length - pos)
 	{
-		std::transform(out, out + fftSize, data + pos, normalizeFFT);
+		std::transform(out, out + _fftSize, data + pos, normalizeFFT);
 	}
 	else //fileSize - pos < fftSize
 	{
@@ -301,7 +229,7 @@ void SubtractionConfiguration::copyInputOLA(int pos)
 		std::copy_n(data + pos, ola_frame_increment, in);
 		std::fill_n(in + ola_frame_increment, ola_frame_increment, 0);
 
-		std::copy_n(in, fftSize, windowed_in);
+		std::copy_n(in, _fftSize, windowed_in);
 		std::fill_n(data + pos, ola_frame_increment, 0);
 	}
 	else
@@ -309,7 +237,7 @@ void SubtractionConfiguration::copyInputOLA(int pos)
 		std::copy_n(data + pos, tab_length - pos, in);
 		std::fill_n(in + tab_length - pos, ola_frame_increment - (tab_length - pos), 0);
 
-		std::copy_n(in, fftSize, windowed_in);
+		std::copy_n(in, _fftSize, windowed_in);
 		std::fill_n(data + pos, tab_length - pos, 0);
 	}
 }
@@ -318,21 +246,37 @@ void SubtractionConfiguration::copyOutputOLA(int pos)
 {
 	// Lock here
 	//ola_mutex.lock();
-	for (unsigned int j = 0; (j < fftSize) && (pos + j < tab_length); ++j)
+	for (auto j = 0U; (j < _fftSize) && (pos + j < tab_length); ++j)
 	{
-		data[pos + j] += out[j] / fftSize;
+		data[pos + j] += out[j] / _fftSize;
 	}
 	// Unlock here
 	//ola_mutex.unlock();
 }
+
+unsigned int SubtractionConfiguration::getFrameIncrement()
+{
+	return useOLA? ola_frame_increment : frame_increment;
+}
+
+SubtractionAlgorithm *SubtractionConfiguration::getSubtractionImplementation() const
+{
+	return subtraction;
+}
+
+void SubtractionConfiguration::setSubtractionImplementation(SubtractionAlgorithm *value)
+{//TODO
+	subtraction = value;
+}
+
 unsigned int SubtractionConfiguration::getSamplingRate() const
 {
-	return samplingRate;
+	return _samplingRate;
 }
 
 void SubtractionConfiguration::setSamplingRate(unsigned int value)
 {
-	samplingRate = value;
+	_samplingRate = value;
 	clean();
 	initStructs();
 }
@@ -349,68 +293,62 @@ void SubtractionConfiguration::setSamplingRate(unsigned int value)
 */
 void SubtractionConfiguration::readParametersFromFile()
 {
-	static const std::map<std::string, NoiseEstimationAlgorithm> noise_est
-	{
-		std::make_pair("std", NoiseEstimationAlgorithm::Simple),
-		std::make_pair("martin", NoiseEstimationAlgorithm::Martin),
-		std::make_pair("wavelets", NoiseEstimationAlgorithm::Wavelets)
-	};
-	static const std::map<std::string, SpectralSubtractionAlgorithm> algo
-	{
-		std::make_pair("std", SpectralSubtractionAlgorithm::Standard),
-		std::make_pair("el", SpectralSubtractionAlgorithm::EqualLoudness),
-		std::make_pair("ga", SpectralSubtractionAlgorithm::GeometricApproach),
-		std::make_pair("bypass", SpectralSubtractionAlgorithm::Bypass)
-	};
+//	static const std::map<std::string, NoiseEstimationAlgorithm> noise_est
+//	{
+//		std::make_pair("std", NoiseEstimationAlgorithm::Simple),
+//		std::make_pair("martin", NoiseEstimationAlgorithm::Martin),
+//		std::make_pair("wavelets", NoiseEstimationAlgorithm::Wavelets)
+//	};
+//	static const std::map<std::string, SubtractionAlgorithm::Algorithm> algo
+//	{
+//		std::make_pair("std", SubtractionAlgorithm::Algorithm::Standard),
+//		std::make_pair("el", SubtractionAlgorithm::Algorithm::EqualLoudness),
+//		std::make_pair("ga", SubtractionAlgorithm::Algorithm::GeometricApproach),
+//		std::make_pair("bypass", SubtractionAlgorithm::Algorithm::Bypass)
+//	};
 
-	std::ifstream f("subtraction.conf");
-	std::string noise_alg, alg;
+//	std::ifstream f("subtraction.conf");
+//	std::string noise_alg, alg;
 
-	// Class members
-	f >> alpha;
-	f >> beta;
-	f >> alphawt;
-	f >> betawt;
-	f >> iterations;
+//	// Class members
+//	f >> _alpha;
+//	f >> _beta;
+//	f >> _alphawt;
+//	f >> _betawt;
+//	f >> _iterations;
 
-	// Local stuff
-	f >> noise_alg;
-	f >> alg;
-	f.close();
+//	// Local stuff
+//	f >> noise_alg;
+//	f >> alg;
+//	f.close();
 
-	if (noise_est.find(noise_alg) != noise_est.end())
-		estimationAlgo = noise_est.at(noise_alg);
-	else
-		std::cerr << "Invalid noise estimation algorithm";
+//	if (noise_est.find(noise_alg) != noise_est.end())
+//		estimationAlgo = noise_est.at(noise_alg);
+//	else
+//		std::cerr << "Invalid noise estimation algorithm";
 
-	if (algo.find(alg) != algo.end())
-		subtractionAlgo = algo.at(alg);
-	else
-		std::cerr << "Invalid subtraction algorithm";
+//	if (algo.find(alg) != algo.end())
+//		subtractionAlgo = algo.at(alg);
+//	else
+//		std::cerr << "Invalid subtraction algorithm";
 
 }
 
-unsigned int SubtractionConfiguration::getFftSize() const
+unsigned int SubtractionConfiguration::FFTSize() const
 {
-	return fftSize;
+	return _fftSize;
 }
 
 void SubtractionConfiguration::setFftSize(unsigned int value)
 {
-	fftSize = value;
+	_fftSize = value;
 	clean();
 	initStructs();
 }
 
-unsigned int SubtractionConfiguration::getSpectrumSize() const
+unsigned int SubtractionConfiguration::spectrumSize() const
 {
-	return spectrumSize;
+	return _spectrumSize;
 }
 
 
-void SubtractionConfiguration::initializeAlgorithmData()
-{
-	std::fill_n(prev_gamma, spectrumSize, 1);
-	std::fill_n(prev_halfchi, spectrumSize, 1);
-
-}

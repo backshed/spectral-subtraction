@@ -79,22 +79,10 @@ class SpectralSubtractor
 		 */
 		void subtraction(SubtractionConfiguration &config, fftw_complex *input_spectrum, double *noise_power);
 
-		/**
-		 * @brief Performs spectral subtraction, equal-loudness algorithm.
-		 *
-		 * @param config Configuration.
-		 * @param input_spectrum Input spectrum.
-		 * @param noise_power Estimated noise power.
-		 */
+
 		void subtraction_el(SubtractionConfiguration &config, fftw_complex *input_spectrum, double *noise_power);
 
-		/**
-		 * @brief Performs spectral subtraction, geometric algorithm.
-		 *
-		 * @param input_spectrum Input spectrum.
-		 * @param noise_power Estimated noise power.
-		 * @param firstcall Reinitializes some inner static data if set to true.
-		 */
+
 		void geom_algo(SubtractionConfiguration &config, fftw_complex *input_spectrum, double *noise_power);
 
 		/**** General stuf ****/
@@ -105,7 +93,7 @@ class SpectralSubtractor
 		 * @param reinit Reinitializes some inner static data if set to true.
 		 */
 		void subtractionHandler(SubtractionConfiguration &config);
-
+		void estimationHandler(SubtractionConfiguration &config);
 
 
 
@@ -118,6 +106,7 @@ class SpectralSubtractor
 		uint fftSize; /**< TODO */
 		uint spectrumSize; /**< TODO */
 		uint samplingRate; /**< TODO */
+
 };
 
 

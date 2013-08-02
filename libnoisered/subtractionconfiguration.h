@@ -4,10 +4,12 @@
 #include <fftw3.h>
 #include "defines.h"
 #include <mutex>
-#include "noiseestimatordataholder.h"
+
 
 class SpectralSubtractor;
 class NoiseEstimator;
+class SubtractionAlgorithm;
+class EstimationAlgorithm;
 class CWTNoiseEstimator;
 /**
  * @brief Holds the data for the spectral subtraction algorithms, as well as the raw audio data.
@@ -20,17 +22,10 @@ class SubtractionConfiguration
 		friend class NoiseEstimator;
 		friend class NoiseEstimatorDataHolder;
 	public:
-		/**
-		 * @brief Algorithm used to estimate noise.
-		 *
-		 */
-		enum class NoiseEstimationAlgorithm { Simple, Wavelets, Martin };
 
-		/**
-		 * @brief Algorithm used to perform subtraction.
-		 *
-		 */
-		enum class SpectralSubtractionAlgorithm { Standard, EqualLoudness, GeometricApproach, Bypass};
+
+
+
 
 		/**
 		 * @brief Constructor
@@ -52,6 +47,13 @@ class SubtractionConfiguration
 		 * @return double Pointer to the modified buffer.
 		 */
 		double *getData();
+
+		/**
+		 * @brief Generates all the data needed from the given parameters
+		 *
+		 * For instance, if using EL algorithm, will load loudness countour data from disk.
+		 */
+		void prepare();
 
 		/**
 		 * @brief Returns the size of the internal buffer / audio file.
@@ -97,68 +99,13 @@ class SubtractionConfiguration
 		 */
 		void initDataArray();
 
-		/**
-		 * @brief Returns alpha.
-		 *
-		 * @return double alpha.
-		 */
-		double getAlpha() const;
-
-		/**
-		 * @brief Sets alpha.
-		 *
-		 * @param value alpha.
-		 */
-		void setAlpha(double value);
-
-		/**
-		 * @brief Returns beta.
-		 *
-		 * @return double beta.
-		 */
-		double getBeta() const;
-
-		/**
-		 * @brief Sets beta.
-		 *
-		 * @param value beta.
-		 */
-		void setBeta(double value);
-
-		/**
-		 * @brief Returns weighted alpha, for Equal-Loudness algorithm.
-		 *
-		 * @return double alpha_wt.
-		 */
-		double getAlphawt() const;
-
-		/**
-		 * @brief Sets weighted alpha, for Equal-Loudness algorithm.
-		 *
-		 * @param value alpha_wt.
-		 */
-		void setAlphawt(double value);
-
-		/**
-		 * @brief Returns weighted beta, for Equal-Loudness algorithm.
-		 *
-		 * @return double beta_wt.
-		 */
-		double getBetawt() const;
-
-		/**
-		 * @brief Sets weighted beta, for Equal-Loudness algorithm.
-		 *
-		 * @param value beta_wt.
-		 */
-		void setBetawt(double value);
 
 		/**
 		 * @brief Returns the number of iterations of the algorithm.
 		 *
 		 * @return int Number of iterations.
 		 */
-		int getIterations() const;
+		int iterations() const;
 
 		/**
 		 * @brief Sets the number of iterations of the algorithm.
@@ -167,40 +114,13 @@ class SubtractionConfiguration
 		 */
 		void setIterations(int value);
 
-		/**
-		 * @brief Returns the chosen noise estimation algorithm.
-		 *
-		 * @return NoiseEstimationAlgorithm Chosen noise estimation algorithm.
-		 */
-		NoiseEstimationAlgorithm getNoiseEstimationAlgorithm() const;
-
-		/**
-		 * @brief Sets the chosen noise estimation algorithm.
-		 *
-		 * @param value Noise estimation algorithm.
-		 */
-		void setNoiseEstimationAlgorithm(const NoiseEstimationAlgorithm &value);
-
-		/**
-		 * @brief Returns the chosen spectral subtraction algorithm.
-		 *
-		 * @return SpectralSubtractionAlgorithm Chosen spectral subtraction algorithm.
-		 */
-		SpectralSubtractionAlgorithm getSpectralSubtractionAlgorithm() const;
-
-		/**
-		 * @brief Sets the chosen spectral subtraction algorithm.
-		 *
-		 * @param value Spectral subtraction algorithm.
-		 */
-		void setSpectralSubtractionAlgorithm(const SpectralSubtractionAlgorithm &value);
 
 		/**
 		 * @brief Returns the chosen FFT size.
 		 *
 		 * @return unsigned int FFT size.
 		 */
-		unsigned int getFftSize() const;
+		unsigned int FFTSize() const;
 
 		/**
 		 * @brief Sets the FFT size.
@@ -219,7 +139,7 @@ class SubtractionConfiguration
 		 *
 		 * @return unsigned int Spectrum size.
 		 */
-		unsigned int getSpectrumSize() const;
+		unsigned int spectrumSize() const;
 
 		/**
 		 * @brief Returns the sampling rate.
@@ -261,6 +181,11 @@ class SubtractionConfiguration
 		 * @param config Configuration.
 		 */
 		void initializeAlgorithmData();
+
+		SubtractionAlgorithm *getSubtractionImplementation() const;
+		void setSubtractionImplementation(SubtractionAlgorithm *value);
+
+		unsigned int getFrameIncrement();
 
 	private:
 		/**
@@ -328,28 +253,16 @@ class SubtractionConfiguration
 		 */
 		void copyOutputOLA(int pos);
 
-		/**
-		 * @brief Loads corresponding loudness contour data, for EL-SS.
-		 *
-		 * @param config Configuration.
-		 */
-		void loadLoudnessContour();
+
+
 
 		enum DataSource { File, Buffer } datasource;
 
 		//*** Subtraction "main" parameters***//
-		NoiseEstimationAlgorithm estimationAlgo; /**< TODO */
-		SpectralSubtractionAlgorithm subtractionAlgo; /**< TODO */
 
-		unsigned int fftSize; /**< TODO */
-		unsigned int spectrumSize; /**< TODO */
-		unsigned int samplingRate; /**< TODO */
-
-		double alpha; /**< TODO */
-		double beta; /**< TODO */
-		double alphawt; /**< TODO */
-		double betawt; /**< TODO */
-		unsigned int iterations; /**< TODO */
+		unsigned int _fftSize; /**< TODO */
+		unsigned int _spectrumSize; /**< TODO */
+		unsigned int _samplingRate; /**< TODO */
 
 		double *data; /**< TODO */
 		double *origdata; /**< TODO */
@@ -359,36 +272,28 @@ class SubtractionConfiguration
 		unsigned int ola_frame_increment; /**< TODO */
 		unsigned int frame_increment; /**< TODO */
 
+		unsigned int _iterations; /**< TODO */
+
 		//*** used inside algos ***///
 		// Arrays used for storing data
 		double *in = nullptr; /**< TODO */
 		double *windowed_in = nullptr; /**< TODO */
 		double *out = nullptr; /**< TODO */
-		double *tmp_out = nullptr; /**< TODO */
+
 		fftw_complex *spectrum = nullptr; /**< TODO */
-		fftw_complex *tmp_spectrum = nullptr; /**< TODO */
-		fftw_complex *windowed_spectrum = nullptr; /**< TODO */
-		double *noise_power = nullptr; /**< TODO */
-		double *noise_power_reest = nullptr; /**< TODO */
+
+		fftw_complex *windowed_spectrum = nullptr; //TODO a faire passer dans Martin_estimation.h
+
 
 		// FFTW plans
 		fftw_plan plan_fw; /**< TODO */
 		fftw_plan plan_fw_windowed; /**< TODO */
 		fftw_plan plan_bw; /**< TODO */
-		fftw_plan plan_bw_temp; /**< TODO */
 
-		/*** For geom algo ***/
-		double *prev_gamma = nullptr; /**< TODO */
-		double *prev_halfchi = nullptr; /**< TODO */
 
-		/*** For EL algo ***/
-		double *loudness_contour = nullptr; /**< TODO */
-
-		/*** Noise estimation data ***/
-		NoiseEstimatorDataHolder noise_est_cfg;
-		//*** For threading ***//
-		std::mutex ola_mutex; /**< TODO */
-
+		/*** Spectral algos ***/
+		SubtractionAlgorithm* subtraction = nullptr;
+		EstimationAlgorithm* estimation = nullptr;
 
 };
 
