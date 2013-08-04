@@ -11,7 +11,7 @@
 class WaveletEstimation : public Estimation
 {
 	public:
-		WaveletEstimation(SubtractionConfiguration& configuration);
+		WaveletEstimation(SubtractionManager& configuration);
 		virtual ~WaveletEstimation();
 		virtual bool operator()(fftw_complex* input_spectrum);
 		virtual void onFFTSizeUpdate();

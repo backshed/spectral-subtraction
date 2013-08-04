@@ -5,7 +5,7 @@
 class GeometricSpectralSubtraction : public Subtraction
 {
 	public:
-		GeometricSpectralSubtraction(SubtractionConfiguration& configuration);
+		GeometricSpectralSubtraction(SubtractionManager& configuration);
 		virtual ~GeometricSpectralSubtraction();
 
 		/**

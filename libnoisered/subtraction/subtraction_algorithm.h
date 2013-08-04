@@ -3,7 +3,7 @@
 
 #include <fftw3.h>
 
-class SubtractionConfiguration;
+class SubtractionManager;
 
 
 class Subtraction
@@ -17,14 +17,14 @@ class Subtraction
 		Algorithm algorithm = Algorithm::Bypass; /**< TODO */
 
 
-		Subtraction(SubtractionConfiguration& configuration);
+		Subtraction(SubtractionManager& configuration);
 		virtual ~Subtraction();
 		virtual void operator()(fftw_complex* input_spectrum, double* noise_spectrum);
 		virtual void onFFTSizeUpdate();
 		virtual void onDataUpdate();
 
 	protected:
-		SubtractionConfiguration& conf;
+		SubtractionManager& conf;
 };
 
 #endif // BASE_SUBTRACTION_ALGORITHM_H

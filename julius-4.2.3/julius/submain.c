@@ -25,7 +25,7 @@
 
 #include "app.h"
 #include "../../julius_ss/subWrapper.h"
-
+#include <stdio.h>
 boolean separate_score_flag = FALSE;
 boolean outfile_enabled = FALSE;
 
@@ -41,6 +41,11 @@ static boolean nolog = FALSE;
 static void modifyAudioCallback(Recog *recog, SP16* buf, int len, void *dummy)
 {
 	computeSS(buf, len);
+}
+
+static void newFileCallback(Recog* recog, void* data)
+{
+	printf("hello");
 }
 
 static boolean
@@ -205,6 +210,7 @@ submain(int argc, char *argv[])
   /* output system information to log */
   //j_recog_info(recog);
   callback_add_adin(recog, CALLBACK_ADIN_CAPTURED, modifyAudioCallback, NULL);
+  callback_add(recog, CALLBACK_EVENT_SPEECH_STOP, newFileCallback, NULL);
 
 
   /* if no grammar specified on startup, start with pause status */

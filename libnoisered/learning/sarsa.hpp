@@ -2,7 +2,6 @@
 #define SARSA_H
 
 #include <algorithm>
-#include "../spectral_subtractor.h"
 #include "state.hpp"
 #include "action.hpp"
 // Dans la classe Sarsa, on va avoir un handler qui va prendre un état, une action, et calculer le reward, ainsi que l'état modifié.

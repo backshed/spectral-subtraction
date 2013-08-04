@@ -40,7 +40,7 @@ struct MartinNoiseParams
 class MartinEstimation: public Estimation
 {
 	public:
-		MartinEstimation(SubtractionConfiguration& configuration);
+		MartinEstimation(SubtractionManager& configuration);
 		virtual ~MartinEstimation();
 		virtual bool operator()(fftw_complex* input_spectrum);
 		virtual void onFFTSizeUpdate();

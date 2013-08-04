@@ -2,9 +2,9 @@
 #include "../math_util.h"
 
 #include <cmath>
-#include "subtractionconfiguration.h"
+#include "subtraction_manager.h"
 
-SimpleEstimation::SimpleEstimation(SubtractionConfiguration &configuration):
+SimpleEstimation::SimpleEstimation(SubtractionManager &configuration):
 	Estimation(configuration)
 {
 	algorithm = Algorithm::Simple;

@@ -1,9 +1,9 @@
 #include "estimation_algorithm.h"
 #include <algorithm>
 
-#include "subtractionconfiguration.h"
+#include "subtraction_manager.h"
 
-Estimation::Estimation(SubtractionConfiguration &configuration):
+Estimation::Estimation(SubtractionManager &configuration):
 	conf(configuration)
 {
 }

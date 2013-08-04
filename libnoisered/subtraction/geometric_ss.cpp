@@ -2,9 +2,9 @@
 #include <cmath>
 #include <algorithm>
 
-#include <subtractionconfiguration.h>
+#include "subtraction_manager.h"
 
-GeometricSpectralSubtraction::GeometricSpectralSubtraction(SubtractionConfiguration &configuration):
+GeometricSpectralSubtraction::GeometricSpectralSubtraction(SubtractionManager &configuration):
 	Subtraction(configuration)
 {
 	algorithm = Algorithm::GeometricApproach;

@@ -2,7 +2,7 @@
 #define ESTIMATION_ALGORITHM_H
 
 #include <fftw3.h>
-class SubtractionConfiguration;
+class SubtractionManager;
 
 class Estimation
 {
@@ -15,7 +15,7 @@ class Estimation
 		Algorithm algorithm = Algorithm::Bypass; /**< TODO */
 
 
-		Estimation(SubtractionConfiguration& configuration);
+		Estimation(SubtractionManager& configuration);
 		virtual ~Estimation();
 		virtual bool operator()(fftw_complex* input_spectrum);
 		virtual void onFFTSizeUpdate();
@@ -23,7 +23,7 @@ class Estimation
 		virtual double* noisePower();
 
 	protected:
-		SubtractionConfiguration& conf;
+		SubtractionManager& conf;
 		double* noise_power = nullptr;
 };
 

@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <iostream>
 
-#include "subtractionconfiguration.h"
+#include "subtraction_manager.h"
 
 void MartinEstimation::mh_values(double d, double *m, double *h)
 {
@@ -49,7 +49,7 @@ void MartinEstimation::mh_values(double d, double *m, double *h)
 }
 
 
-MartinEstimation::MartinEstimation(SubtractionConfiguration& configuration):
+MartinEstimation::MartinEstimation(SubtractionManager& configuration):
 	Estimation(configuration)
 {
 	algorithm = Algorithm::Martin;

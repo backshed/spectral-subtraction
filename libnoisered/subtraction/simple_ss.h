@@ -5,7 +5,7 @@
 class SimpleSpectralSubtraction : public Subtraction
 {
 	public:
-		SimpleSpectralSubtraction(SubtractionConfiguration& configuration);
+		SimpleSpectralSubtraction(SubtractionManager& configuration);
 		~SimpleSpectralSubtraction();
 
 		/**

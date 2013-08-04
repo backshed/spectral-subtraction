@@ -7,8 +7,7 @@
 #include <QDir>
 #include "dataholder.h"
 
-#include <spectral_subtractor.h>
-#include <subtractionconfiguration.h>
+#include <subtraction_manager.h>
 #include <QBuffer>
 
 class AudioManager : public QWidget
@@ -44,8 +43,7 @@ private:
 
 	bool loaded;
 
-	SpectralSubtractor s;
-	SubtractionConfiguration s_data;
+	SubtractionManager s_data;
 	double *origData;
 
 

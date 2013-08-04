@@ -11,7 +11,7 @@
 
 AudioManager::AudioManager(DataHolder *config, QWidget *parent) :
 	QWidget(parent),
-	s_data(512, 16000)
+	s_mgr(512, 16000)
 {
 
 	loaded = false;
@@ -41,17 +41,17 @@ void AudioManager::exec()
 		return;
 	}
 
-	s_data.setIterations(data->iterations);
+	s_mgr.setIterations(data->iterations);
 
 	if(data->useMartin)
 	{
-		s_data.setEstimationImplementation(std::shared_ptr<Estimation>(new MartinEstimation(s_data)));
-		s_data.enableOLA();
+		s_mgr.setEstimationImplementation(std::shared_ptr<Estimation>(new MartinEstimation(s_mgr)));
+		s_mgr.enableOLA();
 	}
 	else if(data->enableWavelets)
-		s_data.setEstimationImplementation(std::shared_ptr<Estimation>(new WaveletEstimation(s_data)));
+		s_mgr.setEstimationImplementation(std::shared_ptr<Estimation>(new WaveletEstimation(s_mgr)));
 	else
-		s_data.setEstimationImplementation(std::shared_ptr<Estimation>(new SimpleEstimation(s_data)));
+		s_mgr.setEstimationImplementation(std::shared_ptr<Estimation>(new SimpleEstimation(s_mgr)));
 
 
 	switch(data->model)
@@ -59,37 +59,37 @@ void AudioManager::exec()
 		case DataHolder::STANDARD:
 		{
 			//TODO memoryleak
-			SimpleSpectralSubtraction* subtraction = new SimpleSpectralSubtraction(s_data);
+			SimpleSpectralSubtraction* subtraction = new SimpleSpectralSubtraction(s_mgr);
 			subtraction->setAlpha(data->alphaBsc);
 			subtraction->setBeta(data->betaBsc);
-			s_data.setSubtractionImplementation(std::shared_ptr<Subtraction>(subtraction));
+			s_mgr.setSubtractionImplementation(std::shared_ptr<Subtraction>(subtraction));
 			break;
 		}
 		case DataHolder::EQUAL_LOUDNESS:
 		{
-			EqualLoudnessSpectralSubtraction* subtraction = new EqualLoudnessSpectralSubtraction(s_data);
+			EqualLoudnessSpectralSubtraction* subtraction = new EqualLoudnessSpectralSubtraction(s_mgr);
 			subtraction->setAlpha(data->alphaBsc);
 			subtraction->setBeta(data->betaBsc);
 			subtraction->setAlphawt(data->alphaWt);
 			subtraction->setBetawt(data->betaWt);
-			s_data.setSubtractionImplementation(std::shared_ptr<Subtraction>(subtraction));
+			s_mgr.setSubtractionImplementation(std::shared_ptr<Subtraction>(subtraction));
 			break;
 		}
 		case DataHolder::GA:
 		{
-			GeometricSpectralSubtraction* subtraction = new GeometricSpectralSubtraction(s_data);
-			s_data.setSubtractionImplementation(std::shared_ptr<Subtraction>(subtraction));
-			s_data.enableOLA();
+			GeometricSpectralSubtraction* subtraction = new GeometricSpectralSubtraction(s_mgr);
+			s_mgr.setSubtractionImplementation(std::shared_ptr<Subtraction>(subtraction));
+			s_mgr.enableOLA();
 			break;
 		}
 	}
 
-	s.execute(s_data);
+	s_mgr.execute();
 
-	emit sNRR(QString("%1").arg(NRR(s_data.getNoisyData(), s_data.getData(), s_data.getLength())));
+	emit sNRR(QString("%1").arg(NRR(s_mgr.getNoisyData(), s_mgr.getData(), s_mgr.getLength())));
 	if(origData != nullptr)
 	{
-		emit sSDR(QString("%1").arg(SDR(origData, s_data.getData(), s_data.getLength())));
+		emit sSDR(QString("%1").arg(SDR(origData, s_mgr.getData(), s_mgr.getLength())));
 	}
 
 	audioOut->stop();
@@ -98,9 +98,9 @@ void AudioManager::exec()
 
 	QDataStream stream(audioBuffer);
 	stream.setByteOrder(QDataStream::LittleEndian);
-	for(auto i = 0U; i < s_data.getLength(); ++i)
+	for(auto i = 0U; i < s_mgr.getLength(); ++i)
 	{
-		qint16 r = s_data.getData()[i] * 32768.;
+		qint16 r = s_mgr.getData()[i] * 32768.;
 		stream << r;
 	}
 
@@ -111,7 +111,7 @@ void AudioManager::loadSource(QString src)
 {
 	if(noiseFile != 0) delete noiseFile;
 	noiseFile = new QFile(src);
-	s_data.readFile(noiseFile->fileName().toLatin1().data());
+	s_mgr.readFile(noiseFile->fileName().toLatin1().data());
 	loaded = true;
 }
 

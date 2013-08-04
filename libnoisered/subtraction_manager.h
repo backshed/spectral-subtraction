@@ -11,7 +11,7 @@ class SpectralSubtractor;
  * @brief Holds the data for the spectral subtraction algorithms, as well as the raw audio data.
  *
  */
-class SubtractionConfiguration
+class SubtractionManager
 {
 		friend class SpectralSubtractor;
 	public:
@@ -23,13 +23,13 @@ class SubtractionConfiguration
 		 * @param fft_Size Wanted size of FFT. 256 or 512 are good choices. Must be a power of two for good performance.
 		 * @param sampling_Rate Sampling rate of the audio.
 		 */
-		SubtractionConfiguration(int fft_Size, int sampling_Rate);
+		SubtractionManager(int fft_Size, int sampling_Rate);
 
 		/**
 		 * @brief Destructor.
 		 *
 		 */
-		~SubtractionConfiguration();
+		~SubtractionManager();
 
 		/**
 		 * @brief Returns the modified buffer (the subtracted one).
@@ -91,7 +91,6 @@ class SubtractionConfiguration
 		 */
 		void initDataArray();
 
-		void prepare();
 
 		/**
 		 * @brief Returns the number of iterations of the algorithm.
@@ -177,20 +176,22 @@ class SubtractionConfiguration
 
 		bool bypass();
 
-		DataSource dataSource() const;
-		void setDataSource(const DataSource& dataSource);
 
-		bool OLAenabled() const;
+
+
 		void enableOLA();
 		void disableOLA();
 		void setOLA(bool val);
+
+		void execute();
+	private:
+		bool OLAenabled() const;
+		DataSource dataSource() const;
 
 		void forwardFFT();
 		void backwardFFT();
 
 		fftw_complex *spectrum();
-
-	private:
 		/**
 		 * @brief Deletes most of the arrays.
 		 *

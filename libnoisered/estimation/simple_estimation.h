@@ -10,7 +10,7 @@
 class SimpleEstimation : public Estimation
 {
 	public:
-		SimpleEstimation(SubtractionConfiguration& configuration);
+		SimpleEstimation(SubtractionManager& configuration);
 		virtual ~SimpleEstimation();
 		virtual bool operator()(fftw_complex* input_spectrum);
 		virtual void onFFTSizeUpdate();

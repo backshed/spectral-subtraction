@@ -5,7 +5,7 @@
 class EqualLoudnessSpectralSubtraction : public SimpleSpectralSubtraction
 {
 	public:
-		EqualLoudnessSpectralSubtraction(SubtractionConfiguration& configuration);
+		EqualLoudnessSpectralSubtraction(SubtractionManager& configuration);
 		~EqualLoudnessSpectralSubtraction();
 
 		/**

@@ -1,7 +1,7 @@
 #include "subtraction_algorithm.h"
-#include <subtractionconfiguration.h>
+#include "subtraction_manager.h"
 
-Subtraction::Subtraction(SubtractionConfiguration &configuration):
+Subtraction::Subtraction(SubtractionManager &configuration):
 	conf(configuration)
 {
 }

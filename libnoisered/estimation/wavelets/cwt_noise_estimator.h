@@ -6,7 +6,7 @@
 #include <cwtlib>
 #include "area.h"
 
-class SubtractionConfiguration;
+class SubtractionManager;
 
 using namespace cwtlib;
 /**
@@ -53,7 +53,7 @@ class CWTNoiseEstimator
 		 *
 		 * @param config Configuration.
 		 */
-		void initialize(SubtractionConfiguration &config);
+		void initialize(SubtractionManager &config);
 
 		/**
 		 * @brief Cleanup some inner data.

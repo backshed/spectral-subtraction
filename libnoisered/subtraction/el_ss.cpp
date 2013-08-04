@@ -3,8 +3,8 @@
 #include <fstream>
 #include <clocale>
 
-#include <subtractionconfiguration.h>
-EqualLoudnessSpectralSubtraction::EqualLoudnessSpectralSubtraction(SubtractionConfiguration &configuration):
+#include "subtraction_manager.h"
+EqualLoudnessSpectralSubtraction::EqualLoudnessSpectralSubtraction(SubtractionManager &configuration):
 	SimpleSpectralSubtraction(configuration)
 {
 	algorithm = Algorithm::EqualLoudness;

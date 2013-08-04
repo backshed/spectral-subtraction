@@ -4,9 +4,9 @@
 #include <algorithm>
 
 #include <iostream>
-#include "subtractionconfiguration.h"
+#include "subtraction_manager.h"
 
-WaveletEstimation::WaveletEstimation(SubtractionConfiguration &configuration):
+WaveletEstimation::WaveletEstimation(SubtractionManager &configuration):
 	Estimation(configuration)
 {
 	algorithm = Algorithm::Simple;

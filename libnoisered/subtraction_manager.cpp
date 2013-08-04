@@ -1,4 +1,4 @@
-#include "subtractionconfiguration.h"
+#include "subtraction_manager.h"
 #include <algorithm>
 #include <fstream>
 #include <functional>
@@ -7,7 +7,7 @@
 
 #include <climits>
 
-SubtractionConfiguration::SubtractionConfiguration(int fft_Size, int sampling_Rate):
+SubtractionManager::SubtractionManager(int fft_Size, int sampling_Rate):
 	_fftSize(fft_Size),
 	_samplingRate(sampling_Rate),
 	_data(nullptr),
@@ -21,9 +21,40 @@ SubtractionConfiguration::SubtractionConfiguration(int fft_Size, int sampling_Ra
 
 
 
+void SubtractionManager::execute()
+{
+	// Some configuration and cleaning according to the parameters used
+	if (bypass()) return;
+	if (dataSource() == DataSource::File)
+	{
+		initDataArray();
+	}
+	// For Julius, call onDataUpdate() on every file change, and only once if it is mic input.
 
+	// Execution of the algortihm
+	for (auto iter = 0U; iter < iterations(); ++iter)
+	{
+		for (auto sample_n = 0U; sample_n < getLength(); sample_n += getFrameIncrement())
+		{
+			copyInput(sample_n);
+			forwardFFT();
 
-void SubtractionConfiguration::onFFTSizeUpdate()
+			if(dataSource() == DataSource::File && sample_n == 0)
+				onDataUpdate();
+
+			// Noise estimation
+			(*getEstimationImplementation())(spectrum());
+
+			// Spectral subtraction
+			(*getSubtractionImplementation())(spectrum(), getEstimationImplementation()->noisePower());
+
+			backwardFFT();
+			copyOutput(sample_n);
+		}
+	}
+}
+
+void SubtractionManager::onFFTSizeUpdate()
 {
 	_spectrumSize = _fftSize / 2 + 1;
 	ola_frame_increment = _fftSize / 2;
@@ -43,19 +74,19 @@ void SubtractionConfiguration::onFFTSizeUpdate()
 	if(subtraction) subtraction->onFFTSizeUpdate();
 }
 
-double SubtractionConfiguration::ShortToDouble(short x)
+double SubtractionManager::ShortToDouble(short x)
 {
 	static const double normalizationFactor = 1.0 / pow(2.0, sizeof(short) * 8 - 1.0);
 	return x * normalizationFactor;
 }
 
-short SubtractionConfiguration::DoubleToShort(double x)
+short SubtractionManager::DoubleToShort(double x)
 {
 	static const double denormalizationFactor = pow(2.0, sizeof(short) * 8 - 1.0);
 	return x * denormalizationFactor;
 }
 
-void SubtractionConfiguration::copyInput(unsigned int pos)
+void SubtractionManager::copyInput(unsigned int pos)
 {
 	if(_useOLA)
 		copyInputOLA(pos);
@@ -63,7 +94,7 @@ void SubtractionConfiguration::copyInput(unsigned int pos)
 		copyInputSimple(pos);
 }
 
-void SubtractionConfiguration::copyOutput(unsigned int pos)
+void SubtractionManager::copyOutput(unsigned int pos)
 {
 	if(_useOLA)
 		copyOutputOLA(pos);
@@ -71,7 +102,7 @@ void SubtractionConfiguration::copyOutput(unsigned int pos)
 		copyOutputSimple(pos);
 }
 
-void SubtractionConfiguration::clean()
+void SubtractionManager::clean()
 {
 	fftw_free(in);
 	fftw_free(out);
@@ -79,7 +110,7 @@ void SubtractionConfiguration::clean()
 	fftw_free(_spectrum);
 }
 
-SubtractionConfiguration::~SubtractionConfiguration()
+SubtractionManager::~SubtractionManager()
 {
 	clean();
 
@@ -87,44 +118,44 @@ SubtractionConfiguration::~SubtractionConfiguration()
 	delete[] _origData;
 }
 
-void SubtractionConfiguration::initDataArray()
+void SubtractionManager::initDataArray()
 {
 	std::copy_n(_origData, _tabLength, _data);
 }
 
-unsigned int SubtractionConfiguration::iterations() const
+unsigned int SubtractionManager::iterations() const
 {
 	return _iterations;
 }
 
-void SubtractionConfiguration::setIterations(int value)
+void SubtractionManager::setIterations(int value)
 {
 	_iterations = std::max(value, 1);
 }
 
 
-double *SubtractionConfiguration::getData()
+double *SubtractionManager::getData()
 {
 	return _data;
 }
 
-void SubtractionConfiguration::onDataUpdate()
+void SubtractionManager::onDataUpdate()
 {
 	estimation->onDataUpdate();
 	subtraction->onDataUpdate();
 }
 
-double *SubtractionConfiguration::getNoisyData()
+double *SubtractionManager::getNoisyData()
 {
 	return _origData;
 }
 
-unsigned int SubtractionConfiguration::getLength()
+unsigned int SubtractionManager::getLength()
 {
 	return _tabLength;
 }
 
-unsigned int SubtractionConfiguration::readFile(char *str)
+unsigned int SubtractionManager::readFile(char *str)
 {
 	std::ifstream ifile(str, std::ios_base::ate | std::ios_base::binary);
 	_tabLength = ifile.tellg() / (sizeof(short) / sizeof(char));
@@ -151,7 +182,7 @@ unsigned int SubtractionConfiguration::readFile(char *str)
 	return _tabLength;
 }
 
-unsigned int SubtractionConfiguration::readBuffer(short *buffer, int length)
+unsigned int SubtractionManager::readBuffer(short *buffer, int length)
 {
 	if(_bypass) return length;
 
@@ -166,24 +197,24 @@ unsigned int SubtractionConfiguration::readBuffer(short *buffer, int length)
 	// std::transform(buffer, buffer + tab_length, buffer,
 	//                [] (short val) {return (val << 8) | ((val >> 8) & 0xFF)});
 
-	std::transform(buffer, buffer + _tabLength, _origData, &SubtractionConfiguration::ShortToDouble);
+	std::transform(buffer, buffer + _tabLength, _origData, &SubtractionManager::ShortToDouble);
 	initDataArray();
 
 	_dataSource = DataSource::Buffer;
 	return _tabLength;
 }
 
-void SubtractionConfiguration::writeBuffer(short *buffer)
+void SubtractionManager::writeBuffer(short *buffer)
 {
 	if(_bypass) return;
-	std::transform(_data, _data + _tabLength, buffer, &SubtractionConfiguration::DoubleToShort);
+	std::transform(_data, _data + _tabLength, buffer, &SubtractionManager::DoubleToShort);
 	// Julius accepts only big-endian raw files but it seems internal buffers
 	// are little-endian so no need to convert.
 	// std::transform(buffer, buffer + tab_length, buffer,
 	//                [] (short val) {return (val << 8) | ((val >> 8) & 0xFF)});
 }
 
-void SubtractionConfiguration::copyInputSimple(unsigned int pos)
+void SubtractionManager::copyInputSimple(unsigned int pos)
 {
 	// Data copying
 	if (_fftSize <= _tabLength - pos)
@@ -197,7 +228,7 @@ void SubtractionConfiguration::copyInputSimple(unsigned int pos)
 	}
 }
 
-void SubtractionConfiguration::copyOutputSimple(unsigned int pos)
+void SubtractionManager::copyOutputSimple(unsigned int pos)
 {
 	auto normalizeFFT = [&](double x) { return x / _fftSize; };
 	if (_fftSize <= _tabLength - pos)
@@ -210,7 +241,7 @@ void SubtractionConfiguration::copyOutputSimple(unsigned int pos)
 	}
 }
 
-void SubtractionConfiguration::copyInputOLA(unsigned int pos)
+void SubtractionManager::copyInputOLA(unsigned int pos)
 {
 	// Data copying
 	if (ola_frame_increment <= _tabLength - pos) // last case
@@ -229,7 +260,7 @@ void SubtractionConfiguration::copyInputOLA(unsigned int pos)
 	}
 }
 
-void SubtractionConfiguration::copyOutputOLA(unsigned int pos)
+void SubtractionManager::copyOutputOLA(unsigned int pos)
 {
 	// Lock here
 	//ola_mutex.lock();
@@ -240,90 +271,85 @@ void SubtractionConfiguration::copyOutputOLA(unsigned int pos)
 	// Unlock here
 	//ola_mutex.unlock();
 }
-bool SubtractionConfiguration::OLAenabled() const
+bool SubtractionManager::OLAenabled() const
 {
 	return _useOLA;
 }
 
-void SubtractionConfiguration::enableOLA()
+void SubtractionManager::enableOLA()
 {
 	_useOLA = true;
 }
 
-void SubtractionConfiguration::disableOLA()
+void SubtractionManager::disableOLA()
 {
 	_useOLA = false;
 }
 
-void SubtractionConfiguration::setOLA(bool val)
+void SubtractionManager::setOLA(bool val)
 {
 	_useOLA = val;
 }
 
-void SubtractionConfiguration::forwardFFT()
+void SubtractionManager::forwardFFT()
 {
 	fftw_execute(plan_fw);
 }
 
-void SubtractionConfiguration::backwardFFT()
+void SubtractionManager::backwardFFT()
 {
 	fftw_execute(plan_bw);
 }
 
-fftw_complex *SubtractionConfiguration::spectrum()
+fftw_complex *SubtractionManager::spectrum()
 {
 	return _spectrum;
 }
 
-SubtractionConfiguration::DataSource SubtractionConfiguration::dataSource() const
+SubtractionManager::DataSource SubtractionManager::dataSource() const
 {
 	return _dataSource;
 }
 
-void SubtractionConfiguration::setDataSource(const SubtractionConfiguration::DataSource& val)
-{
-	_dataSource = val;
-}
-
-std::shared_ptr<Estimation> SubtractionConfiguration::getEstimationImplementation() const
+std::shared_ptr<Estimation> SubtractionManager::getEstimationImplementation() const
 {
 	return estimation;
 }
 
-void SubtractionConfiguration::setEstimationImplementation(std::shared_ptr<Estimation> value)
+void SubtractionManager::setEstimationImplementation(std::shared_ptr<Estimation> value)
 {
 	estimation = std::move(value);
 	estimation->onFFTSizeUpdate();
 }
 
-bool SubtractionConfiguration::bypass()
+bool SubtractionManager::bypass()
 {
 	return _bypass;
 }
 
 
-unsigned int SubtractionConfiguration::getFrameIncrement()
+unsigned int SubtractionManager::getFrameIncrement()
 {
 	return _useOLA? ola_frame_increment : frame_increment;
 }
 
-std::shared_ptr<Subtraction> SubtractionConfiguration::getSubtractionImplementation() const
+std::shared_ptr<Subtraction> SubtractionManager::getSubtractionImplementation() const
 {
 	return subtraction;
 }
 
-void SubtractionConfiguration::setSubtractionImplementation(std::shared_ptr<Subtraction> value)
+void SubtractionManager::setSubtractionImplementation(std::shared_ptr<Subtraction> value)
 {
 	subtraction = std::move(value);
 	subtraction->onFFTSizeUpdate();
 }
 
-unsigned int SubtractionConfiguration::getSamplingRate() const
+unsigned int SubtractionManager::getSamplingRate() const
 {
 	return _samplingRate;
 }
 
-void SubtractionConfiguration::setSamplingRate(unsigned int value)
+void SubtractionManager::setSamplingRate(unsigned int value)
 {
 	_samplingRate = value;
 	clean();
@@ -340,7 +366,7 @@ void SubtractionConfiguration::setSamplingRate(unsigned int value)
  * noise algo (std / martin / wavelets)
  * algo (std / el / ga)
 */
-void SubtractionConfiguration::readParametersFromFile()
+void SubtractionManager::readParametersFromFile()
 {
 	std::map<std::string, std::shared_ptr<Estimation>> noise_est
 	{
@@ -419,19 +445,19 @@ void SubtractionConfiguration::readParametersFromFile()
 	}
 }
 
-unsigned int SubtractionConfiguration::FFTSize() const
+unsigned int SubtractionManager::FFTSize() const
 {
 	return _fftSize;
 }
 
-void SubtractionConfiguration::setFftSize(unsigned int value)
+void SubtractionManager::setFftSize(unsigned int value)
 {
 	_fftSize = value;
 	clean();
 	onFFTSizeUpdate();
 }
 
-unsigned int SubtractionConfiguration::spectrumSize() const
+unsigned int SubtractionManager::spectrumSize() const
 {
 	return _spectrumSize;
 }
