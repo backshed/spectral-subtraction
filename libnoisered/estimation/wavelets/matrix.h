@@ -62,32 +62,32 @@ class Matrix : public std::vector<std::vector<double>>
 		 *
 		 * There is a padding around the data (usually 2 pixels) to allow the algorithm to work.
 		 *
-		 * @return uint Column.
+		 * @return unsigned int Column.
 		 */
-		uint getColPadding() const;
+		unsigned int getColPadding() const;
 
 		/**
 		 * @brief Sets the column at which the data starts.
 		 *
 		 * @param value Column.
 		 */
-		void setColPadding(const uint &value);
+		void setColPadding(const unsigned int &value);
 
 		/**
 		 * @brief Returns the row at which the data starts.
 		 *
 		 * There is a padding around the data (usually 2 pixels) to allow the algorithm to work.
 		 *
-		 * @return uint Row.
+		 * @return unsigned int Row.
 		 */
-		uint getRowPadding() const;
+		unsigned int getRowPadding() const;
 
 		/**
 		 * @brief Sets the row at which the data starts.
 		 *
 		 * @param value Row.
 		 */
-		void setRowPadding(const uint &value);
+		void setRowPadding(const unsigned int &value);
 
 		const unsigned int mask_value = 2; /**< TODO */
 
@@ -119,12 +119,12 @@ class Matrix : public std::vector<std::vector<double>>
 		void unmask(unsigned int i, unsigned int j);
 
 	private:
-		uint _colPadding; /**< TODO */
-		uint numCols; /**< TODO */
-		uint _rowPadding; /**< TODO */
-		uint numRows; /**< TODO */
-		uint _tmp_cols;
-		uint _tmp_rows;
+		unsigned int _colPadding; /**< TODO */
+		unsigned int numCols; /**< TODO */
+		unsigned int _rowPadding; /**< TODO */
+		unsigned int numRows; /**< TODO */
+		unsigned int _tmp_cols;
+		unsigned int _tmp_rows;
 
 		std::vector<std::vector<double>> _mask; /**< TODO */
 };

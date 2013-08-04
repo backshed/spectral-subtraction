@@ -14,14 +14,14 @@ GeometricSpectralSubtraction::~GeometricSpectralSubtraction()
 	delete[] prev_halfchi;
 }
 
-void GeometricSpectralSubtraction::initializeAlgorithmData()
+void GeometricSpectralSubtraction::onDataUpdate()
 {
 	std::fill_n(prev_gamma, conf.spectrumSize(), 1);
 	std::fill_n(prev_halfchi, conf.spectrumSize(), 1);
 }
 
 
-void GeometricSpectralSubtraction::prepare()
+void GeometricSpectralSubtraction::onFFTSizeUpdate()
 {
 	prev_gamma = new double[conf.spectrumSize()];
 	prev_halfchi = new double[conf.spectrumSize()];

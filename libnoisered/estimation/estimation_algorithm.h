@@ -17,8 +17,8 @@ class EstimationAlgorithm
 		EstimationAlgorithm(SubtractionConfiguration& configuration);
 		virtual ~EstimationAlgorithm();
 		virtual bool operator()(fftw_complex* input_spectrum);
-		virtual void prepare();
-		virtual void initializeAlgorithmData();
+		virtual void onFFTSizeUpdate();
+		virtual void onDataUpdate();
 		virtual double* noisePower();
 
 	protected:

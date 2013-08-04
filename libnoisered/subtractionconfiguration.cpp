@@ -7,58 +7,46 @@
 
 #include <climits>
 
+#include <estimation/estimation_algorithm.h>
+#include <subtraction/subtraction_algorithm.h>
 
-#include "el_ss.h"
-#include "simple_ss.h"
-#include "geometric_ss.h"
-
-
-SubtractionConfiguration::SubtractionConfiguration(int fft_Size, int sampling_Rate)
+SubtractionConfiguration::SubtractionConfiguration(int fft_Size, int sampling_Rate):
+	_fftSize(fft_Size),
+	_samplingRate(sampling_Rate),
+	data(nullptr),
+	origdata(nullptr),
+	tab_length(0)
 {
-	data = nullptr;
-	origdata = nullptr;
-	tab_length = 0;
-
-	_fftSize = fft_Size;
-
-	_samplingRate = sampling_Rate;
-
-	initStructs();
-	initializeAlgorithmData();
+	onFFTSizeUpdate();
+	onDataUpdate();
 }
 
 
 
 
 
-void SubtractionConfiguration::initStructs()
+void SubtractionConfiguration::onFFTSizeUpdate()
 {
 	_spectrumSize = _fftSize / 2 + 1;
 	ola_frame_increment = _fftSize / 2;
 	frame_increment = _fftSize;
 
 	in = fftw_alloc_real(_fftSize);
-	windowed_in = fftw_alloc_real(_fftSize);
 	out = fftw_alloc_real(_fftSize);
-
 
 	spectrum = fftw_alloc_complex(_spectrumSize);
 
+	// To move ?
+	windowed_in = fftw_alloc_real(_fftSize);
 	windowed_spectrum = fftw_alloc_complex(_spectrumSize);
-
-
-
-
-
+	plan_fw_windowed = fftw_plan_dft_r2c_1d(_fftSize, windowed_in, windowed_spectrum, FFTW_ESTIMATE);
 
 	// Initialize the fftw plans (so.. FAAAST)
 	plan_fw = fftw_plan_dft_r2c_1d(_fftSize, in, spectrum, FFTW_ESTIMATE);
-	plan_fw_windowed = fftw_plan_dft_r2c_1d(_fftSize, windowed_in, windowed_spectrum, FFTW_ESTIMATE);
 	plan_bw = fftw_plan_dft_c2r_1d(_fftSize, spectrum, out, FFTW_ESTIMATE);
 
-
-
-
+	estimation->onFFTSizeUpdate();
+	subtraction->onFFTSizeUpdate();
 }
 
 double SubtractionConfiguration::ShortToDouble(short x)
@@ -71,6 +59,22 @@ short SubtractionConfiguration::DoubleToShort(double x)
 {
 	static const double denormalizationFactor = pow(2.0, sizeof(short) * 8 - 1.0);
 	return x * denormalizationFactor;
+}
+
+void SubtractionConfiguration::copyInput(unsigned int pos)
+{
+	if(useOLA)
+		copyInputOLA(pos);
+	else
+		copyInputSimple(pos);
+}
+
+void SubtractionConfiguration::copyOutput(unsigned int pos)
+{
+	if(useOLA)
+		copyOutputOLA(pos);
+	else
+		copyOutputSimple(pos);
 }
 
 void SubtractionConfiguration::clean()
@@ -93,9 +97,10 @@ SubtractionConfiguration::~SubtractionConfiguration()
 	clean();
 
 	delete subtraction;
+	delete estimation;
 
-	delete data;
-	delete origdata;
+	delete[] data;
+	delete[] origdata;
 }
 
 
@@ -120,10 +125,10 @@ double *SubtractionConfiguration::getData()
 	return data;
 }
 
-void SubtractionConfiguration::prepare()
+void SubtractionConfiguration::onDataUpdate()
 {
-	//Bof
-
+	estimation->onDataUpdate();
+	subtraction->onDataUpdate();
 }
 
 double *SubtractionConfiguration::getNoisyData()
@@ -143,8 +148,8 @@ unsigned int SubtractionConfiguration::readFile(char *str)
 	ifile.clear();
 	ifile.seekg(0, std::ios_base::beg);
 
-	if (origdata != nullptr) delete origdata;
-	if (data != nullptr) delete data;
+	delete[] origdata;
+	delete[] data;
 	origdata = new double[tab_length];
 	data = new double[tab_length];
 
@@ -168,8 +173,8 @@ unsigned int SubtractionConfiguration::readBuffer(short *buffer, int length)
 	if(subtraction->algorithm == SubtractionAlgorithm::Algorithm::Bypass) return length;
 
 	tab_length = length;
-	if (origdata != nullptr) delete origdata;
-	if (data != nullptr) delete data;
+	delete[] origdata;
+	delete[] data;
 	origdata = new double[tab_length];
 	data = new double[tab_length];
 
@@ -194,7 +199,7 @@ void SubtractionConfiguration::writeBuffer(short *buffer)
 	//                [] (short val) {return (val << 8) | ((val >> 8) & 0xFF)});
 }
 
-void SubtractionConfiguration::copyInputSimple(int pos)
+void SubtractionConfiguration::copyInputSimple(unsigned int pos)
 {
 	// Data copying
 	if (_fftSize <= tab_length - pos)
@@ -208,7 +213,7 @@ void SubtractionConfiguration::copyInputSimple(int pos)
 	}
 }
 
-void SubtractionConfiguration::copyOutputSimple(int pos)
+void SubtractionConfiguration::copyOutputSimple(unsigned int pos)
 {
 	auto normalizeFFT = [&](double x) { return x / _fftSize; };
 	if (_fftSize <= tab_length - pos)
@@ -221,7 +226,7 @@ void SubtractionConfiguration::copyOutputSimple(int pos)
 	}
 }
 
-void SubtractionConfiguration::copyInputOLA(int pos)
+void SubtractionConfiguration::copyInputOLA(unsigned int pos)
 {
 	// Data copying
 	if (ola_frame_increment <= tab_length - pos) // last case
@@ -242,7 +247,7 @@ void SubtractionConfiguration::copyInputOLA(int pos)
 	}
 }
 
-void SubtractionConfiguration::copyOutputOLA(int pos)
+void SubtractionConfiguration::copyOutputOLA(unsigned int pos)
 {
 	// Lock here
 	//ola_mutex.lock();
@@ -278,7 +283,7 @@ void SubtractionConfiguration::setSamplingRate(unsigned int value)
 {
 	_samplingRate = value;
 	clean();
-	initStructs();
+	onFFTSizeUpdate();
 }
 
 /*
@@ -343,7 +348,7 @@ void SubtractionConfiguration::setFftSize(unsigned int value)
 {
 	_fftSize = value;
 	clean();
-	initStructs();
+	onFFTSizeUpdate();
 }
 
 unsigned int SubtractionConfiguration::spectrumSize() const

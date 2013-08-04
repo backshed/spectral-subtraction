@@ -16,8 +16,8 @@ class GeometricSpectralSubtraction : public SubtractionAlgorithm
 		 */
 		virtual void operator()(fftw_complex* input_spectrum, double* noise_spectrum);
 
-		virtual void prepare();
-		virtual void initializeAlgorithmData();
+		virtual void onFFTSizeUpdate();
+		virtual void onDataUpdate();
 
 	private:
 		double *prev_gamma = nullptr; /**< TODO */

@@ -43,10 +43,13 @@ class MartinEstimation: public EstimationAlgorithm
 		MartinEstimation(SubtractionConfiguration& configuration);
 		virtual ~MartinEstimation();
 		virtual bool operator()(fftw_complex* input_spectrum);
-		virtual void prepare();
-		virtual void initializeAlgorithmData();
+		virtual void onFFTSizeUpdate();
+		virtual void onDataUpdate();
 
 	private:
+		void mh_values(double d, double *m, double *h);
+
+
 		int subwc;
 		int segment_number;
 		double *yft = nullptr;
@@ -85,6 +88,7 @@ class MartinEstimation: public EstimationAlgorithm
 		double qeqimax;
 		double qeqimin;
 		double nsms[4];
+
 };
 
 #endif // MARTIN_ESTIMATION_H

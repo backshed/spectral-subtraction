@@ -1,5 +1,7 @@
 #include "simple_ss.h"
 #include <cmath>
+#include <algorithm>
+
 SimpleSpectralSubtraction::SimpleSpectralSubtraction(SubtractionConfiguration& configuration):
 	SubtractionAlgorithm(configuration)
 {
@@ -30,7 +32,12 @@ void SimpleSpectralSubtraction::operator()(fftw_complex *input_spectrum, double*
 	}
 }
 
-void SimpleSpectralSubtraction::prepare()
+void SimpleSpectralSubtraction::onFFTSizeUpdate()
+{
+
+}
+
+void SimpleSpectralSubtraction::onDataUpdate()
 {
 
 }

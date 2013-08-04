@@ -22,7 +22,7 @@ double abssum(double *tab, unsigned int length)
 
 double NRR(double *original, double *reduced, unsigned int length)
 {
-	return 10 * log10(energy(original, length) / energy(reduced, length));
+	return 10.0 * log10(energy(original, length) / energy(reduced, length));
 }
 
 double SDR(double *original, double *reduced, unsigned int length)
@@ -35,6 +35,6 @@ double SDR(double *original, double *reduced, unsigned int length)
 		res += pow(original[i] - gamma * reduced[i], 2);
 	}
 
-	return 10 * log10(energy(original, length) / res);
+	return 10.0 * log10(energy(original, length) / res);
 }
 

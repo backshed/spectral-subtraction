@@ -5,7 +5,7 @@ EstimationAlgorithm::EstimationAlgorithm(SubtractionConfiguration &configuration
 {
 }
 
-void EstimationAlgorithm::prepare()
+void EstimationAlgorithm::onFFTSizeUpdate()
 {
 	noise_power = new double[conf.FFTSize()];
 }

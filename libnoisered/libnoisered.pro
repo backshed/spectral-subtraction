@@ -32,36 +32,36 @@ UI_DIR = $${BUILDDIR}/ui
 SOURCES += \
 	subtractionconfiguration.cpp \
 	spectral_subtractor.cpp \
-	point.cpp \
-	pair.cpp \
-	matrix.cpp \
+	estimation/wavelets/point.cpp \
+	estimation/wavelets/pair.cpp \
+	estimation/wavelets/matrix.cpp \
 	eval.cpp \
-	cwt_noise_estimator.cpp \
-	area.cpp \
+	estimation/wavelets/cwt_noise_estimator.cpp \
+	estimation/wavelets/area.cpp \
 	learning/standardssstate.cpp \
 	learning/standardssaction.cpp \
 	learning/sarsa.cpp \
 	learning/realaction.cpp \
-    simple_ss.cpp \
-    el_ss.cpp \
-    geometric_ss.cpp \
-    estimation_algorithm.cpp \
-    subtraction_algorithm.cpp \
-    simple_estimation.cpp \
-    martin_estimation.cpp \
-    util.cpp \
-    wavelet_estimation.cpp
+	subtraction/simple_ss.cpp \
+	subtraction/el_ss.cpp \
+	subtraction/geometric_ss.cpp \
+	estimation/estimation_algorithm.cpp \
+	subtraction/subtraction_algorithm.cpp \
+	estimation/simple_estimation.cpp \
+	estimation/martin_estimation.cpp \
+	util.cpp \
+	estimation/wavelet_estimation.cpp
 
 HEADERS += \
 	subtractionconfiguration.h \
 	spectral_subtractor.h \
-	point.h \
-	pair.h \
-	matrix.h \
+	estimation/wavelets/point.h \
+	estimation/wavelets/pair.h \
+	estimation/wavelets/matrix.h \
 	eval.h \
 	defines.h \
-	cwt_noise_estimator.h \
-	area.h \
+	estimation/wavelets/cwt_noise_estimator.h \
+	estimation/wavelets/area.h \
 	learning/state.hpp \
 	learning/standardssstate.hpp \
 	learning/standardssaction.hpp \
@@ -69,12 +69,14 @@ HEADERS += \
 	learning/realstate.hpp \
 	learning/realaction.hpp \
 	learning/action.hpp \
-    simple_ss.h \
-    el_ss.h \
-    geometric_ss.h \
-    estimation_algorithm.h \
-    subtraction_algorithm.h \
-    simple_estimation.h \
-    martin_estimation.h \
-    util.h \
-    wavelet_estimation.h
+	subtraction/simple_ss.h \
+	subtraction/el_ss.h \
+	subtraction/geometric_ss.h \
+	estimation/estimation_algorithm.h \
+	subtraction/subtraction_algorithm.h \
+	estimation/simple_estimation.h \
+	estimation/martin_estimation.h \
+	util.h \
+	estimation/wavelet_estimation.h \
+    subtraction/algorithms.h \
+    estimation/algorithms.h

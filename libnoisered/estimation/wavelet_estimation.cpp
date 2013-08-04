@@ -1,6 +1,6 @@
 #include "wavelet_estimation.h"
 #include "simple_estimation.h"
-#include "subtraction_algorithm.h"
+#include <subtraction/subtraction_algorithm.h>
 #include <algorithm>
 
 WaveletEstimation::WaveletEstimation(SubtractionConfiguration &configuration):
@@ -19,7 +19,7 @@ WaveletEstimation::~WaveletEstimation()
 
 bool WaveletEstimation::operator()(fftw_complex *input_spectrum)
 {
-	bool reinit = true; // TODO CAREFUL GUY TO DOOOOOO
+	bool reinit = true; //TODO CAREFUL GUY TO DOOOOOO
 	static bool computeMax = false;
 	if (reinit) computeMax = false;
 	SimpleEstimation simpleEstimation(conf);
@@ -51,8 +51,10 @@ bool WaveletEstimation::operator()(fftw_complex *input_spectrum)
 }
 
 // prepare: quand on change de fftsize par exemple
-void WaveletEstimation::prepare()
+void WaveletEstimation::onFFTSizeUpdate()
 {
+	EstimationAlgorithm::onFFTSizeUpdate();
+
 	noise_power_reest = new double[conf.FFTSize()];
 
 	tmp_out = fftw_alloc_real(conf.FFTSize());
@@ -67,7 +69,7 @@ double *WaveletEstimation::noisePower()
 }
 
 
-void WaveletEstimation::initializeAlgorithmData()
+void WaveletEstimation::onDataUpdate()
 {
 	cwt_noise_estimator.clean();
 }

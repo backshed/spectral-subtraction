@@ -2,15 +2,11 @@
 #define SUBTRACTIONCONFIGURATION_H
 
 #include <fftw3.h>
-#include "defines.h"
-#include <mutex>
 
 
 class SpectralSubtractor;
-class NoiseEstimator;
 class SubtractionAlgorithm;
 class EstimationAlgorithm;
-class CWTNoiseEstimator;
 /**
  * @brief Holds the data for the spectral subtraction algorithms, as well as the raw audio data.
  *
@@ -18,14 +14,7 @@ class CWTNoiseEstimator;
 class SubtractionConfiguration
 {
 		friend class SpectralSubtractor;
-		friend class CWTNoiseEstimator;
-		friend class NoiseEstimator;
-		friend class NoiseEstimatorDataHolder;
 	public:
-
-
-
-
 
 		/**
 		 * @brief Constructor
@@ -53,7 +42,7 @@ class SubtractionConfiguration
 		 *
 		 * For instance, if using EL algorithm, will load loudness countour data from disk.
 		 */
-		void prepare();
+		void onDataUpdate();
 
 		/**
 		 * @brief Returns the size of the internal buffer / audio file.
@@ -173,14 +162,6 @@ class SubtractionConfiguration
 		 */
 		void readParametersFromFile();
 
-		/**
-		 * @brief Initializes some data used inside algorithms.
-		 *
-		 * Needs to be called when a new file is loaded, or if the environment changes completely for instance
-		 *
-		 * @param config Configuration.
-		 */
-		void initializeAlgorithmData();
 
 		SubtractionAlgorithm *getSubtractionImplementation() const;
 		void setSubtractionImplementation(SubtractionAlgorithm *value);
@@ -197,10 +178,10 @@ class SubtractionConfiguration
 		void clean();
 
 		/**
-		 * @brief Initializes most of the data.
+		 * @brief Initializes the needed arrays when a change of FFT size is performed.
 		 *
 		 */
-		void initStructs();
+		void onFFTSizeUpdate();
 
 		/**
 		 * @brief Puts a signed 16bit integer (red book) between the -1 / 1 range in double.
@@ -219,19 +200,22 @@ class SubtractionConfiguration
 		static inline short DoubleToShort(double x);
 
 		//*** Data copying algorithms ***//
+		void copyInput(unsigned int pos);
+		void copyOutput(unsigned int pos);
+
 		/**
 		 * @brief Copies untouched value into inner fft-sized buffer for transformation.
 		 *
 		 * @param pos Sample where the copy must start.
 		 */
-		void copyInputSimple(int pos);
+		void copyInputSimple(unsigned int pos);
 
 		/**
 		 * @brief Copies subtracted values into file or large buffer after transformation.
 		 *
 		 * @param pos Sample where the copy must start.
 		 */
-		void copyOutputSimple(int pos);
+		void copyOutputSimple(unsigned int pos);
 
 		/**
 		 * @brief Copies untouched value into inner fft-sized buffer for transformation.
@@ -240,7 +224,7 @@ class SubtractionConfiguration
 		 *
 		 * @param pos
 		 */
-		void copyInputOLA(int pos);
+		void copyInputOLA(unsigned int pos);
 
 		/**
 		 * @brief Copies subtracted values into file or large buffer after transformation.
@@ -251,7 +235,7 @@ class SubtractionConfiguration
 		 *
 		 * @param pos
 		 */
-		void copyOutputOLA(int pos);
+		void copyOutputOLA(unsigned int pos);
 
 
 

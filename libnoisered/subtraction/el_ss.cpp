@@ -31,7 +31,7 @@ void EqualLoudnessSpectralSubtraction::operator()(fftw_complex *input_spectrum, 
 	}
 }
 
-void EqualLoudnessSpectralSubtraction::prepare()
+void EqualLoudnessSpectralSubtraction::onFFTSizeUpdate()
 {
 	loadLoudnessContour();
 }
@@ -61,7 +61,7 @@ void EqualLoudnessSpectralSubtraction::loadLoudnessContour()
 
 	std::ifstream ldata(path);
 
-	if(loudness_contour != nullptr) delete[] loudness_contour;
+	delete[] loudness_contour;
 	loudness_contour = new double[conf.FFTSize() / 2];
 
 	for (auto i = 0U; i < conf.FFTSize() / 2; ++i)

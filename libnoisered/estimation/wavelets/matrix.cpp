@@ -50,22 +50,22 @@ const std::vector<std::vector<double>> &Matrix::getMask() const
 	return _mask;
 }
 
-uint Matrix::getColPadding() const
+unsigned int Matrix::getColPadding() const
 {
 	return _colPadding;
 }
 
-void Matrix::setColPadding(const uint &value)
+void Matrix::setColPadding(const unsigned int &value)
 {
 	_colPadding = value;
 }
 
-uint Matrix::getRowPadding() const
+unsigned int Matrix::getRowPadding() const
 {
 	return _rowPadding;
 }
 
-void Matrix::setRowPadding(const uint &value)
+void Matrix::setRowPadding(const unsigned int &value)
 {
 	_rowPadding = value;
 }

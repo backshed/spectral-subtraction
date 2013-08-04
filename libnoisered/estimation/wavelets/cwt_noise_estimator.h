@@ -2,6 +2,7 @@
 #define CWT_NOISE_ESTIMATOR_H
 
 #include <vector>
+#include <functional>
 #include <cwtlib>
 #include "area.h"
 #include "subtractionconfiguration.h"
@@ -11,10 +12,10 @@ using namespace cwtlib;
  * @brief Type for functions that are applied on arr.
  *
  * Basically, these functions should only do very simple operations,
- * like void f(uint i, uint j) { arr[i][j] += 1; }.
+ * like void f(unsigned int i, unsigned int j) { arr[i][j] += 1; }.
  * These operations should be applied only on the given coordinates.
  */
-typedef std::function<void (uint, uint)> ArrayValueFilter;
+typedef std::function<void (unsigned int, unsigned int)> ArrayValueFilter;
 
 /**
  * @brief This class performs the proposed musical tone reduction method using wavelet transform.
@@ -141,9 +142,9 @@ class CWTNoiseEstimator
 		 */
 		void createFilterBinsSeparation();
 
-		uint fftSize; /**< TODO */
-		uint spectrumSize; /**< TODO */
-		uint samplingRate; /**< TODO */
+		unsigned int fftSize; /**< TODO */
+		unsigned int spectrumSize; /**< TODO */
+		unsigned int samplingRate; /**< TODO */
 
 		/**
 		 * @brief Gets frequency from a vertical pixel in the WT.

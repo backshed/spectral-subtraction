@@ -21,11 +21,11 @@ CWTNoiseEstimator::CWTNoiseEstimator():
 
 void CWTNoiseEstimator::clean()
 {
-	if (areaParams != nullptr) delete areaParams;
-	if (s != nullptr) delete s;
-	if (scales != nullptr) delete scales;
-	if (arr != nullptr) delete arr;
-	if (copyFromWT != nullptr) delete copyFromWT;
+	delete areaParams;
+	delete s;
+	delete scales;
+	delete arr;
+	delete copyFromWT;
 }
 
 void CWTNoiseEstimator::initialize(SubtractionConfiguration &config)
@@ -38,7 +38,7 @@ void CWTNoiseEstimator::initialize(SubtractionConfiguration &config)
 	s = new Signal(config.FFTSize(), NULL, NULL, 1.0, "signal");
 	scales = new LinearRangeFunctor(AMIN, ASTP, AMAX);
 	arr = new Matrix(config.FFTSize() + 4, (AMAX - AMIN) / ASTP + 4);
-	copyFromWT = new ArrayValueFilter([&](uint i, uint j) { (*arr)[i][j] = wt->mag(j, i) / fftSize; });
+	copyFromWT = new ArrayValueFilter([&](unsigned int i, unsigned int j) { (*arr)[i][j] = wt->mag(j, i) / fftSize; });
 }
 
 void CWTNoiseEstimator::writeFiles(std::string dir, int file_no)
@@ -90,8 +90,8 @@ void CWTNoiseEstimator::computeCWT(double *signal)
 void CWTNoiseEstimator::computeAreas()
 {
 	areas.clear();
-	for (uint i = arr->getColPadding(); i < wt->cols(); ++i)
-		for (uint j = arr->getRowPadding(); j < wt->rows(); ++j)
+	for (unsigned int i = arr->getColPadding(); i < wt->cols(); ++i)
+		for (unsigned int j = arr->getRowPadding(); j < wt->rows(); ++j)
 			if ((*arr)[i][j] > 0)
 			{
 				if (arr->isMasked(i, j)) // already explored area
@@ -130,9 +130,12 @@ void CWTNoiseEstimator::estimate(double *signal_in, double *noise_power, bool co
 	if (computeMax) maxi = 0;
 
 	// Lambdas initialisation
-	ArrayValueFilter lowCeiling([&](uint i, uint j) { (*arr)[i][j] = ((*arr)[i][j] > ceil) ? (*arr)[i][j] : 0; });
-	ArrayValueFilter dblCeiling([&](uint i, uint j) { (*arr)[i][j] = ((*arr)[i][j] > ceil) ? (((*arr)[i][j] < upperceil) ? (*arr)[i][j] : 0) : 0; });
-	ArrayValueFilter updateMax([&](uint i, uint j) { maxi = std::max(maxi, (*arr)[i][j]); });
+	ArrayValueFilter lowCeiling([&](unsigned int i, unsigned int j)
+		{ (*arr)[i][j] = ((*arr)[i][j] > ceil) ? (*arr)[i][j] : 0; });
+	ArrayValueFilter dblCeiling([&](unsigned int i, unsigned int j)
+		{ (*arr)[i][j] = ((*arr)[i][j] > ceil) ? (((*arr)[i][j] < upperceil) ? (*arr)[i][j] : 0) : 0; });
+	ArrayValueFilter updateMax([&](unsigned int i, unsigned int j)
+		{ maxi = std::max(maxi, (*arr)[i][j]); });
 
 	computeCWT(signal_in);
 
@@ -145,7 +148,8 @@ void CWTNoiseEstimator::estimate(double *signal_in, double *noise_power, bool co
 
 	// Apply ceiling
 	//TODO Get a good ceiling estimation
-	if (computeMax) ceil = 0.03; // maxi - 10.0 / fftSize; // 0.03;
+	//if (computeMax)
+		ceil = 0.03; // maxi - 10.0 / fftSize; // 0.03;
 	applyToArr({lowCeiling});
 
 
@@ -209,8 +213,8 @@ void CWTNoiseEstimator::reestimateNoise(double *noise_power)
 
 void CWTNoiseEstimator::applyToArr(std::initializer_list<ArrayValueFilter> funs)
 {
-	for (uint i = arr->getColPadding(); i < wt->cols(); ++i)
-		for (uint j = arr->getRowPadding(); j < wt->rows(); ++j)
+	for (unsigned int i = arr->getColPadding(); i < wt->cols(); ++i)
+		for (unsigned int j = arr->getRowPadding(); j < wt->rows(); ++j)
 			for (auto f : funs)
 				f(i, j);
 }

@@ -3,9 +3,4 @@
 
 
 #define PLOT_CWT
-/**
- * @brief typedef for unsigned int. Should not be used.
- *
- */
-typedef unsigned int uint;
 #endif // DEFINES_H

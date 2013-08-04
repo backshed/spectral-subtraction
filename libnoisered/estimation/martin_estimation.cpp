@@ -2,10 +2,11 @@
 #include <cmath>
 #include "util.h"
 #include <climits>
+#include <cfloat>
 #include <numeric>
 #include <algorithm>
 
-void mh_values(double d, double *m, double *h)
+void MartinEstimation::mh_values(double d, double *m, double *h)
 {
 	static double dmh[3][18] =
 	{
@@ -69,8 +70,8 @@ bool MartinEstimation::operator()(fftw_complex *input_spectrum)
 			pminu[i] = p[i];
 			pb2[i] = p[i] * p[i];
 			lminflag[i] = false;
-			actmin[i] = INT_MAX;
-			actminsub[i] = INT_MAX;
+			actmin[i] = DBL_MAX;
+			actminsub[i] = DBL_MAX;
 		}
 	}
 
@@ -190,9 +191,51 @@ bool MartinEstimation::operator()(fftw_complex *input_spectrum)
 
 
 
-void MartinEstimation::prepare()
+void MartinEstimation::onFFTSizeUpdate()
 {
-	auto local_frame_increment = conf.getFrameIncrement();
+	EstimationAlgorithm::onFFTSizeUpdate();
+
+	delete[] ah;
+	ah = new double[conf.spectrumSize()];
+	delete[] b;
+	b = new double[conf.spectrumSize()];
+	delete[] qeqi;
+	qeqi = new double[conf.spectrumSize()];
+	delete[] bmind;
+	bmind = new double[conf.spectrumSize()];
+	delete[] bminv;
+	bminv = new double[conf.spectrumSize()];
+	delete[] lmin;
+	lmin = new double[conf.spectrumSize()];
+	delete[] qisq;
+	qisq = new double[conf.spectrumSize()];
+	delete[] kmod;
+	kmod = new bool[conf.spectrumSize()];
+
+	delete[] yft;
+	yft = new double[conf.spectrumSize()];
+	delete[] p;
+	p = new double[conf.spectrumSize()];
+	delete[] sn2;
+	sn2 = new double[conf.spectrumSize()];
+	delete[] pb;
+	pb = new double[conf.spectrumSize()];
+	delete[] pminu;
+	pminu = new double[conf.spectrumSize()];
+	delete[] pb2;
+	pb2 = new double[conf.spectrumSize()];
+	delete[] lminflag;
+	lminflag = new bool[conf.spectrumSize()];
+	delete[] actmin;
+	actmin = new double[conf.spectrumSize()];
+	delete[] actminsub;
+	actminsub = new double[conf.spectrumSize()];
+}
+
+// reinit
+void MartinEstimation::onDataUpdate()
+{
+	double tinc = 0.012;
 
 	segment_number = 0;
 	ibuf = 0;
@@ -209,7 +252,7 @@ void MartinEstimation::prepare()
 	qq.qith[0] = 0.03;
 	qq.qith[1] = 0.05;
 	qq.qith[2] = 0.06;
-	qq.qith[3] = INT_MAX;
+	qq.qith[3] = DBL_MAX;
 	qq.nsmdb[0] = 47.;
 	qq.nsmdb[1] = 31.4;
 	qq.nsmdb[2] = 15.7;
@@ -217,76 +260,39 @@ void MartinEstimation::prepare()
 
 	nu      = qq.nu;
 	ac      = 1;
-	aca     = exp(-local_frame_increment / qq.taca); // smoothing constant for alpha_c in equ (11) = 0.7
+	aca     = exp(-tinc / qq.taca); // smoothing constant for alpha_c in equ (11) = 0.7
 	acmax   = aca;          // min value of alpha_c = 0.7 in equ (11) also = 0.7
-	amax    = exp(-local_frame_increment / qq.tamax); // max smoothing constant in (3) = 0.96
-	aminh   = exp(-local_frame_increment / qq.taminh); // min smoothing constant (upper limit) in (3) = 0.3
-	bmax    = exp(-local_frame_increment / qq.tbmax); // max smoothing constant in (20) = 0.8
-	snrexp  = -local_frame_increment / qq.tpfall;
-	nv      = round(qq.td / (local_frame_increment * qq.nu));    // length of each subwindow in frames
+	amax    = exp(-tinc / qq.tamax); // max smoothing constant in (3) = 0.96
+	aminh   = exp(-tinc / qq.taminh); // min smoothing constant (upper limit) in (3) = 0.3
+	bmax    = exp(-tinc / qq.tbmax); // max smoothing constant in (20) = 0.8
+	snrexp  = -tinc / qq.tpfall;
+	nv      = round(qq.td / (tinc * qq.nu));    // length of each subwindow in frames
 	if (nv < 4)
 	{
 		// algorithm doesn't work for miniscule frames
 		nv = 4;
-		nu = std::max(round(qq.td / (local_frame_increment * nv)), 1.);
+		nu = std::max(round(qq.td / (tinc * nv)), 1.);
 	}
 	subwc = nv;
 
-
 	nd = nu * nv;           // length of total window in frames
-
 	mh_values(nd, &md, &hd);
 	mh_values(nv, &mv, &hv);
 
 	for (auto i = 0U; i < 4; ++i)
-		nsms[i] = pow(10., qq.nsmdb[i] * nv * local_frame_increment / 10.);  // [8 4 2 1.2] in paper
+		nsms[i] = pow(10., qq.nsmdb[i] * nv * tinc / 10.);  // [8 4 2 1.2] in paper
 
 	qeqimax = 1. / qq.qeqmin;  // maximum value of Qeq inverse (23)
 	qeqimin = 1. / qq.qeqmax; // minumum value of Qeq per frame inverse
 
-	if (ah) delete ah;
-	ah = new double[conf.spectrumSize()];
-	if (b) delete b;
-	b = new double[conf.spectrumSize()];
-	if (qeqi) delete qeqi;
-	qeqi = new double[conf.spectrumSize()];
-	if (bmind) delete bmind;
-	bmind = new double[conf.spectrumSize()];
-	if (bminv) delete bminv;
-	bminv = new double[conf.spectrumSize()];
-	if (lmin) delete lmin;
-	lmin = new double[conf.spectrumSize()];
-	if (qisq) delete qisq;
-	qisq = new double[conf.spectrumSize()];
-	if (kmod) delete kmod;
-	kmod = new bool[conf.spectrumSize()];
-
-	if (yft) delete yft;
-	yft = new double[conf.spectrumSize()];
-	if (p) delete p;
-	p = new double[conf.spectrumSize()];
-	if (sn2) delete sn2;
-	sn2 = new double[conf.spectrumSize()];
-	if (pb) delete pb;
-	pb = new double[conf.spectrumSize()];
-	if (pminu) delete pminu;
-	pminu = new double[conf.spectrumSize()];
-	if (pb2) delete pb2;
-	pb2 = new double[conf.spectrumSize()];
-	if (lminflag) delete lminflag;
-	lminflag = new bool[conf.spectrumSize()];
-	if (actmin) delete actmin;
-	actmin = new double[conf.spectrumSize()];
-	if (actminsub) delete actminsub;
-	actminsub = new double[conf.spectrumSize()];
 
 	if (actbuf)
 	{
 		for (auto i = 0U; i < nu; ++i)
 		{
-			delete actbuf[i];
+			delete[] actbuf[i];
 		}
-		delete actbuf;
+		delete[] actbuf;
 	}
 	actbuf = new double*[nu];
 	for (auto i = 0U; i < nu; ++i)
@@ -294,13 +300,7 @@ void MartinEstimation::prepare()
 		actbuf[i] = new double[conf.spectrumSize()];
 		for (auto j = 0U; j < conf.spectrumSize(); ++j)
 		{
-			actbuf[i][j] = INT_MAX;
+			actbuf[i][j] = DBL_MAX;
 		}
 	}
-}
-
-// reinit
-void MartinEstimation::initializeAlgorithmData()
-{
-
 }

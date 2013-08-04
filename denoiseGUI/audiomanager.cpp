@@ -20,7 +20,6 @@ AudioManager::AudioManager(DataHolder *config, QWidget *parent) :
 	audioBuffer = new QBuffer();
 	data = config;
 
-	s->initialize(*s_data);
 
 	format.setSampleRate(16000);
 	format.setChannelCount(1);

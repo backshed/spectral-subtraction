@@ -17,8 +17,8 @@ class SubtractionAlgorithm
 		SubtractionAlgorithm(SubtractionConfiguration& configuration);
 		virtual ~SubtractionAlgorithm();
 		virtual void operator()(fftw_complex* input_spectrum, double* noise_spectrum);
-		virtual void prepare();
-		virtual void initializeAlgorithmData();
+		virtual void onFFTSizeUpdate();
+		virtual void onDataUpdate();
 
 	protected:
 		SubtractionConfiguration& conf;

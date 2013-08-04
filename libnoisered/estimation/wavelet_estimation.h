@@ -7,15 +7,15 @@
  *
  * Wavelet estimation algorithm.
  */
-#include "cwt_noise_estimator.h"
+#include <estimation/wavelets/cwt_noise_estimator.h>
 class WaveletEstimation : public EstimationAlgorithm
 {
 	public:
 		WaveletEstimation(SubtractionConfiguration& configuration);
 		virtual ~WaveletEstimation();
 		virtual bool operator()(fftw_complex* input_spectrum);
-		virtual void prepare();
-		virtual void initializeAlgorithmData();
+		virtual void onFFTSizeUpdate();
+		virtual void onDataUpdate();
 		virtual double *noisePower();
 
 	private:
@@ -24,8 +24,6 @@ class WaveletEstimation : public EstimationAlgorithm
 		double cwt_amax = 64;
 
 		CWTNoiseEstimator cwt_noise_estimator; /**< TODO */
-
-
 
 
 		double *noise_power_reest = nullptr; /**< TODO */

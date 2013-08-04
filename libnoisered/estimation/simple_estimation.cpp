@@ -24,13 +24,13 @@ bool SimpleEstimation::operator()(fftw_complex *input_spectrum)
 	return false;
 }
 
-void SimpleEstimation::prepare()
+void SimpleEstimation::onFFTSizeUpdate()
 {
-
+	EstimationAlgorithm::onFFTSizeUpdate();
 }
 
 // reinit
-void SimpleEstimation::initializeAlgorithmData()
+void SimpleEstimation::onDataUpdate()
 {
 	noise_rms = 100000;
 }
