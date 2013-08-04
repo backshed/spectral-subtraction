@@ -83,7 +83,9 @@ class SubtractionConfiguration
 		void writeBuffer(short *buffer);
 
 		/**
-		 * @brief Undoes all change on the audio data.
+		 * @brief Undoes all change on the processed audio data.
+		 *
+		 * Effectively copies orig_data into data.
 		 *
 		 */
 		void initDataArray();
@@ -167,6 +169,9 @@ class SubtractionConfiguration
 		void setSubtractionImplementation(SubtractionAlgorithm *value);
 
 		unsigned int getFrameIncrement();
+
+		EstimationAlgorithm *getEstimationImplementation() const;
+		void setEstimationImplementation(EstimationAlgorithm *value);
 
 	private:
 		/**
@@ -261,17 +266,17 @@ class SubtractionConfiguration
 		//*** used inside algos ***///
 		// Arrays used for storing data
 		double *in = nullptr; /**< TODO */
-		double *windowed_in = nullptr; /**< TODO */
 		double *out = nullptr; /**< TODO */
 
 		fftw_complex *spectrum = nullptr; /**< TODO */
 
+		// To move ?
+		double *windowed_in = nullptr; /**< TODO */
 		fftw_complex *windowed_spectrum = nullptr; //TODO a faire passer dans Martin_estimation.h
-
+		fftw_plan plan_fw_windowed; /**< TODO */
 
 		// FFTW plans
 		fftw_plan plan_fw; /**< TODO */
-		fftw_plan plan_fw_windowed; /**< TODO */
 		fftw_plan plan_bw; /**< TODO */
 
 

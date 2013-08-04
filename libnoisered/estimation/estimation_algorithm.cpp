@@ -5,9 +5,24 @@ EstimationAlgorithm::EstimationAlgorithm(SubtractionConfiguration &configuration
 {
 }
 
+EstimationAlgorithm::~EstimationAlgorithm()
+{
+
+}
+
+bool EstimationAlgorithm::operator()(fftw_complex *)
+{
+	return true;
+}
+
 void EstimationAlgorithm::onFFTSizeUpdate()
 {
 	noise_power = new double[conf.FFTSize()];
+}
+
+void EstimationAlgorithm::onDataUpdate()
+{
+
 }
 
 double *EstimationAlgorithm::noisePower()

@@ -6,12 +6,13 @@
 #include <QMessageBox>
 #include <QtAlgorithms>
 
-AudioManager::AudioManager(DataHolder *config, QWidget *parent) :
-	QWidget(parent)
-{
-	s = new SpectralSubtractor();
+#include <subtraction/algorithms.h>
+#include <estimation/algorithms.h>
 
-	s_data = new SubtractionConfiguration(512, 16000);
+AudioManager::AudioManager(DataHolder *config, QWidget *parent) :
+	QWidget(parent),
+	s_data(512, 16000)
+{
 
 	loaded = false;
 	noiseFile = 0;
@@ -40,40 +41,51 @@ void AudioManager::exec()
 		return;
 	}
 
-	s_data->setIterations(data->iterations);
+	s_data.setIterations(data->iterations);
 
-	s_data->setAlpha(data->alphaBsc);
-	s_data->setBeta(data->betaBsc);
-	s_data->setAlphawt(data->alphaWt);
-	s_data->setBetawt(data->betaWt);
 
 	if(data->useMartin)
-		s_data->setNoiseEstimationAlgorithm(SubtractionConfiguration::NoiseEstimationAlgorithm::Martin);
+		s_data.setEstimationImplementation(new MartinEstimation(s_data));
 	else if(data->enableWavelets)
-		s_data->setNoiseEstimationAlgorithm(SubtractionConfiguration::NoiseEstimationAlgorithm::Wavelets);
+		s_data.setEstimationImplementation(new WaveletEstimation(s_data));
 	else
-		s_data->setNoiseEstimationAlgorithm(SubtractionConfiguration::NoiseEstimationAlgorithm::Simple);
+		s_data.setEstimationImplementation(new SimpleEstimation(s_data));
 
 	switch(data->model)
 	{
 		case DataHolder::STANDARD:
-			s_data->setSpectralSubtractionAlgorithm(SubtractionConfiguration::SpectralSubtractionAlgorithm::Standard);
+		{
+			//TODO memoryleak
+			SimpleSpectralSubtraction* subtraction = new SimpleSpectralSubtraction(s_data);
+			subtraction->setAlpha(data->alphaBsc);
+			subtraction->setBeta(data->betaBsc);
+			s_data.setSubtractionImplementation(subtraction);
 			break;
+		}
 		case DataHolder::EQUAL_LOUDNESS:
-			s_data->setSpectralSubtractionAlgorithm(SubtractionConfiguration::SpectralSubtractionAlgorithm::EqualLoudness);
+		{
+			EqualLoudnessSpectralSubtraction* subtraction = new EqualLoudnessSpectralSubtraction(s_data);
+			subtraction->setAlpha(data->alphaBsc);
+			subtraction->setBeta(data->betaBsc);
+			subtraction->setAlphawt(data->alphaWt);
+			subtraction->setBetawt(data->betaWt);
+			s_data.setSubtractionImplementation(subtraction);
 			break;
+		}
 		case DataHolder::GA:
-			s_data->setSpectralSubtractionAlgorithm(SubtractionConfiguration::SpectralSubtractionAlgorithm::GeometricApproach);
+		{
+			GeometricSpectralSubtraction* subtraction = new GeometricSpectralSubtraction(s_data);
+			s_data.setSubtractionImplementation(subtraction);
 			break;
+		}
 	}
 
-	s_data->initDataArray();
-	s->execute(*s_data);
+	s.execute(s_data);
 
-	emit sNRR(QString("%1").arg(NRR(s_data->getNoisyData(), s_data->getData(), s_data->getSize())));
+	emit sNRR(QString("%1").arg(NRR(s_data.getNoisyData(), s_data.getData(), s_data.getSize())));
 	if(origData != nullptr)
 	{
-		emit sSDR(QString("%1").arg(SDR(origData, s_data->getData(), s_data->getSize())));
+		emit sSDR(QString("%1").arg(SDR(origData, s_data.getData(), s_data.getSize())));
 	}
 
 	audioOut->stop();
@@ -82,9 +94,9 @@ void AudioManager::exec()
 
 	QDataStream stream(audioBuffer);
 	stream.setByteOrder(QDataStream::LittleEndian);
-	for(auto i = 0U; i < s_data->getSize(); ++i)
+	for(auto i = 0U; i < s_data.getSize(); ++i)
 	{
-		qint16 r = s_data->getData()[i] * 32768.;
+		qint16 r = s_data.getData()[i] * 32768.;
 		stream << r;
 	}
 
@@ -95,7 +107,7 @@ void AudioManager::loadSource(QString src)
 {
 	if(noiseFile != 0) delete noiseFile;
 	noiseFile = new QFile(src);
-	s_data->readFile(noiseFile->fileName().toLatin1().data());
+	s_data.readFile(noiseFile->fileName().toLatin1().data());
 	loaded = true;
 }
 

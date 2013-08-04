@@ -4,3 +4,23 @@ SubtractionAlgorithm::SubtractionAlgorithm(SubtractionConfiguration &configurati
 	conf(configuration)
 {
 }
+
+SubtractionAlgorithm::~SubtractionAlgorithm()
+{
+
+}
+
+void SubtractionAlgorithm::operator()(fftw_complex *input_spectrum, double *noise_spectrum)
+{
+
+}
+
+void SubtractionAlgorithm::onFFTSizeUpdate()
+{
+
+}
+
+void SubtractionAlgorithm::onDataUpdate()
+{
+
+}

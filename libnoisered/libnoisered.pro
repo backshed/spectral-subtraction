@@ -49,8 +49,8 @@ SOURCES += \
 	subtraction/subtraction_algorithm.cpp \
 	estimation/simple_estimation.cpp \
 	estimation/martin_estimation.cpp \
-	util.cpp \
-	estimation/wavelet_estimation.cpp
+	estimation/wavelet_estimation.cpp \
+    math_util.cpp
 
 HEADERS += \
 	subtractionconfiguration.h \
@@ -76,7 +76,7 @@ HEADERS += \
 	subtraction/subtraction_algorithm.h \
 	estimation/simple_estimation.h \
 	estimation/martin_estimation.h \
-	util.h \
 	estimation/wavelet_estimation.h \
-    subtraction/algorithms.h \
-    estimation/algorithms.h
+	subtraction/algorithms.h \
+	estimation/algorithms.h \
+    math_util.h

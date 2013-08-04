@@ -85,11 +85,6 @@ void SubtractionConfiguration::clean()
 
 	fftw_free(spectrum);
 	fftw_free(windowed_spectrum);
-
-
-
-
-
 }
 
 SubtractionConfiguration::~SubtractionConfiguration()
@@ -102,7 +97,6 @@ SubtractionConfiguration::~SubtractionConfiguration()
 	delete[] data;
 	delete[] origdata;
 }
-
 
 void SubtractionConfiguration::initDataArray()
 {
@@ -258,6 +252,16 @@ void SubtractionConfiguration::copyOutputOLA(unsigned int pos)
 	// Unlock here
 	//ola_mutex.unlock();
 }
+EstimationAlgorithm *SubtractionConfiguration::getEstimationImplementation() const
+{
+	return estimation;
+}
+
+void SubtractionConfiguration::setEstimationImplementation(EstimationAlgorithm *value)
+{
+	estimation = value;
+}
+
 
 unsigned int SubtractionConfiguration::getFrameIncrement()
 {

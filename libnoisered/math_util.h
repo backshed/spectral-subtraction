@@ -2,7 +2,7 @@
 #define UTIL_H
 
 #include <fftw3.h>
-namespace Util
+namespace MathUtil
 {
 	/**
 	 * @brief Computes power and phase array from the magnitude spectrum.
@@ -24,6 +24,6 @@ namespace Util
 	 */
 	void compute_power(fftw_complex *in, double *powoutput, int size);
 
-};
+}
 
 #endif // UTIL_H

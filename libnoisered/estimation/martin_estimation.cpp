@@ -1,6 +1,6 @@
 #include "martin_estimation.h"
 #include <cmath>
-#include "util.h"
+#include "../math_util.h"
 #include <climits>
 #include <cfloat>
 #include <numeric>
@@ -59,7 +59,7 @@ MartinEstimation::~MartinEstimation()
 
 bool MartinEstimation::operator()(fftw_complex *input_spectrum)
 {
-	Util::compute_power(input_spectrum, yft, conf.spectrumSize());
+	MathUtil::compute_power(input_spectrum, yft, conf.spectrumSize());
 	if(segment_number == 0)
 	{
 		for (auto i = 0U; i < conf.spectrumSize(); ++i)

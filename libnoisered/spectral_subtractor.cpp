@@ -7,20 +7,20 @@
 
 void SpectralSubtractor::subtractionHandler(SubtractionConfiguration &config)
 {
-	(*config.subtraction)(config.spectrum, config.estimation->noisePower());
+	(*config.getSubtractionImplementation())(config.spectrum, config.estimation->noisePower());
 }
 
 void SpectralSubtractor::estimationHandler(SubtractionConfiguration &config) // Reinit pour la CWT
 {
 	fftw_complex* used_spectrum = config.spectrum;
 	if    (config.getSubtractionImplementation()->algorithm == SubtractionAlgorithm::Algorithm::GeometricApproach
-		&& config.estimation->algorithm == EstimationAlgorithm::Algorithm::Martin)
+		&& config.getEstimationImplementation()->algorithm == EstimationAlgorithm::Algorithm::Martin)
 	{
 		fftw_execute(config.plan_fw_windowed); // A utiliser dans martinEstimation si GA ? normalement, va avec OLA.
 		used_spectrum = config.windowed_spectrum;
 	}
 
-	(*config.estimation).operator ()(used_spectrum);
+	(*config.getEstimationImplementation())(used_spectrum);
 }
 
 
@@ -37,14 +37,11 @@ void SpectralSubtractor::execute(SubtractionConfiguration &config)
 	// Maybe make people able to choose by themselves ?
 	config.useOLA = config.getSubtractionImplementation()->algorithm == SubtractionAlgorithm::Algorithm::GeometricApproach;
 	// Should maybe imply the windowed stuff ?
-	const int increment = config.useOLA ? config.ola_frame_increment : config.frame_increment;
-
-
 
 	// Execution of the algortihm
 	for (auto iter = 0U; iter < config._iterations; ++iter)
 	{
-		for (auto sample_n = 0U; sample_n < config.tab_length; sample_n += increment)
+		for (auto sample_n = 0U; sample_n < config.tab_length; sample_n += config.getFrameIncrement())
 		{
 			// Data copying from input to buffer
 			config.copyInput(sample_n);

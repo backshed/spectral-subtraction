@@ -1,6 +1,7 @@
-#include "util.h"
+#include "math_util.h"
 #include <cmath>
-namespace Util
+
+namespace MathUtil
 {
 	// This functions computes the power and the phase vector of the in argument.
 	void compute_power_and_phase(fftw_complex *in, double *powoutput, double *phaseoutput, unsigned int size)

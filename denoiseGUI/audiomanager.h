@@ -44,8 +44,8 @@ private:
 
 	bool loaded;
 
-	SpectralSubtractor *s;
-	SubtractionConfiguration *s_data;
+	SpectralSubtractor s;
+	SubtractionConfiguration s_data;
 	double *origData;
 
 
