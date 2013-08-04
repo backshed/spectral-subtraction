@@ -3,7 +3,6 @@
 
 #include <vector>
 #include "point.h"
-#include "defines.h"
 
 
 //TODO : make a pure matrix class and inherit from it to serve CWT purposes.

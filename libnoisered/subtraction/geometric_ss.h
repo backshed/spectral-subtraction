@@ -2,7 +2,7 @@
 #define GEOMETRIC_SS_H
 
 #include "subtraction_algorithm.h"
-class GeometricSpectralSubtraction : public SubtractionAlgorithm
+class GeometricSpectralSubtraction : public Subtraction
 {
 	public:
 		GeometricSpectralSubtraction(SubtractionConfiguration& configuration);

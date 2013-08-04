@@ -1,26 +1,27 @@
 #include "subtraction_algorithm.h"
+#include <subtractionconfiguration.h>
 
-SubtractionAlgorithm::SubtractionAlgorithm(SubtractionConfiguration &configuration):
+Subtraction::Subtraction(SubtractionConfiguration &configuration):
 	conf(configuration)
 {
 }
 
-SubtractionAlgorithm::~SubtractionAlgorithm()
+Subtraction::~Subtraction()
 {
 
 }
 
-void SubtractionAlgorithm::operator()(fftw_complex *, double *)
+void Subtraction::operator()(fftw_complex *, double *)
 {
 
 }
 
-void SubtractionAlgorithm::onFFTSizeUpdate()
+void Subtraction::onFFTSizeUpdate()
 {
 
 }
 
-void SubtractionAlgorithm::onDataUpdate()
+void Subtraction::onDataUpdate()
 {
 
 }

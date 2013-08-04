@@ -2,7 +2,7 @@
 #define SIMPLE_SS_H
 #include "subtraction_algorithm.h"
 
-class SimpleSpectralSubtraction : public SubtractionAlgorithm
+class SimpleSpectralSubtraction : public Subtraction
 {
 	public:
 		SimpleSpectralSubtraction(SubtractionConfiguration& configuration);

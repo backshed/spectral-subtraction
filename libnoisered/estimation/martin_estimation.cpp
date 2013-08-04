@@ -5,6 +5,9 @@
 #include <cfloat>
 #include <numeric>
 #include <algorithm>
+#include <iostream>
+
+#include "subtractionconfiguration.h"
 
 void MartinEstimation::mh_values(double d, double *m, double *h)
 {
@@ -47,7 +50,7 @@ void MartinEstimation::mh_values(double d, double *m, double *h)
 
 
 MartinEstimation::MartinEstimation(SubtractionConfiguration& configuration):
-	EstimationAlgorithm(configuration)
+	Estimation(configuration)
 {
 	algorithm = Algorithm::Martin;
 }
@@ -193,7 +196,7 @@ bool MartinEstimation::operator()(fftw_complex *input_spectrum)
 
 void MartinEstimation::onFFTSizeUpdate()
 {
-	EstimationAlgorithm::onFFTSizeUpdate();
+	Estimation::onFFTSizeUpdate();
 
 	delete[] ah;
 	ah = new double[conf.spectrumSize()];
@@ -235,8 +238,8 @@ void MartinEstimation::onFFTSizeUpdate()
 // reinit
 void MartinEstimation::onDataUpdate()
 {
-	double tinc = 0.012;
-
+	Estimation::onDataUpdate();
+	double tinc = conf.getFrameIncrement(); //TODO : this is wrong. It's a time, not a sample number.
 	segment_number = 0;
 	ibuf = 0;
 	qq.taca = 0.0449;    // smoothing time constant for alpha_c = -tinc/log(0.7) in equ (11)
@@ -272,6 +275,7 @@ void MartinEstimation::onDataUpdate()
 		// algorithm doesn't work for miniscule frames
 		nv = 4;
 		nu = std::max(round(qq.td / (tinc * nv)), 1.);
+
 	}
 	subwc = nv;
 

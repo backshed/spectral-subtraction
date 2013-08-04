@@ -7,7 +7,7 @@
  *
  * Performs a simple noise estimation, and updates when RMS power is low.
  */
-class SimpleEstimation : public EstimationAlgorithm
+class SimpleEstimation : public Estimation
 {
 	public:
 		SimpleEstimation(SubtractionConfiguration& configuration);

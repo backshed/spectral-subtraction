@@ -2,11 +2,11 @@
 #define SUBTRACTIONCONFIGURATION_H
 
 #include <fftw3.h>
-
+#include <memory>
 
 class SpectralSubtractor;
-class SubtractionAlgorithm;
-class EstimationAlgorithm;
+#include "subtraction/algorithms.h"
+#include "estimation/algorithms.h"
 /**
  * @brief Holds the data for the spectral subtraction algorithms, as well as the raw audio data.
  *
@@ -15,6 +15,7 @@ class SubtractionConfiguration
 {
 		friend class SpectralSubtractor;
 	public:
+		enum DataSource { File, Buffer };
 
 		/**
 		 * @brief Constructor
@@ -49,7 +50,7 @@ class SubtractionConfiguration
 		 *
 		 * @return unsigned int size.
 		 */
-		unsigned int getSize();
+		unsigned int getLength();
 
 		/**
 		 * @brief Returns the original buffer, to perform NRR computation for instance.
@@ -97,7 +98,7 @@ class SubtractionConfiguration
 		 *
 		 * @return int Number of iterations.
 		 */
-		int iterations() const;
+		unsigned int iterations() const;
 
 		/**
 		 * @brief Sets the number of iterations of the algorithm.
@@ -166,13 +167,28 @@ class SubtractionConfiguration
 		void readParametersFromFile();
 
 
-		SubtractionAlgorithm *getSubtractionImplementation() const;
-		void setSubtractionImplementation(SubtractionAlgorithm *value);
+		std::shared_ptr<Subtraction> getSubtractionImplementation() const;
+		void setSubtractionImplementation(std::shared_ptr<Subtraction> value);
 
 		unsigned int getFrameIncrement();
 
-		EstimationAlgorithm *getEstimationImplementation() const;
-		void setEstimationImplementation(EstimationAlgorithm *value);
+		std::shared_ptr<Estimation> getEstimationImplementation() const;
+		void setEstimationImplementation(std::shared_ptr<Estimation> value);
+
+		bool bypass();
+
+		DataSource dataSource() const;
+		void setDataSource(const DataSource& dataSource);
+
+		bool OLAenabled() const;
+		void enableOLA();
+		void disableOLA();
+		void setOLA(bool val);
+
+		void forwardFFT();
+		void backwardFFT();
+
+		fftw_complex *spectrum();
 
 	private:
 		/**
@@ -244,46 +260,38 @@ class SubtractionConfiguration
 		void copyOutputOLA(unsigned int pos);
 
 
-
-
-		enum DataSource { File, Buffer } datasource;
-
-		//*** Subtraction "main" parameters***//
+		//*** Members ***//
+		DataSource _dataSource;
 
 		unsigned int _fftSize; /**< TODO */
 		unsigned int _spectrumSize; /**< TODO */
 		unsigned int _samplingRate; /**< TODO */
 
-		double *data; /**< TODO */
-		double *origdata; /**< TODO */
-		unsigned int tab_length; /**< TODO */
+		// Storage
+		double *_data; /**< TODO */
+		double *_origData; /**< TODO */
+		unsigned int _tabLength; /**< TODO */
 
-		bool useOLA; // recommended with GA /**< TODO */
+		bool _useOLA;
 		unsigned int ola_frame_increment; /**< TODO */
 		unsigned int frame_increment; /**< TODO */
 
 		unsigned int _iterations; /**< TODO */
 
-		//*** used inside algos ***///
 		// Arrays used for storing data
 		double *in = nullptr; /**< TODO */
 		double *out = nullptr; /**< TODO */
 
-		fftw_complex *spectrum = nullptr; /**< TODO */
+		fftw_complex *_spectrum = nullptr; /**< TODO */
 
-		// To move ?
-		double *windowed_in = nullptr; /**< TODO */
-		fftw_complex *windowed_spectrum = nullptr; //TODO a faire passer dans Martin_estimation.h
-		fftw_plan plan_fw_windowed; /**< TODO */
-
-		// FFTW plans
 		fftw_plan plan_fw; /**< TODO */
 		fftw_plan plan_bw; /**< TODO */
 
+		// Algorithms
+		std::shared_ptr<Subtraction> subtraction = nullptr;
+		std::shared_ptr<Estimation>  estimation  = nullptr;
 
-		/*** Spectral algos ***/
-		SubtractionAlgorithm* subtraction = nullptr;
-		EstimationAlgorithm* estimation = nullptr;
+		bool _bypass;
 
 };
 

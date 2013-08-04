@@ -2,8 +2,10 @@
 #include <cmath>
 #include <algorithm>
 
+#include <subtractionconfiguration.h>
+
 SimpleSpectralSubtraction::SimpleSpectralSubtraction(SubtractionConfiguration& configuration):
-	SubtractionAlgorithm(configuration)
+	Subtraction(configuration)
 {
 	algorithm = Algorithm::Standard;
 }

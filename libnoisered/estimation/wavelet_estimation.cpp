@@ -1,10 +1,13 @@
 #include "wavelet_estimation.h"
 #include "simple_estimation.h"
-#include <subtraction/subtraction_algorithm.h>
+#include "../subtraction/subtraction_algorithm.h"
 #include <algorithm>
 
+#include <iostream>
+#include "subtractionconfiguration.h"
+
 WaveletEstimation::WaveletEstimation(SubtractionConfiguration &configuration):
-	EstimationAlgorithm(configuration)
+	Estimation(configuration)
 {
 	algorithm = Algorithm::Simple;
 	cwt_noise_estimator.initialize(conf);
@@ -12,6 +15,7 @@ WaveletEstimation::WaveletEstimation(SubtractionConfiguration &configuration):
 
 WaveletEstimation::~WaveletEstimation()
 {
+	std::cout << "WaveletEstimation deleted";
 	delete[] noise_power_reest;
 	fftw_free(tmp_out);
 	fftw_free(tmp_spectrum);
@@ -19,7 +23,7 @@ WaveletEstimation::~WaveletEstimation()
 
 bool WaveletEstimation::operator()(fftw_complex *input_spectrum)
 {
-	bool reinit = true; //TODO CAREFUL GUY TO DOOOOOO
+	bool reinit = true; //TODO CAREFUL GUY
 	static bool computeMax = false;
 	if (reinit) computeMax = false;
 	SimpleEstimation simpleEstimation(conf);
@@ -53,7 +57,7 @@ bool WaveletEstimation::operator()(fftw_complex *input_spectrum)
 // prepare: quand on change de fftsize par exemple
 void WaveletEstimation::onFFTSizeUpdate()
 {
-	EstimationAlgorithm::onFFTSizeUpdate();
+	Estimation::onFFTSizeUpdate();
 
 	noise_power_reest = new double[conf.FFTSize()];
 
@@ -71,6 +75,7 @@ double *WaveletEstimation::noisePower()
 
 void WaveletEstimation::onDataUpdate()
 {
+	Estimation::onDataUpdate();
 	cwt_noise_estimator.clean();
 }
 

@@ -2,8 +2,10 @@
 #include <cmath>
 #include <algorithm>
 
+#include <subtractionconfiguration.h>
+
 GeometricSpectralSubtraction::GeometricSpectralSubtraction(SubtractionConfiguration &configuration):
-	SubtractionAlgorithm(configuration)
+	Subtraction(configuration)
 {
 	algorithm = Algorithm::GeometricApproach;
 }
@@ -34,16 +36,16 @@ void GeometricSpectralSubtraction::operator ()(fftw_complex* input_spectrum, dou
 	static const double twentysixdb = pow(10., -26. / 20.);
 	static const double thirteendb = pow(10., -20. / 20.);
 
-	double gammai, gamma, chi, h, ymag, xmag;
-
+#pragma omp parallel for
 	for (auto i = 0U; i < conf.spectrumSize(); ++i)
 	{
+		double gammai, gamma, chi, h, ymag, xmag;
+
 		// 1) Magnitude spectrum
 		ymag = std::sqrt(std::pow(input_spectrum[i][0], 2.0) + std::pow(input_spectrum[i][1], 2.0));
 
 		// 3) compute Gamma
-		gammai = std::pow(ymag, 2.0) / noise_spectrum[i]; //todo max(thirdeendb, expr)
-		gammai = (thirteendb > gammai) ? thirteendb : gammai;
+		gammai = std::max(thirteendb, std::pow(ymag, 2.0) / noise_spectrum[i]);
 
 		gamma = geom_beta * prev_gamma[i] + (1.0 - geom_beta) * gammai;
 		prev_gamma[i] = gamma;
@@ -53,8 +55,10 @@ void GeometricSpectralSubtraction::operator ()(fftw_complex* input_spectrum, dou
 		chi = (twentysixdb > chi) ? twentysixdb : chi;
 
 		// 5) compute gain
-		h = std::sqrt((1.0 - std::pow(gamma - chi + 1.0, 2.0) / (4.0 * gamma)) / (1.0 - std::pow(gamma - 1.0 - chi, 2.0) / (4.0 * chi)));
-		h = (h > 1.0) ? 1.0 : h;
+		h = std::min(1.0, std::sqrt(
+						 (1.0 - std::pow(gamma - chi + 1.0, 2.0) / (4.0 * gamma))
+					   / (1.0 - std::pow(gamma - 1.0 - chi, 2.0) / (4.0 * chi))
+						 ));
 
 		// 6) compute enhanced magnitude spectrum
 		xmag = h * ymag;
@@ -62,8 +66,8 @@ void GeometricSpectralSubtraction::operator ()(fftw_complex* input_spectrum, dou
 
 		// 7) reverse FFT
 		double orig_phase = std::atan2(input_spectrum[i][1], input_spectrum[i][0]);
-		double orig_amp = xmag;
-		input_spectrum[i][0] = orig_amp * std::cos(orig_phase);
-		input_spectrum[i][1] = orig_amp * std::sin(orig_phase);
+
+		input_spectrum[i][0] = xmag * std::cos(orig_phase);
+		input_spectrum[i][1] = xmag * std::sin(orig_phase);
 	}
 }

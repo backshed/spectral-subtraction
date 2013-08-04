@@ -43,13 +43,16 @@ void AudioManager::exec()
 
 	s_data.setIterations(data->iterations);
 
-
 	if(data->useMartin)
-		s_data.setEstimationImplementation(new MartinEstimation(s_data));
+	{
+		s_data.setEstimationImplementation(std::shared_ptr<Estimation>(new MartinEstimation(s_data)));
+		s_data.enableOLA();
+	}
 	else if(data->enableWavelets)
-		s_data.setEstimationImplementation(new WaveletEstimation(s_data));
+		s_data.setEstimationImplementation(std::shared_ptr<Estimation>(new WaveletEstimation(s_data)));
 	else
-		s_data.setEstimationImplementation(new SimpleEstimation(s_data));
+		s_data.setEstimationImplementation(std::shared_ptr<Estimation>(new SimpleEstimation(s_data)));
+
 
 	switch(data->model)
 	{
@@ -59,7 +62,7 @@ void AudioManager::exec()
 			SimpleSpectralSubtraction* subtraction = new SimpleSpectralSubtraction(s_data);
 			subtraction->setAlpha(data->alphaBsc);
 			subtraction->setBeta(data->betaBsc);
-			s_data.setSubtractionImplementation(subtraction);
+			s_data.setSubtractionImplementation(std::shared_ptr<Subtraction>(subtraction));
 			break;
 		}
 		case DataHolder::EQUAL_LOUDNESS:
@@ -69,23 +72,24 @@ void AudioManager::exec()
 			subtraction->setBeta(data->betaBsc);
 			subtraction->setAlphawt(data->alphaWt);
 			subtraction->setBetawt(data->betaWt);
-			s_data.setSubtractionImplementation(subtraction);
+			s_data.setSubtractionImplementation(std::shared_ptr<Subtraction>(subtraction));
 			break;
 		}
 		case DataHolder::GA:
 		{
 			GeometricSpectralSubtraction* subtraction = new GeometricSpectralSubtraction(s_data);
-			s_data.setSubtractionImplementation(subtraction);
+			s_data.setSubtractionImplementation(std::shared_ptr<Subtraction>(subtraction));
+			s_data.enableOLA();
 			break;
 		}
 	}
 
 	s.execute(s_data);
 
-	emit sNRR(QString("%1").arg(NRR(s_data.getNoisyData(), s_data.getData(), s_data.getSize())));
+	emit sNRR(QString("%1").arg(NRR(s_data.getNoisyData(), s_data.getData(), s_data.getLength())));
 	if(origData != nullptr)
 	{
-		emit sSDR(QString("%1").arg(SDR(origData, s_data.getData(), s_data.getSize())));
+		emit sSDR(QString("%1").arg(SDR(origData, s_data.getData(), s_data.getLength())));
 	}
 
 	audioOut->stop();
@@ -94,7 +98,7 @@ void AudioManager::exec()
 
 	QDataStream stream(audioBuffer);
 	stream.setByteOrder(QDataStream::LittleEndian);
-	for(auto i = 0U; i < s_data.getSize(); ++i)
+	for(auto i = 0U; i < s_data.getLength(); ++i)
 	{
 		qint16 r = s_data.getData()[i] * 32768.;
 		stream << r;

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include "cwt_noise_estimator.h"
+#include <subtractionconfiguration.h>
 
 #define AMIN 0                  /* A min  */
 #define ASTP 0.05               /* A step */

@@ -1,9 +1,10 @@
 #ifndef ESTIMATION_ALGORITHM_H
 #define ESTIMATION_ALGORITHM_H
 
-#include "subtractionconfiguration.h"
+#include <fftw3.h>
+class SubtractionConfiguration;
 
-class EstimationAlgorithm
+class Estimation
 {
 	public:
 		/**
@@ -14,8 +15,8 @@ class EstimationAlgorithm
 		Algorithm algorithm = Algorithm::Bypass; /**< TODO */
 
 
-		EstimationAlgorithm(SubtractionConfiguration& configuration);
-		virtual ~EstimationAlgorithm();
+		Estimation(SubtractionConfiguration& configuration);
+		virtual ~Estimation();
 		virtual bool operator()(fftw_complex* input_spectrum);
 		virtual void onFFTSizeUpdate();
 		virtual void onDataUpdate();

@@ -3,6 +3,7 @@
 #include <fstream>
 #include <clocale>
 
+#include <subtractionconfiguration.h>
 EqualLoudnessSpectralSubtraction::EqualLoudnessSpectralSubtraction(SubtractionConfiguration &configuration):
 	SimpleSpectralSubtraction(configuration)
 {

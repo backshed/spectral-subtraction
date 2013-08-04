@@ -2,10 +2,10 @@
 #include "../math_util.h"
 
 #include <cmath>
-
+#include "subtractionconfiguration.h"
 
 SimpleEstimation::SimpleEstimation(SubtractionConfiguration &configuration):
-	EstimationAlgorithm(configuration)
+	Estimation(configuration)
 {
 	algorithm = Algorithm::Simple;
 }
@@ -27,12 +27,13 @@ bool SimpleEstimation::operator()(fftw_complex *input_spectrum)
 
 void SimpleEstimation::onFFTSizeUpdate()
 {
-	EstimationAlgorithm::onFFTSizeUpdate();
+	Estimation::onFFTSizeUpdate();
 }
 
 // reinit
 void SimpleEstimation::onDataUpdate()
 {
+	Estimation::onDataUpdate();
 	noise_rms = 100000;
 }
 

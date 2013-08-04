@@ -1,31 +1,35 @@
 #include "estimation_algorithm.h"
+#include <algorithm>
 
-EstimationAlgorithm::EstimationAlgorithm(SubtractionConfiguration &configuration):
+#include "subtractionconfiguration.h"
+
+Estimation::Estimation(SubtractionConfiguration &configuration):
 	conf(configuration)
 {
 }
 
-EstimationAlgorithm::~EstimationAlgorithm()
+Estimation::~Estimation()
 {
 
 }
 
-bool EstimationAlgorithm::operator()(fftw_complex *)
+bool Estimation::operator()(fftw_complex *)
 {
 	return true;
 }
 
-void EstimationAlgorithm::onFFTSizeUpdate()
+void Estimation::onFFTSizeUpdate()
 {
 	noise_power = new double[conf.FFTSize()];
+	onDataUpdate();
 }
 
-void EstimationAlgorithm::onDataUpdate()
+void Estimation::onDataUpdate()
 {
-
+	std::fill_n(noise_power, conf.FFTSize(), 0);
 }
 
-double *EstimationAlgorithm::noisePower()
+double *Estimation::noisePower()
 {
 	return noise_power;
 }

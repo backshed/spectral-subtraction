@@ -37,7 +37,7 @@ void Area::plotArea(Matrix &m)
 			}
 			else
 			{
-				m[i][j] = 0; //TODO why ?
+				m[i][j] = 0; //TODO might erase surroundings ?
 			}
 		}
 	}

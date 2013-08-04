@@ -37,7 +37,7 @@ struct MartinNoiseParams
  *        Noise power spectral density estimation on highly correlated data
  *        Proc IWAENC, 2006
  */
-class MartinEstimation: public EstimationAlgorithm
+class MartinEstimation: public Estimation
 {
 	public:
 		MartinEstimation(SubtractionConfiguration& configuration);

@@ -5,7 +5,8 @@
 #include <functional>
 #include <cwtlib>
 #include "area.h"
-#include "subtractionconfiguration.h"
+
+class SubtractionConfiguration;
 
 using namespace cwtlib;
 /**
@@ -67,7 +68,6 @@ class CWTNoiseEstimator
 		 * @brief Contains parameters used into an algorithm.
 		 *
 		 */
-		//TODO put this in s_data to enable threading.
 		struct areaParams_
 		{
 			areaParams_();

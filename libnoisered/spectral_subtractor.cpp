@@ -7,20 +7,13 @@
 
 void SpectralSubtractor::subtractionHandler(SubtractionConfiguration &config)
 {
-	(*config.getSubtractionImplementation())(config.spectrum, config.estimation->noisePower());
+	(*config.getSubtractionImplementation())(config.spectrum(), config.getEstimationImplementation()->noisePower());
 }
 
 void SpectralSubtractor::estimationHandler(SubtractionConfiguration &config) // Reinit pour la CWT
 {
-	fftw_complex* used_spectrum = config.spectrum;
-	if    (config.getSubtractionImplementation()->algorithm == SubtractionAlgorithm::Algorithm::GeometricApproach
-		&& config.getEstimationImplementation()->algorithm == EstimationAlgorithm::Algorithm::Martin)
-	{
-		fftw_execute(config.plan_fw_windowed); // A utiliser dans martinEstimation si GA ? normalement, va avec OLA.
-		used_spectrum = config.windowed_spectrum;
-	}
 
-	(*config.getEstimationImplementation())(used_spectrum);
+	(*config.getEstimationImplementation())(config.spectrum());
 }
 
 
@@ -28,30 +21,26 @@ void SpectralSubtractor::estimationHandler(SubtractionConfiguration &config) // 
 void SpectralSubtractor::execute(SubtractionConfiguration &config)
 {
 	// Some configuration and cleaning according to the parameters used
-	if (config.getSubtractionImplementation()->algorithm == SubtractionAlgorithm::Algorithm::Bypass) return;
-	if (config.datasource == SubtractionConfiguration::DataSource::File)
+	if (config.bypass()) return;
+	if (config.dataSource() == SubtractionConfiguration::DataSource::File)
 	{
 		config.initDataArray();
 	}
-
-	// Maybe make people able to choose by themselves ?
-	config.useOLA = config.getSubtractionImplementation()->algorithm == SubtractionAlgorithm::Algorithm::GeometricApproach;
-	// Should maybe imply the windowed stuff ?
+	// For Julius, call onDataUpdate() on every file change, and only once if it is mic input.
 
 	// Execution of the algortihm
-	for (auto iter = 0U; iter < config._iterations; ++iter)
+	for (auto iter = 0U; iter < config.iterations(); ++iter)
 	{
-		for (auto sample_n = 0U; sample_n < config.tab_length; sample_n += config.getFrameIncrement())
+		for (auto sample_n = 0U; sample_n < config.getLength(); sample_n += config.getFrameIncrement())
 		{
 			// Data copying from input to buffer
 			config.copyInput(sample_n);
 
 			// FFT
-			fftw_execute(config.plan_fw);
+			config.forwardFFT();
 
-			// TODO : do something good when working on buffers for local data.
 			// Noise estimation
-			if(config.datasource == SubtractionConfiguration::DataSource::File && sample_n == 0)
+			if(config.dataSource() == SubtractionConfiguration::DataSource::File && sample_n == 0)
 				config.onDataUpdate();
 
 			// Noise estimation
@@ -61,7 +50,7 @@ void SpectralSubtractor::execute(SubtractionConfiguration &config)
 			subtractionHandler(config);
 
 			// IFFT
-			fftw_execute(config.plan_bw);
+			config.backwardFFT();
 
 			// Data copying from buffer to output
 			config.copyOutput(sample_n);

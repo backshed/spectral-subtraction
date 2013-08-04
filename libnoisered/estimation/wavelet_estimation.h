@@ -7,8 +7,8 @@
  *
  * Wavelet estimation algorithm.
  */
-#include <estimation/wavelets/cwt_noise_estimator.h>
-class WaveletEstimation : public EstimationAlgorithm
+#include "wavelets/cwt_noise_estimator.h"
+class WaveletEstimation : public Estimation
 {
 	public:
 		WaveletEstimation(SubtractionConfiguration& configuration);

@@ -1,9 +1,12 @@
 #ifndef BASE_SUBTRACTION_ALGORITHM_H
 #define BASE_SUBTRACTION_ALGORITHM_H
 
-#include <subtractionconfiguration.h>
+#include <fftw3.h>
 
-class SubtractionAlgorithm
+class SubtractionConfiguration;
+
+
+class Subtraction
 {
 	public:
 		/**
@@ -14,8 +17,8 @@ class SubtractionAlgorithm
 		Algorithm algorithm = Algorithm::Bypass; /**< TODO */
 
 
-		SubtractionAlgorithm(SubtractionConfiguration& configuration);
-		virtual ~SubtractionAlgorithm();
+		Subtraction(SubtractionConfiguration& configuration);
+		virtual ~Subtraction();
 		virtual void operator()(fftw_complex* input_spectrum, double* noise_spectrum);
 		virtual void onFFTSizeUpdate();
 		virtual void onDataUpdate();
