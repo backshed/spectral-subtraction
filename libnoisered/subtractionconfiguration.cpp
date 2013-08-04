@@ -18,7 +18,6 @@ SubtractionConfiguration::SubtractionConfiguration(int fft_Size, int sampling_Ra
 	tab_length(0)
 {
 	onFFTSizeUpdate();
-	onDataUpdate();
 }
 
 
@@ -45,8 +44,8 @@ void SubtractionConfiguration::onFFTSizeUpdate()
 	plan_fw = fftw_plan_dft_r2c_1d(_fftSize, in, spectrum, FFTW_ESTIMATE);
 	plan_bw = fftw_plan_dft_c2r_1d(_fftSize, spectrum, out, FFTW_ESTIMATE);
 
-	estimation->onFFTSizeUpdate();
-	subtraction->onFFTSizeUpdate();
+	if(estimation) estimation->onFFTSizeUpdate();
+	if(subtraction) subtraction->onFFTSizeUpdate();
 }
 
 double SubtractionConfiguration::ShortToDouble(short x)
@@ -260,6 +259,7 @@ EstimationAlgorithm *SubtractionConfiguration::getEstimationImplementation() con
 void SubtractionConfiguration::setEstimationImplementation(EstimationAlgorithm *value)
 {
 	estimation = value;
+	estimation->onFFTSizeUpdate();
 }
 
 
@@ -276,6 +276,7 @@ SubtractionAlgorithm *SubtractionConfiguration::getSubtractionImplementation() c
 void SubtractionConfiguration::setSubtractionImplementation(SubtractionAlgorithm *value)
 {//TODO
 	subtraction = value;
+	subtraction->onFFTSizeUpdate();
 }
 
 unsigned int SubtractionConfiguration::getSamplingRate() const

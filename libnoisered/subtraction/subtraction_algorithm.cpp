@@ -10,7 +10,7 @@ SubtractionAlgorithm::~SubtractionAlgorithm()
 
 }
 
-void SubtractionAlgorithm::operator()(fftw_complex *input_spectrum, double *noise_spectrum)
+void SubtractionAlgorithm::operator()(fftw_complex *, double *)
 {
 
 }

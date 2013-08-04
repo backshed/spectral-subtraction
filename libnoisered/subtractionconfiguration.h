@@ -90,6 +90,7 @@ class SubtractionConfiguration
 		 */
 		void initDataArray();
 
+		void prepare();
 
 		/**
 		 * @brief Returns the number of iterations of the algorithm.
