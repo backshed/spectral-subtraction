@@ -43,7 +43,7 @@ private:
 
 	bool loaded;
 
-	SubtractionManager s_data;
+	SubtractionManager s_mgr;
 	double *origData;
 
 
