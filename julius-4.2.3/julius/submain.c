@@ -45,7 +45,7 @@ static void modifyAudioCallback(Recog *recog, SP16* buf, int len, void *dummy)
 
 static void newFileCallback(Recog* recog, void* data)
 {
-	printf("hello");
+	resetSS();
 }
 
 static boolean

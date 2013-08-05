@@ -10,12 +10,18 @@ SubtractionManager* s_data = nullptr;
 extern "C"
 {
 #endif
-	void computeSS(signed short int* buffer, int len)
-	{
-		s_data->readBuffer(buffer, len);
-		s_data->execute();
-		s_data->writeBuffer(buffer);
-	}
+void computeSS(signed short int* buffer, int len)
+{
+	s_data->readBuffer(buffer, len);
+	s_data->execute();
+	s_data->writeBuffer(buffer);
+}
+
+void resetSS()
+{
+	s_data->onDataUpdate();
+}
+
 #ifdef __cplusplus
 }
 #endif

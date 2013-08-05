@@ -39,6 +39,7 @@ struct MartinNoiseParams
  */
 class MartinEstimation: public Estimation
 {
+		friend void martinEstimation(fftw_complex *spectrum, int nrf, double *x, double tinc, bool reinit);
 	public:
 		MartinEstimation(SubtractionManager& configuration);
 		virtual ~MartinEstimation();
@@ -47,9 +48,9 @@ class MartinEstimation: public Estimation
 		virtual void onDataUpdate();
 
 	private:
-		void mh_values(double d, double *m, double *h);
+		static void mh_values(double d, double *m, double *h);
 
-
+		bool reinit = false;
 		int subwc;
 		int segment_number;
 		double *yft = nullptr;

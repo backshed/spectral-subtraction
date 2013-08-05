@@ -1,4 +1,6 @@
 #include <cmath>
+#include <numeric>
+#include <algorithm>
 
 double energy(double *tab, unsigned int length)
 {
@@ -8,6 +10,8 @@ double energy(double *tab, unsigned int length)
 		ret += tab[i] * tab[i];
 	}
 	return ret;
+	// Doesn't work because iterator is forwarded two times
+	//	return std::inner_product(tab, tab+length, tab, 0);
 }
 
 double abssum(double *tab, unsigned int length)

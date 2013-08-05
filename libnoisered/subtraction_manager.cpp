@@ -65,8 +65,7 @@ void SubtractionManager::onFFTSizeUpdate()
 
 	_spectrum = fftw_alloc_complex(_spectrumSize);
 
-
-	// Initialize the fftw plans (so.. FAAAST)
+	// Initialize the fftw plans
 	plan_fw = fftw_plan_dft_r2c_1d(_fftSize, in, _spectrum, FFTW_ESTIMATE);
 	plan_bw = fftw_plan_dft_c2r_1d(_fftSize, _spectrum, out, FFTW_ESTIMATE);
 
@@ -368,6 +367,7 @@ void SubtractionManager::setSamplingRate(unsigned int value)
 */
 void SubtractionManager::readParametersFromFile()
 {
+	_bypass = false;
 	std::map<std::string, std::shared_ptr<Estimation>> noise_est
 	{
 		std::make_pair("std", std::shared_ptr<Estimation>(new SimpleEstimation(*this))),
@@ -401,6 +401,7 @@ void SubtractionManager::readParametersFromFile()
 	f.close();
 
 	setIterations(iterations);
+
 	if (noise_est.find(noise_alg) != noise_est.end())
 		setEstimationImplementation(noise_est[noise_alg]);
 	else
@@ -431,8 +432,7 @@ void SubtractionManager::readParametersFromFile()
 			}
 			case Subtraction::Algorithm::GeometricApproach:
 			{
-				GeometricSpectralSubtraction* subtraction = new GeometricSpectralSubtraction(*this);
-				setSubtractionImplementation(std::shared_ptr<Subtraction>(subtraction));
+				setSubtractionImplementation(std::shared_ptr<Subtraction>(new GeometricSpectralSubtraction(*this)));
 				break;
 			}
 			default:
