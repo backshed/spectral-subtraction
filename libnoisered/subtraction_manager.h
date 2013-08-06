@@ -4,23 +4,21 @@
 #include <fftw3.h>
 #include <memory>
 
-class SpectralSubtractor;
 #include "subtraction/algorithms.h"
 #include "estimation/algorithms.h"
 /**
- * @brief Holds the data for the spectral subtraction algorithms, as well as the raw audio data.
+ * @brief Main class.
  *
  */
 class SubtractionManager
 {
-		friend class SpectralSubtractor;
 	public:
 		enum DataSource { File, Buffer };
 
 		/**
 		 * @brief Constructor
 		 *
-		 * @param fft_Size Wanted size of FFT. 256 or 512 are good choices. Must be a power of two for good performance.
+		 * @param fft_Size Wanted size of FFT. 256 or 512 are good choices. Must be a power of two.
 		 * @param sampling_Rate Sampling rate of the audio.
 		 */
 		SubtractionManager(int fft_Size, int sampling_Rate);
@@ -177,14 +175,14 @@ class SubtractionManager
 		bool bypass();
 
 
-
-
 		void enableOLA();
 		void disableOLA();
 		void setOLA(bool val);
 
 		void execute();
+
 	private:
+
 		bool OLAenabled() const;
 		DataSource dataSource() const;
 
@@ -206,21 +204,7 @@ class SubtractionManager
 		 */
 		void onFFTSizeUpdate();
 
-		/**
-		 * @brief Puts a signed 16bit integer (red book) between the -1 / 1 range in double.
-		 *
-		 * @param x Integer to convert.
-		 * @return double Corresponding floating point value.
-		 */
 
-		static inline double ShortToDouble(short x);
-		/**
-		 * @brief Puts a double between -1 and 1 into a 16 bit signed integer (red book).
-		 *
-		 * @param x Double to convert.
-		 * @return short Corresponding short value.
-		 */
-		static inline short DoubleToShort(double x);
 
 		//*** Data copying algorithms ***//
 		void copyInput(unsigned int pos);
@@ -274,8 +258,8 @@ class SubtractionManager
 		unsigned int _tabLength; /**< TODO */
 
 		bool _useOLA;
-		unsigned int ola_frame_increment; /**< TODO */
-		unsigned int frame_increment; /**< TODO */
+		unsigned int _ola_frame_increment; /**< TODO */
+		unsigned int _std_frame_increment; /**< TODO */
 
 		unsigned int _iterations; /**< TODO */
 
@@ -289,11 +273,11 @@ class SubtractionManager
 		fftw_plan plan_bw; /**< TODO */
 
 		// Algorithms
-		std::shared_ptr<Subtraction> subtraction = nullptr;
-		std::shared_ptr<Estimation>  estimation  = nullptr;
+		std::shared_ptr<Subtraction> subtraction;
+		std::shared_ptr<Estimation>  estimation;
 
+		// For measurements
 		bool _bypass;
-
 };
 
 #endif // SUBTRACTIONCONFIGURATION_H

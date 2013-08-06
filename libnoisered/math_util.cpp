@@ -25,4 +25,17 @@ namespace MathUtil
 	{
 		std::transform(in, in + size, powoutput, ToPower);
 	}
+
+	double ShortToDouble(short x)
+	{
+		const double normalizationFactor = 1.0 / pow(2.0, sizeof(short) * 8 - 1.0);
+		return x * normalizationFactor;
+	}
+
+	short DoubleToShort(double x)
+	{
+		const double denormalizationFactor = pow(2.0, sizeof(short) * 8 - 1.0);
+		return x * denormalizationFactor;
+	}
+
 }

@@ -18,7 +18,7 @@ class Sarsa
 		Sarsa():
 			dist(0, 1)
 		{
-			auto time = /**< TODO */ std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+			auto time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
 			rng.seed(time);
 		}
 

@@ -13,7 +13,7 @@ class Subtraction
 		 * @brief Algorithm used to perform subtraction.
 		 *
 		 */
-		enum class Algorithm { Standard, EqualLoudness, GeometricApproach, Bypass};
+		enum class Algorithm { Standard, EqualLoudness, GeometricApproach, Learning, Bypass};
 		Algorithm algorithm = Algorithm::Bypass; /**< TODO */
 
 

@@ -15,7 +15,6 @@ WaveletEstimation::WaveletEstimation(SubtractionManager &configuration):
 
 WaveletEstimation::~WaveletEstimation()
 {
-	std::cout << "WaveletEstimation deleted";
 	delete[] noise_power_reest;
 	fftw_free(tmp_out);
 	fftw_free(tmp_spectrum);

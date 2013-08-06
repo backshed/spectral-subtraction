@@ -16,6 +16,7 @@ class EqualLoudnessSpectralSubtraction : public SimpleSpectralSubtraction
 		 */
 		virtual void operator()(fftw_complex* input_spectrum, double* noise_spectrum) override;
 		virtual void onFFTSizeUpdate() override;
+		virtual void onDataUpdate() override;
 
 
 

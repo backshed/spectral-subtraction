@@ -4,8 +4,15 @@
 #include <functional>
 #include <iostream>
 #include <map>
+#include <chrono>
+#include "math_util.h"
 
-#include <climits>
+
+//Linux only, for audio out (fifo)
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 SubtractionManager::SubtractionManager(int fft_Size, int sampling_Rate):
 	_fftSize(fft_Size),
@@ -54,11 +61,14 @@ void SubtractionManager::execute()
 	}
 }
 
+
+
 void SubtractionManager::onFFTSizeUpdate()
 {
+	if(_bypass) return;
 	_spectrumSize = _fftSize / 2 + 1;
-	ola_frame_increment = _fftSize / 2;
-	frame_increment = _fftSize;
+	_ola_frame_increment = _fftSize / 2;
+	_std_frame_increment = _fftSize;
 
 	in = fftw_alloc_real(_fftSize);
 	out = fftw_alloc_real(_fftSize);
@@ -73,17 +83,6 @@ void SubtractionManager::onFFTSizeUpdate()
 	if(subtraction) subtraction->onFFTSizeUpdate();
 }
 
-double SubtractionManager::ShortToDouble(short x)
-{
-	static const double normalizationFactor = 1.0 / pow(2.0, sizeof(short) * 8 - 1.0);
-	return x * normalizationFactor;
-}
-
-short SubtractionManager::DoubleToShort(double x)
-{
-	static const double denormalizationFactor = pow(2.0, sizeof(short) * 8 - 1.0);
-	return x * denormalizationFactor;
-}
 
 void SubtractionManager::copyInput(unsigned int pos)
 {
@@ -115,6 +114,7 @@ SubtractionManager::~SubtractionManager()
 
 	delete[] _data;
 	delete[] _origData;
+
 }
 
 void SubtractionManager::initDataArray()
@@ -140,6 +140,7 @@ double *SubtractionManager::getData()
 
 void SubtractionManager::onDataUpdate()
 {
+	if(_bypass) return;
 	estimation->onDataUpdate();
 	subtraction->onDataUpdate();
 }
@@ -183,9 +184,9 @@ unsigned int SubtractionManager::readFile(char *str)
 
 unsigned int SubtractionManager::readBuffer(short *buffer, int length)
 {
+	_tabLength = length;
 	if(_bypass) return length;
 
-	_tabLength = length;
 	delete[] _origData;
 	delete[] _data;
 	_origData = new double[_tabLength];
@@ -196,7 +197,7 @@ unsigned int SubtractionManager::readBuffer(short *buffer, int length)
 	// std::transform(buffer, buffer + tab_length, buffer,
 	//                [] (short val) {return (val << 8) | ((val >> 8) & 0xFF)});
 
-	std::transform(buffer, buffer + _tabLength, _origData, &SubtractionManager::ShortToDouble);
+	std::transform(buffer, buffer + _tabLength, _origData, MathUtil::ShortToDouble);
 	initDataArray();
 
 	_dataSource = DataSource::Buffer;
@@ -206,7 +207,8 @@ unsigned int SubtractionManager::readBuffer(short *buffer, int length)
 void SubtractionManager::writeBuffer(short *buffer)
 {
 	if(_bypass) return;
-	std::transform(_data, _data + _tabLength, buffer, &SubtractionManager::DoubleToShort);
+	std::transform(_data, _data + _tabLength, buffer, MathUtil::DoubleToShort);
+
 	// Julius accepts only big-endian raw files but it seems internal buffers
 	// are little-endian so no need to convert.
 	// std::transform(buffer, buffer + tab_length, buffer,
@@ -243,17 +245,17 @@ void SubtractionManager::copyOutputSimple(unsigned int pos)
 void SubtractionManager::copyInputOLA(unsigned int pos)
 {
 	// Data copying
-	if (ola_frame_increment <= _tabLength - pos) // last case
+	if (_ola_frame_increment <= _tabLength - pos) // last case
 	{
-		std::copy_n(_data + pos, ola_frame_increment, in);
-		std::fill_n(in + ola_frame_increment, ola_frame_increment, 0);
+		std::copy_n(_data + pos, _ola_frame_increment, in);
+		std::fill_n(in + _ola_frame_increment, _ola_frame_increment, 0);
 
-		std::fill_n(_data + pos, ola_frame_increment, 0);
+		std::fill_n(_data + pos, _ola_frame_increment, 0);
 	}
 	else
 	{
 		std::copy_n(_data + pos, _tabLength - pos, in);
-		std::fill_n(in + _tabLength - pos, ola_frame_increment - (_tabLength - pos), 0);
+		std::fill_n(in + _tabLength - pos, _ola_frame_increment - (_tabLength - pos), 0);
 
 		std::fill_n(_data + pos, _tabLength - pos, 0);
 	}
@@ -329,7 +331,7 @@ bool SubtractionManager::bypass()
 
 unsigned int SubtractionManager::getFrameIncrement()
 {
-	return _useOLA? ola_frame_increment : frame_increment;
+	return _useOLA? _ola_frame_increment : _std_frame_increment;
 }
 
 std::shared_ptr<Subtraction> SubtractionManager::getSubtractionImplementation() const
@@ -365,6 +367,7 @@ void SubtractionManager::setSamplingRate(unsigned int value)
  * noise algo (std / martin / wavelets)
  * algo (std / el / ga)
 */
+
 void SubtractionManager::readParametersFromFile()
 {
 	_bypass = false;
@@ -409,7 +412,7 @@ void SubtractionManager::readParametersFromFile()
 
 	if (algo.find(alg) != algo.end())
 	{
-		switch( algo.at(alg))
+		switch(algo.at(alg))
 		{
 			case Subtraction::Algorithm::Standard:
 			{
@@ -422,12 +425,12 @@ void SubtractionManager::readParametersFromFile()
 			}
 			case Subtraction::Algorithm::EqualLoudness:
 			{
-				EqualLoudnessSpectralSubtraction* subtraction = new EqualLoudnessSpectralSubtraction(*this);
-				subtraction->setAlpha(alpha);
-				subtraction->setBeta(beta);
-				subtraction->setAlphawt(alphawt);
-				subtraction->setBetawt(betawt);
-				setSubtractionImplementation(std::shared_ptr<Subtraction>(subtraction));
+				EqualLoudnessSpectralSubtraction* zubtraction = new EqualLoudnessSpectralSubtraction(*this);
+				zubtraction->setAlpha(alpha);
+				zubtraction->setBeta(beta);
+				zubtraction->setAlphawt(alphawt);
+				zubtraction->setBetawt(betawt);
+				setSubtractionImplementation(std::shared_ptr<Subtraction>(zubtraction));
 				break;
 			}
 			case Subtraction::Algorithm::GeometricApproach:
@@ -461,5 +464,3 @@ unsigned int SubtractionManager::spectrumSize() const
 {
 	return _spectrumSize;
 }
-
-

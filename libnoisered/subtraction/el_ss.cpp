@@ -2,7 +2,7 @@
 #include <cmath>
 #include <fstream>
 #include <clocale>
-
+#include <iostream>
 #include "subtraction_manager.h"
 EqualLoudnessSpectralSubtraction::EqualLoudnessSpectralSubtraction(SubtractionManager &configuration):
 	SimpleSpectralSubtraction(configuration)
@@ -17,7 +17,7 @@ void EqualLoudnessSpectralSubtraction::operator()(fftw_complex *input_spectrum, 
 	{
 		double Apower, Bpower, magnitude, phase, y, alpha, beta;
 		alpha = _alpha - _alphawt * (loudness_contour[i] - 60);
-		beta  = _beta  - _betawt  * (loudness_contour[i] - 60);
+		beta  = _beta - _betawt  * (loudness_contour[i] - 60);
 
 		y = std::pow(input_spectrum[i][0], 2) + std::pow(input_spectrum[i][1], 2);
 
@@ -63,15 +63,20 @@ void EqualLoudnessSpectralSubtraction::loadLoudnessContour()
 	std::ifstream ldata(path);
 
 	delete[] loudness_contour;
-	loudness_contour = new double[conf.FFTSize() / 2];
+	loudness_contour = new double[conf.FFTSize() / 2 + 1];
+	loudness_contour[0] = 0;
 
 	for (auto i = 0U; i < conf.FFTSize() / 2; ++i)
 	{
-		ldata >> loudness_contour[(conf.FFTSize() / 2 - 1) - i];
+		ldata >> loudness_contour[(conf.FFTSize() / 2) - i];
 	}
 	ldata.close();
 }
 
+void EqualLoudnessSpectralSubtraction::onDataUpdate()
+{
+
+}
 
 
 double EqualLoudnessSpectralSubtraction::alphawt() const

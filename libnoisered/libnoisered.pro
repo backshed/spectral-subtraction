@@ -41,6 +41,7 @@ SOURCES += \
 	learning/standardssaction.cpp \
 	learning/sarsa.cpp \
 	learning/realaction.cpp \
+	learning/learning.cpp \
 	subtraction/simple_ss.cpp \
 	subtraction/el_ss.cpp \
 	subtraction/geometric_ss.cpp \
@@ -49,7 +50,8 @@ SOURCES += \
 	estimation/simple_estimation.cpp \
 	estimation/martin_estimation.cpp \
 	estimation/wavelet_estimation.cpp \
-    subtraction_manager.cpp
+	subtraction_manager.cpp \
+    subtraction/learning_ss.cpp
 
 
 HEADERS += \
@@ -64,6 +66,7 @@ HEADERS += \
 	learning/state.hpp \
 	learning/standardssstate.hpp \
 	learning/standardssaction.hpp \
+	learning/learning.hpp \
 	learning/sarsa.hpp \
 	learning/realstate.hpp \
 	learning/realaction.hpp \
@@ -78,5 +81,6 @@ HEADERS += \
 	estimation/wavelet_estimation.h \
 	subtraction/algorithms.h \
 	estimation/algorithms.h \
-    subtraction_manager.h
+	subtraction_manager.h \
+    subtraction/learning_ss.h
 

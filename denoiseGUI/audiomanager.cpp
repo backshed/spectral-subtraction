@@ -86,10 +86,10 @@ void AudioManager::exec()
 
 	s_mgr.execute();
 
-	emit sNRR(QString("%1").arg(NRR(s_mgr.getNoisyData(), s_mgr.getData(), s_mgr.getLength())));
+	emit sNRR(QString("%1").arg(Eval::NRR(s_mgr.getNoisyData(), s_mgr.getData(), s_mgr.getLength())));
 	if(origData != nullptr)
 	{
-		emit sSDR(QString("%1").arg(SDR(origData, s_mgr.getData(), s_mgr.getLength())));
+		emit sSDR(QString("%1").arg(Eval::SDR(origData, s_mgr.getData(), s_mgr.getLength())));
 	}
 
 	audioOut->stop();
