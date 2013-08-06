@@ -16,15 +16,15 @@ AudioManager::AudioManager()
 
 	audioOut = new QAudioOutput(format, this);
 
-	connect(audioOut, SIGNAL(stateChanged(QAudio::State)), this, SLOT(handleStateChanged(QAudio::State)));
+	//connect(audioOut, SIGNAL(stateChanged(QAudio::State)), this, SLOT(handleStateChanged(QAudio::State)));
 
 }
 
 void AudioManager::writeAudio(short* ext_buffer, unsigned int len)
 {
-
-	qint64 ActPos = audioBuffer->pos();
+	qint64 pos = audioBuffer->pos();
 	audioBuffer->seek(audioBuffer->size());
+
 	QDataStream stream(audioBuffer);
 	stream.setByteOrder(QDataStream::LittleEndian);
 
@@ -32,17 +32,15 @@ void AudioManager::writeAudio(short* ext_buffer, unsigned int len)
 	{
 		stream << ext_buffer[i];
 	}
-	audioBuffer->seek(ActPos);
+	audioBuffer->seek(pos);
 }
 
 void AudioManager::handleStateChanged(QAudio::State newState)
 {
-
 	switch (newState) {
 		case QAudio::IdleState:
 			// Finished playing (no more data)
 			//audioOut->stop();
-			qDebug() << "plop";
 			break;
 
 		case QAudio::StoppedState:
