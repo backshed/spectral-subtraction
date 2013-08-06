@@ -13,8 +13,6 @@ class AudioManager : public QObject
 		void play();
 		void stop();
 
-	public slots:
-		void handleStateChanged(QAudio::State newState);
 
 	private:
 		QBuffer* audioBuffer;

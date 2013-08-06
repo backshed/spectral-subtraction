@@ -16,7 +16,6 @@ AudioManager::AudioManager()
 
 	audioOut = new QAudioOutput(format, this);
 
-	//connect(audioOut, SIGNAL(stateChanged(QAudio::State)), this, SLOT(handleStateChanged(QAudio::State)));
 
 }
 
@@ -33,28 +32,6 @@ void AudioManager::writeAudio(short* ext_buffer, unsigned int len)
 		stream << ext_buffer[i];
 	}
 	audioBuffer->seek(pos);
-}
-
-void AudioManager::handleStateChanged(QAudio::State newState)
-{
-	switch (newState) {
-		case QAudio::IdleState:
-			// Finished playing (no more data)
-			//audioOut->stop();
-			break;
-
-		case QAudio::StoppedState:
-			// Stopped for other reasons
-			if (audioOut->error() != QAudio::NoError) {
-
-				// Error handling
-			}
-			break;
-
-		default:
-			// ... other cases as appropriate
-			break;
-	}
 }
 
 
