@@ -24,7 +24,7 @@ void start_thread(int argc, char* argv[])
 	s_data->readParametersFromFile();
 
 	ready = true;
-//	std::this_thread::sleep_for(std::chrono::seconds(1));
+	std::this_thread::sleep_for(std::chrono::seconds(1));
 //	am->play();
 
 	a.exec();
@@ -34,8 +34,6 @@ void start_thread(int argc, char* argv[])
 
 int main(int argc, char *argv[])
 {
-
-	std::cerr << "hello" << std::endl;
 	std::thread mainThread(&start_thread, argc, argv);
 	while(!ready)
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));

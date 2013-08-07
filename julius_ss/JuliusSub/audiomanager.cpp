@@ -17,19 +17,19 @@ AudioManager::AudioManager()
 	format.setByteOrder(QAudioFormat::LittleEndian);
 	format.setSampleType(QAudioFormat::SignedInt);
 
-        QDataStream stream(audioBuffer);
-        stream.setByteOrder(QDataStream::LittleEndian);
+		QDataStream stream(audioBuffer);
+		stream.setByteOrder(QDataStream::LittleEndian);
 
 	audioBuffer->seek(0);
-        for(auto i = 0U; i < 8192; ++i)
-        {
-                stream << 0;
-        }
+		for(auto i = 0U; i < 8192; ++i)
+		{
+				stream << 0;
+		}
 	audioBuffer->seek(0);
 
 	audioOut = new QAudioOutput(format, this);
 
-	//connect(audioOut, SIGNAL(stateChanged(QAudio::State)), this, SLOT(handleStateChanged(QAudio::State)));	
+	//connect(audioOut, SIGNAL(stateChanged(QAudio::State)), this, SLOT(handleStateChanged(QAudio::State)));
 }
 
 void AudioManager::writeAudio(short* ext_buffer, unsigned int len)
@@ -59,10 +59,12 @@ void AudioManager::play()
 
 void AudioManager::stop()
 {
-	audioOut->stop();
-	audioBuffer->seek(0);
+	if(audioOut->state() != QAudio::ActiveState)
+	{
+		audioOut->stop();
+		audioBuffer->seek(0);
+	}
 }
-
 void AudioManager::handleStateChanged(QAudio::State newState)
 {
 	switch (newState) {

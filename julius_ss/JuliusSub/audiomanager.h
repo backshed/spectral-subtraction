@@ -1,11 +1,12 @@
 #ifndef AUDIOMANAGER_H
 #define AUDIOMANAGER_H
 
-#if QT_VERSION >= 0x050000
+#ifndef __arm__
 #include <QtMultimedia/QAudioOutput>
 #else
 #include <QtMultimediaKit/QAudioOutput>
 #endif
+
 #include <QBuffer>
 class AudioManager : public QObject
 {

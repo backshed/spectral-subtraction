@@ -20,7 +20,7 @@ import shutil
 from compute_word_rate import *
 
 def is_non_zero_file(fpath):
-    return True if os.path.isfile(fpath) and os.path.getsize(fpath) > 0 else False
+	return True if os.path.isfile(fpath) and os.path.getsize(fpath) > 0 else False
 
 
 def GenerateFileLists():
@@ -39,7 +39,7 @@ def GenerateFileLists():
 
 
 
-algo_scripts = ["ss_conf/std", "ss_conf/el", "ss_conf/ga", "ss_conf/std_martin", "ss_conf/ga_martin"]
+algo_scripts = ["ss_conf/bypass", "ss_conf/std", "ss_conf/std_martin", "ss_conf/el", "ss_conf/ga",  "ss_conf/ga_martin", "ss_conf/ga_martin_2"]
 
 # 1. Load the original sentences
 original = open("/media/doom/Data/JNAS/Vol. 1/ORG_TEXT/KANJI/NP/001.KAN", "r", encoding='iso-2022-jp')

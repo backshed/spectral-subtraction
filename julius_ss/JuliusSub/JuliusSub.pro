@@ -19,11 +19,10 @@ TARGET =juliusSub
 DESTDIR =$$PWD/../../output/
 CONFIG   +=console
 CONFIG   -=app_bundle
-MOBILITY += multimedia
+
 TEMPLATE = app
 
-INCLUDEPATH +=/usr/include/QtMultimediaKit
-INCLUDEPATH +=/usr/include/QtMobility
+
 
 QMAKE_CXXFLAGS+=-std=c++11 -fopenmp -O3 -march=native -D_GLIBCXX_PARALLEL
 
@@ -46,5 +45,14 @@ unix:!macx: LIBS +=
 
 unix:!macx: PRE_TARGETDEPS += $$PWD/../../output/libjls.a
 
-
-LIBS +=  -lcwt -lfftw3 -ldl -lpthread  -lasound -lz -lsndfile -lm -lQtMultimediaKit -lpulse -lpulse-simple
+linux-arm-gnueabi-g++ {
+MOBILITY += multimedia
+INCLUDEPATH +=/usr/include/QtMultimediaKit
+INCLUDEPATH +=/usr/include/QtMobility
+LIBS +=  -lQtMultimediaKit
+}
+linux-g++-64
+{
+QT += multimedia
+}
+LIBS +=  -lcwt -lfftw3 -ldl -lpthread  -lasound -lz -lsndfile -lm -lpulse -lpulse-simple
