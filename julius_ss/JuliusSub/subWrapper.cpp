@@ -18,7 +18,9 @@ void computeSS(signed short int* buffer, int len)
 	s_data->execute();
 	s_data->writeBuffer(buffer);
 
+#ifdef ENABLE_AUDIO
 	am->writeAudio(buffer, len);
+#endif
 }
 
 void startAudioStream()

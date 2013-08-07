@@ -6,6 +6,7 @@
 #else
 #include <QtMultimediaKit/QAudioOutput>
 #endif
+#define ENABLE_AUDIO
 
 #include <QBuffer>
 class AudioManager : public QObject

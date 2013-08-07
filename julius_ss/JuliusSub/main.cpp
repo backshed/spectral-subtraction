@@ -20,15 +20,14 @@ void start_thread(int argc, char* argv[])
 	QCoreApplication a(argc, argv);
 
 	s_data = new SubtractionManager(512, 16000);
+	#ifdef ENABLE_AUDIO
 	am = new AudioManager();
+	#endif
 	s_data->readParametersFromFile();
 
 	ready = true;
-	std::this_thread::sleep_for(std::chrono::seconds(1));
-//	am->play();
 
 	a.exec();
-
 }
 
 
