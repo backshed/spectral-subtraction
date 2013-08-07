@@ -9,6 +9,7 @@ extern "C"
 
 void computeSS(signed short int* buffer, int len);
 void resetSS();
+void startAudioStream();
 #ifdef __cplusplus
 }
 #endif

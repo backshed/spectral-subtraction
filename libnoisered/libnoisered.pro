@@ -11,7 +11,7 @@ TEMPLATE = lib
 CONFIG += staticlib c++11
 DESTDIR = $$PWD/../output
 LIBS += -lcwt -lfftw3
-QMAKE_CXXFLAGS_RELEASE += -fopenmp -O3 -march=native -D_GLIBCXX_PARALLEL
+QMAKE_CXXFLAGS_RELEASE += -std=c++11 -fopenmp -O3 -march=native -D_GLIBCXX_PARALLEL
 QMAKE_CXX = g++-4.8
 BASEPATH = ../build/libnoisered
 

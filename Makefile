@@ -1,13 +1,20 @@
-MAKE=make -j4
+MAKE=make
 
-all:
+all: lred julius jss
+
+
+lred:
 	qmake libnoisered/libnoisered.pro -o build/libnoisered/release/Makefile
 	$(MAKE) -C build/libnoisered/release/
 
+julius:
 	(export CC="gcc-4.8" && export CFLAGS="-O3 -march=native" && cd julius-4.2.3 && ./configure)
 	$(MAKE) -C julius-4.2.3/
 	$(MAKE) -C julius-4.2.3/julius -f MakefileJLS
-	$(MAKE) -C julius_ss
+
+jss:
+	qmake julius_ss/JuliusSub/JuliusSub.pro -o build/juliusss/release/Makefile
+	$(MAKE) -C build/juliusss/release
 
 gui:
 	qmake denoiseGUI/Interface.pro -o build/denoiseGUI/release/Makefile

@@ -21,8 +21,14 @@ void computeSS(signed short int* buffer, int len)
 	am->writeAudio(buffer, len);
 }
 
+void startAudioStream()
+{
+	//am->play();
+}
+
 void resetSS()
 {
+	//am->stop();
 	s_data->onDataUpdate();
 }
 

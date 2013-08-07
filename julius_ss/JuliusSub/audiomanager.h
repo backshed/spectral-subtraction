@@ -1,7 +1,11 @@
 #ifndef AUDIOMANAGER_H
 #define AUDIOMANAGER_H
 
+#if QT_VERSION >= 0x050000
 #include <QtMultimedia/QAudioOutput>
+#else
+#include <QtMultimediaKit/QAudioOutput>
+#endif
 #include <QBuffer>
 class AudioManager : public QObject
 {
@@ -13,6 +17,8 @@ class AudioManager : public QObject
 		void play();
 		void stop();
 
+	public slots:
+		void handleStateChanged(QAudio::State newState);
 
 	private:
 		QBuffer* audioBuffer;

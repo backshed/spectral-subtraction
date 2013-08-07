@@ -48,6 +48,11 @@ static void newFileCallback(Recog* recog, void* data)
 	resetSS();
 }
 
+static void speechStartCallback(Recog* recog, void* data)
+{
+	startAudioStream();
+}
+
 static boolean
 opt_help(Jconf *jconf, char *arg[], int argnum)
 {
@@ -211,7 +216,7 @@ submain(int argc, char *argv[])
   //j_recog_info(recog);
   callback_add_adin(recog, CALLBACK_ADIN_CAPTURED, modifyAudioCallback, NULL);
   callback_add(recog, CALLBACK_EVENT_SPEECH_STOP, newFileCallback, NULL);
-
+  callback_add(recog, CALLBACK_EVENT_SPEECH_START, speechStartCallback, NULL);
 
   /* if no grammar specified on startup, start with pause status */
   {
