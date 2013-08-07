@@ -45,14 +45,13 @@ unix:!macx: LIBS +=
 
 unix:!macx: PRE_TARGETDEPS += $$PWD/../../output/libjls.a
 
-linux-arm-gnueabi-g++ {
+#linux-arm-g++ {
 MOBILITY += multimedia
 INCLUDEPATH +=/usr/include/QtMultimediaKit
 INCLUDEPATH +=/usr/include/QtMobility
 LIBS +=  -lQtMultimediaKit
-}
-linux-g++-64
-{
-QT += multimedia
-}
+#}
+#linux-g++ {
+#QT += multimedia
+#}
 LIBS +=  -lcwt -lfftw3 -ldl -lpthread  -lasound -lz -lsndfile -lm -lpulse -lpulse-simple
