@@ -24,6 +24,7 @@ class AudioManager : public QObject
 
 	private:
 		QBuffer* audioBuffer;
+		QByteArray *data;
 		QAudioFormat format;
 		QAudioOutput *audioOut;
 
