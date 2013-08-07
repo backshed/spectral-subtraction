@@ -51,8 +51,7 @@ INCLUDEPATH +=/usr/include/QtMultimediaKit
 INCLUDEPATH +=/usr/include/QtMobility
 LIBS +=  -lQtMultimediaKit
 }
-linux-g++-64
-{
+else {
 QT += multimedia
 }
 LIBS +=  -lcwt -lfftw3 -ldl -lpthread  -lasound -lz -lsndfile -lm -lpulse -lpulse-simple
