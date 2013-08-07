@@ -54,4 +54,5 @@ LIBS +=  -lQtMultimediaKit
 #linux-g++ {
 #QT += multimedia
 #}
+
 LIBS +=  -lcwt -lfftw3 -ldl -lpthread  -lasound -lz -lsndfile -lm -lpulse -lpulse-simple
