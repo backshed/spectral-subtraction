@@ -1,12 +1,91 @@
 \section{Objectives}
-\subsection{Research objectives}
+\subsection{Internship subject}
+My official internship subject was : "Research about noise and reverberation reduction for robust speech recognition".
+However, it was only there both as a starting point and a lead: the development of my subject took place during the internship.
+There were two major distinct parts to it :
+\begin{itemize}
+\item An engineering part, where I had to develop a software library for noise reduction and have speech recognition running efficiently on an embedded device.
+\item A research part, where I had to come up with novel ideas to improve on the current methods.
+\end{itemize}
+
+
 \subsection{Engineering objectives}
-\subsubsection{Work with embedded systems}
-\paragraph{Presentation of the BeagleBoard-XM}
+These are the objectives I had to achieve from an engineering point of view.
+\subsubsection{Working with embedded systems}
+The final goal for my work was to have the speech recognition working on an embedded device, with added noise reduction techniques.
+Depending on the device, this could lead to constraints for the system.
+I was given a choice between different families of devices : 
+\begin{itemize}
+\item An \ac{FPGA}
+\item An \brand{Arduino} board
+\item A \brand{BeagleBoard}
+\item A \ac{DSP}
+\end{itemize}
+I rejected the idea of the \ac{FPGA} and of the \ac{DSP} because I would have had to write \ac{VHDL} code, which I don't know, and because speech recognition also has a lot of high-level logic, like grammar, which would be really difficult to implement with \ac{DSP} patterns, which are better suited for simple and repetitive tasks.
+I didn't have knowledge of \brand{Arduino}, so I choose to work with the \brand{BeagleBoard}, because it runs Linux natively, which makes development very easy and allows me to focus only on the important matters.
+\paragraph{Presentation of the \brand{BeagleBoard-XM}}
+The model on which I had to work was the \brand{BeagleBoard-XM}. It is originally a \brand{Texas Instruments} test board, which acts like a full-fledged computer. Some of its relevant characteristics are : 
+\begin{itemize}
+\item 1 GHz ARM Cortex-A8 processor. 512 MB of RAM.
+\item USB / HDMI / Ethernet connectivity
+\item No embedded memory : the operating system is on a micro-SD card.
+\end{itemize}
+
+It ships with \brand{Angstrom Linux}, but packages are not always up to date, and I have a better knowledge of \brand{Debian GNU/Linux}, so I decided to switch to it.
+
 \subsubsection{Speech recognition}
+There are many software able to perform a fairly efficient speech recognition, so I had to choose one. I would have to make this software work on the \brand{BeagleBoard}. I would also have to include the noise reduction algorithms inside the software, so it had to be modular.
+\paragraph{A Japanese software : \brand{Julius}}
+ \brand{Julius} is a speech recognition software developed at \ac{NITECH}. It is very mature : development started in 1991 and the latest version came out during my internship.
+ 
 \paragraph{Acoustic and Language models}
-\paragraph{Japanese software : Julius}
+To perform speech recognition, the software needs some data, which is generally separated 
+in : 
+\begin{enumerate}
+\item A purely audio-data related model : the acoustic model. It generally uses \acp{HMM}.
+\item A semantic-data related model : the language model. It is made from a dictionary and a grammar. The grammar can be made by hand for little corpuses, like a phone dialer, but for a full human language it requires the use of probabilistic word position estimation known as \textit{n-grams}.
+\end{enumerate}
+
+During the course of my internship, I had to build both a language and acoustic model for use with \brand{Julius}.
+
 \paragraph{\ac{HTK}}
+\ac{HTK} is a set of software currently maintained by the \ac{CUED}, which is used to build acoustic and language models. I would have to learn how to use them by reading the HTK Book, the reference book on the subject.
+
 \subsubsection{Noise reduction}
+The core of my internship was about performing noise reduction on a real-time speech signal.
+I would first have to read scientific literature on the subject, and would then move to implementation.
+Simply put, noise reduction is generally a two step process, which often occurs in the spectral domain : 
+\begin{enumerate}
+\item Noise estimation.
+\item Noise removal according to the estimation.
+\end{enumerate}
+
+Each of these steps are active research fields, so there are many different algorithms for each. I was given some of these papers during the whole course of my internship, which led to important architectural changes in the end. I will give a brief explanation of all the papers I was given.
 \paragraph{Spectral subtraction}
+Spectral subtraction is the \textit{de facto} standard method for noise removal. The concept is simple : the estimated noise spectrum is removed to the signal spectrum for every frame of signal.
+
+\subparagraph{Standard algorithm}
+The original method was described by Steven Boll in 1979\cite{boll1979suppression}. A standard optimization is to iterate the process many times, it is then called Iterative Spectral Subtraction. The first objective of my internship was to implement this algorithm.
+\subparagraph{Equal-Loudness optimization}
+Another optimization based on psychoacoustic properties was developed in the lab\cite{horii2013musical}. It filters each band of the noise spectrum using the equal-loudness contour curves, which represent how the human ear filters the signal.
+\subparagraph{Geometric algorithm}
+This algorithm\cite{lu2008geometric} differs of standard spectral subtraction by taking into account otherwise neglected coefficients. It offers a high level of performance.
 \paragraph{Noise estimation}
+As for spectral subtraction, there are multiple ways to estimate the ambient noise present on a signal.
+\subparagraph{Simple method}
+A naive method is to assume that the spectrum of the noise will be constant, and that the signal begins with a speechless part. While this estimation method is inefficient in a changing environment, it works reasonably well if the noise is effectively constant, like with white noise.
+\subparagraph{Method based on statistics}
+This method is presented in a paper from Rainer Martin\cite{martin2001noise}. In opposition to the previous one, it is constantly running, even on frames containing speech, and offers a good noise estimation even if the noise changes completely. It is based on a statistical study of the signal spectrum.
+\subsection{Research objectives}
+\subsubsection{Improving spectral subtraction}
+\subsubsection{Evaluating the different methods}
+\subsection{Resources offered by the lab}
+- accès aux papiers
+\subsection{Planification}
+Meeting hebdomadaire
+Début : découverte des outils, librairies
+alsa
+qt
+julius
+htk
+...
