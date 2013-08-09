@@ -1,0 +1,111 @@
+\documentclass[a4paper,11pt]{article}
+
+\date{September te 15th, 2013}
+\usepackage{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[french,english]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{tikz-uml}
+\usepackage{relsize}
+\usepackage{color}
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\usepackage{listings}
+\usepackage{float}
+\usepackage{kpfonts}
+
+\usepackage{graphicx}
+%% \newcommand{\foofoo}{\hspace{-2.3pt}$\bullet$ \hspace{5pt}}
+
+\lstset{
+language=C++,
+basicstyle=\footnotesize,
+backgroundcolor=\color{white},
+keywordstyle=\color{red},
+commentstyle=\color{dkgreen},
+stringstyle=\color{mauve},
+numberstyle=\color{red},
+morekeywords={string},
+frame=BL,
+aboveskip=1em,
+belowskip=2em,
+}
+\lstset{
+  literate={ù}{{\`u}}1
+           {é}{{\'e}}1
+           {è}{{\'e}}1
+           {à}{{\`a}}1
+}
+
+
+\lstdefinelanguage{tikzuml}{language=[LaTeX]TeX, classoffset=0, morekeywords={umlbasiccomponent, umlprovidedinterface, umlrequiredinterface, umldelegateconnector, umlassemblyconnector, umlVHVassemblyconnector, umlHVHassemblyconnector, umlnote, umlusecase, umlactor, umlinherit, umlassoc, umlVHextend, umlinclude, umlstateinitial, umlbasicstate, umltrans, umlstatefinal, umlVHtrans, umlHVtrans, umldatabase, umlmulti, umlobject, umlfpart, umlcreatecall, umlclass, umlvirt, umlunicompo, umlimport, umlaggreg}, classoffset=1, morekeywords={umlcomponent, umlsystem, umlstate, umlseqdiag, umlcall, umlcallself, umlfragment, umlpackage}, classoffset=0,  sensitive=true, morecomment=[l]{\%}}
+
+\geometry{margin=2cm}
+\geometry{headheight=15pt}
+
+\usepackage{fancyhdr}
+\usepackage{glossaries}
+\usepackage{fancyvrb}
+\usepackage{float}
+\usepackage[footnote,smaller]{acronym}
+\makeglossaries
+
+
+
+\pagestyle{fancy}
+\rhead{Internship}
+
+\acrodef{ASPL}{Acoustics \& Signal Processing Lab}
+\acrodef{MSVC}{Microsoft Visual C++ Compiler}
+\acrodef{GCC}{Gnu Compiler Collection}
+\acrodef{API}{Application Programming Interface}
+\acrodef{HTK}{Hidden Markov Model Toolkit}
+
+\begin{document}
+\selectlanguage{english}
+\begin{titlepage}
+  \begin{center}
+
+    \textsc{\LARGE Embedding noise reduction algorithms for speech recognition}\\[1cm]
+    Ritsumeikan University - Biwako-Kusatsu Campus \\[2em] Acoustics \& Signal Processing Lab \\[3cm]
+    
+    \includegraphics[width=8cm]{logo.png}
+
+  \end{center}
+  \vspace*{\stretch{2}}
+  \begin{flushbottom}
+  \begin{flushleft}
+   \underline{Tutor} : Takanobu \textsc{Nishiura}\\
+   \underline{Student} : Jean-Michaël \textsc{Celerier} - Computer science department - \today \\
+  \end{flushleft}
+  \end{flushbottom}
+
+\end{titlepage}
+
+\clearpage
+\vspace*{\stretch{1}}
+
+\begin{quotation}
+\hfill ``The roots of education are bitter, but the fruit is sweet.'' \\
+\end{quotation}
+\hfill Aristotle
+\vspace*{\stretch{2}}
+\clearpage
+
+\tableofcontents
+\include{remerciements}
+\include{intro}
+\include{universite}
+\include{objectifs}
+\include{realisation}
+\include{conclusion}
+\include{glossaire}
+\include{biblio}
+\include{french_report}
+% \include{intro}
+
+
+
+\end{document}
