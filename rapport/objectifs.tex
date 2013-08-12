@@ -16,12 +16,12 @@ The final goal for my work was to have the speech recognition working on an embe
 Depending on the device, this could lead to constraints for the system.
 I was given a choice between different families of devices : 
 \begin{itemize}
-\item An \ac{FPGA}
+\item A \ac{FPGA}
 \item An \brand{Arduino} board
 \item A \brand{BeagleBoard}
 \item A \ac{DSP}
 \end{itemize}
-I rejected the idea of the \ac{FPGA} and of the \ac{DSP} because I would have had to write \ac{VHDL} code, which I don't know, and because speech recognition also has a lot of high-level logic, like grammar, which would be really difficult to implement with \ac{DSP} patterns, which are better suited for simple and repetitive tasks.
+I rejected the idea of the \ac{FPGA} and the \ac{DSP} because I would have had to write \ac{VHDL} code, which I don't know, and because speech recognition also has a lot of high-level logic, like grammar, which would be really difficult to implement with \ac{DSP} patterns, which are better suited for simple and repetitive tasks.
 I didn't have knowledge of \brand{Arduino}, so I choose to work with the \brand{BeagleBoard}, because it runs Linux natively, which makes development very easy and allows me to focus only on the important matters.
 \paragraph{Presentation of the \brand{BeagleBoard-XM}}
 The model on which I had to work was the \brand{BeagleBoard-XM}. It is originally a \brand{Texas Instruments} test board, which acts like a full-fledged computer. Some of its relevant characteristics are : 
@@ -77,15 +77,39 @@ A naive method is to assume that the spectrum of the noise will be constant, and
 \subparagraph{Method based on statistics}
 This method is presented in a paper from Rainer Martin\cite{martin2001noise}. In opposition to the previous one, it is constantly running, even on frames containing speech, and offers a good noise estimation even if the noise changes completely. It is based on a statistical study of the signal spectrum.
 \subsection{Research objectives}
+In addition to the practical implementation of common algorithms, I had to carry some research work.
 \subsubsection{Improving spectral subtraction}
+The main research goal was to improve the spectral subtraction method : I would have to come up with a novel idea, and implement, test, and compare it.
 \subsubsection{Evaluating the different methods}
+In parallel, I would have to conduct global evaluation of all the methods proposed beforehand.
 \subsection{Resources offered by the lab}
-- accès aux papiers
-\subsection{Planification}
-Meeting hebdomadaire
-Début : découverte des outils, librairies
-alsa
-qt
-julius
-htk
-...
+\begin{itemize}
+\item Access to scientific papers from \ac{IEEE}, Elsevier and other publishers via a school-wide subscription.
+\item A \brand{BeagleBoard-XM}.
+\item Audio equipment to perform experimentation: microphone, loudspeaker, headphone, microphone preamplifier. 
+\item Voice database : \ac{TIMIT} (english), \ac{JNAS} (japanese).
+\item Noise database : \ac{JEIDA}.
+\item A computer screen.
+\item I was proposed a laptop but the keyboard and operating system (\brand{Microsoft\textregistered Windows\texttrademark}) were in Japanese so I preferred to use mine.
+
+\end{itemize}
+\subsection{Planning}
+Since my objectives evolved a lot with time, I will rather present how I organized myself from week to week.
+In the lab, I had to do a weekly report to Mr. Nishiura, and make a short powerpoint presentation explaining what I was doing, why, and what I would be doing next.
+
+\begin{itemize}
+\item The first and second week were about learning how to use the standard tools, algorithms, etc. For instance, how did the Fast Fourier Transform work, how to make a simple digital filter, the overlap-add and windowing techniques, etc. I read many papers during this period, as well as some parts of the book \textit{The Scientist and Engineer's Guide to Digital Signal Processing}. The libraries I learned were : 
+\begin{itemize}
+\item \ac{FFTW}
+\item \ac{ALSA}
+\item The audio-related parts of \textbf{Qt}, especially the \textbf{QtMultimedia} module which enacts low-level audio control.
+\end{itemize}
+\item On the third week, I started prototyping some simple \textbf{C} functions to perform the basic spectral subtraction algorithm. I also started coding a \textbf{Qt} windowed application to test the algorithms on audio files. Finally, I worked on a script to generate a suitable acoustic and language model from the \ac{TIMIT} corpus.
+\item On the fourth week, I started to learn how to use \brand{Julius}, the speech synthesis engine, and its library \brand{LibJulius}, as well as \ac{HTK}. In parallel, I would start implementing my research ideas, and looking for an efficient \ac{CWT} library. I would also add some batch processing abilities to my test application.
+\item On the fifth week, I started preparing a poster about my research that I would present at the Kansai Joint Seminar. Also, I finished coding most of the algorithms in the papers that were cited beforehand. At the same time, I tried to learn how to use most of the \brand{C++} \brand{STL}, as well as \brand{C++11} features.
+\item Sixth week : seminar
+\item Seventh week : refactoring
+\item Eight week : started porting everything on the beagleboard
+\item Ninth week : testing and comparing the status on the beagleboard with sound databases and real speakers, as well as noises emitted with a loudspeaker.
+\item Tenth week : focus on the internship report, test with another corpus.
+\end{itemize}
