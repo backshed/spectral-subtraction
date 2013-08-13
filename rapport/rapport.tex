@@ -28,7 +28,7 @@ commentstyle=\color{dkgreen},
 stringstyle=\color{mauve},
 numberstyle=\color{red},
 morekeywords={string},
-frame=BL,
+frame=lines,
 aboveskip=1em,
 belowskip=2em,
 }
@@ -49,10 +49,11 @@ belowskip=2em,
 \usepackage{glossaries}
 \usepackage{fancyvrb}
 \usepackage{float}
-\usepackage[footnote]{acronym}
-\usepackage[perpage]{footmisc}
 \usepackage{algorithm2e}
 \usepackage{CJKutf8}
+\usepackage[footnote,smaller]{acronym}
+\usepackage[perpage]{footmisc}
+\renewcommand*{\acsfont}[1]{\brand{#1}}
 
 \makeglossaries
 
@@ -61,33 +62,18 @@ belowskip=2em,
 \pagestyle{fancy}
 \rhead{Internship}
 
-\acrodef{ASPL}{Acoustics \& Signal Processing Lab}
-\acrodef{MSVC}{Microsoft Visual C++ Compiler}
-\acrodef{GCC}{Gnu Compiler Collection}
-\acrodef{API}{Application Programming Interface}
-\acrodef{HTK}{Hidden Markov Model Toolkit}
-\acrodef{VHDL}{Very High Speed Integrated Circuit Hardware Description Language}
-\acrodef{DSP}{Digital Signal Processor}
-\acrodef{dspg}[DSP]{Digital Signal Processing}
-\acrodef{FPGA}{Field-Programmable Gate Array}
-\acrodef{NITECH}{Nagoya Institute of Technology}
-\acrodef{HMM}{Hidden Markov Model}
-\acrodef{CUED}{Cambridge University Engineering Department}
-\acrodef{IEEE}{Institute of Electrical and Electronics Engineers}
-\acrodef{TIMIT}{Texas Instruments - Massachusetts institute of Technology}
-\acrodef{JNAS}{Japanese Newspaper Article Sentences}
-\acrodef{JEIDA}{Japan Electronic Industries Development Association}
-\acrodef{FFTW}{Fastest Fourier Transform in the West}
-\acrodef{ALSA}{Advanced Linux Sound Architecture}
-\acrodef{CWT}{Continuous Wavelet Transform}
+
+\newcommand{\brand}[1]{\textsc{\textbf{#1}}}
+\let\oldpar\paragraph
+\renewcommand{\paragraph}[1]{\oldpar{#1}\mbox{}\\}
+
+\input{acronyms_list}
 
 \DeclareMathOperator{\power}{power}
 \DeclareMathOperator{\phase}{phase}
 \DeclareMathOperator{\recompute}{recompute}
 
-\newcommand{\brand}[1]{\textsc{\textbf{#1}}}
-\let\oldpar\paragraph
-\renewcommand{\paragraph}[1]{\oldpar{#1}\mbox{}\\}
+
 \begin{document}
 \selectlanguage{english}
 \begin{titlepage}
