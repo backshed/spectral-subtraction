@@ -15,6 +15,16 @@
 \usepackage{listings}
 \usepackage{float}
 \usepackage{kpfonts}
+\usepackage{verbatimbox}
+
+% more figures per page
+\renewcommand\floatpagefraction{.9}
+\renewcommand\topfraction{.9}
+\renewcommand\bottomfraction{.9}
+\renewcommand\textfraction{.1}   
+\setcounter{totalnumber}{50}
+\setcounter{topnumber}{50}
+\setcounter{bottomnumber}{50}
 
 \usepackage{graphicx}
 %% \newcommand{\foofoo}{\hspace{-2.3pt}$\bullet$ \hspace{5pt}}
@@ -31,6 +41,7 @@ morekeywords={string},
 frame=lines,
 aboveskip=1em,
 belowskip=2em,
+tabsize=4
 }
 \lstset{
   literate={ù}{{\`u}}1
