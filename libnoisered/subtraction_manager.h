@@ -164,36 +164,92 @@ class SubtractionManager
 		void readParametersFromFile();
 
 
+		/**
+		 * @brief getSubtractionImplementation
+		 * @return Used subtraction algorithm.
+		 */
 		std::shared_ptr<Subtraction> getSubtractionImplementation() const;
+		/**
+		 * @brief setSubtractionImplementation
+		 * @param value Subtraction to use.
+		 */
 		void setSubtractionImplementation(std::shared_ptr<Subtraction> value);
 
+		/**
+		 * @brief getFrameIncrement
+		 *
+		 * If OLA is enabled, it will only return the "effective" sample number, not including the samples to zero.
+		 *
+		 * @return Number of samples in each frame.
+		 */
 		unsigned int getFrameIncrement();
 
+		/**
+		 * @brief getEstimationImplementation
+		 * @return Used estimation algorithm.
+		 */
 		std::shared_ptr<Estimation> getEstimationImplementation() const;
+
+		/**
+		 * @brief setEstimationImplementation
+		 * @param value Estimation to use.
+		 */
 		void setEstimationImplementation(std::shared_ptr<Estimation> value);
 
+		/**
+		 * @brief bypass
+		 * @return true if the processing is bypassed, false if not.
+		 */
 		bool bypass();
 
 
+		/**
+		 * @brief enableOLA Enables overlap-add.
+		 */
 		void enableOLA();
+		/**
+		 * @brief disableOLA Disables overlap-add.
+		 */
 		void disableOLA();
+		/**
+		 * @brief setOLA To set overlap-add with a boolean.
+		 * @param val True to enable, false to disable.
+		 */
 		void setOLA(bool val);
+		/**
+		 * @brief OLAenabled
+		 * @return true if overlap-add is enabled.
+		 */
+		bool OLAenabled() const;
 
+		/**
+		 * @brief execute Runs the algorithm.
+		 */
 		void execute();
 
 	private:
 
-		bool OLAenabled() const;
+
 		DataSource dataSource() const;
 
+		/**
+		 * @brief forwardFFT
+		 *
+		 * From time domain to spectral domain.
+		 */
 		void forwardFFT();
+
+		/**
+		 * @brief backwardFFT Performs a backward FFT
+		 *
+		 * From spectral domain to time domain.
+		 */
 		void backwardFFT();
 
 		fftw_complex *spectrum();
+
 		/**
 		 * @brief Deletes most of the arrays.
-		 *
-		 * Used when essential parameters like FS or fft size change.
 		 *
 		 */
 		void clean();
@@ -207,7 +263,18 @@ class SubtractionManager
 
 
 		//*** Data copying algorithms ***//
+		/**
+		 * @brief copyInput High level handler for input copying.
+		 *
+		 * @param pos Sample where the copy must start.
+		 */
 		void copyInput(unsigned int pos);
+
+		/**
+		 * @brief copyOutput High level handler for output copying.
+		 *
+		 * @param pos Sample where the copy must start.
+		 */
 		void copyOutput(unsigned int pos);
 
 		/**
@@ -269,8 +336,8 @@ class SubtractionManager
 
 		fftw_complex *_spectrum = nullptr; /**< TODO */
 
-		fftw_plan plan_fw; /**< TODO */
-		fftw_plan plan_bw; /**< TODO */
+		fftw_plan plan_fw = nullptr; /**< TODO */
+		fftw_plan plan_bw = nullptr; /**< TODO */
 
 		// Algorithms
 		std::shared_ptr<Subtraction> subtraction;

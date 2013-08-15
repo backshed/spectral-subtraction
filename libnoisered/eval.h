@@ -11,7 +11,7 @@
  * for the ASPL.
  *******************************/
 
-
+//! Useful evaluation functions, like NRR and SDR.
 namespace Eval
 {
 	/**

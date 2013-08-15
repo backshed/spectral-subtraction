@@ -10,7 +10,7 @@ Estimation::Estimation(SubtractionManager &configuration):
 
 Estimation::~Estimation()
 {
-
+	delete[] noise_power;
 }
 
 bool Estimation::operator()(fftw_complex *)

@@ -2,6 +2,11 @@
 #define EL_SS_H
 #include "simple_ss.h"
 
+/**
+ * @brief The EqualLoudnessSpectralSubtraction class
+ *
+ * Performs a spectral subtraction using equal-loudness contour curves.
+ */
 class EqualLoudnessSpectralSubtraction : public SimpleSpectralSubtraction
 {
 	public:

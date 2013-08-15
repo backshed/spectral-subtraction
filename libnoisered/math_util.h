@@ -2,6 +2,8 @@
 #define MATHUTIL_H
 
 #include <fftw3.h>
+
+//! Mathematic utilities.
 namespace MathUtil
 {
 	/**

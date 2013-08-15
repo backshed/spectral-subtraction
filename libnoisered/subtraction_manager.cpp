@@ -76,6 +76,8 @@ void SubtractionManager::onFFTSizeUpdate()
 	_spectrum = fftw_alloc_complex(_spectrumSize);
 
 	// Initialize the fftw plans
+	if(plan_fw) fftw_destroy_plan(plan_fw);
+	if(plan_bw) fftw_destroy_plan(plan_bw);
 	plan_fw = fftw_plan_dft_r2c_1d(_fftSize, in, _spectrum, FFTW_ESTIMATE);
 	plan_bw = fftw_plan_dft_c2r_1d(_fftSize, _spectrum, out, FFTW_ESTIMATE);
 
@@ -106,6 +108,11 @@ void SubtractionManager::clean()
 	fftw_free(out);
 
 	fftw_free(_spectrum);
+
+	fftw_destroy_plan(plan_fw);
+	fftw_destroy_plan(plan_bw);
+
+	fftw_cleanup();
 }
 
 SubtractionManager::~SubtractionManager()
@@ -403,12 +410,15 @@ void SubtractionManager::readParametersFromFile()
 	f >> alg;
 	f.close();
 
+	enableOLA();
+
 	setIterations(iterations);
 
 	if (noise_est.find(noise_alg) != noise_est.end())
 		setEstimationImplementation(noise_est[noise_alg]);
 	else
 		std::cerr << "Invalid estimation algorithm";
+
 
 	if (algo.find(alg) != algo.end())
 	{
@@ -435,6 +445,7 @@ void SubtractionManager::readParametersFromFile()
 			}
 			case Subtraction::Algorithm::GeometricApproach:
 			{
+
 				setSubtractionImplementation(std::shared_ptr<Subtraction>(new GeometricSpectralSubtraction(*this)));
 				break;
 			}

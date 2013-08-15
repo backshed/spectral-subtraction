@@ -2,6 +2,11 @@
 #define GEOMETRIC_SS_H
 
 #include "subtraction_algorithm.h"
+/**
+ * @brief The GeometricSpectralSubtraction class
+ *
+ * Performs a spectral subtraction using the geometric algorithm.
+ */
 class GeometricSpectralSubtraction : public Subtraction
 {
 	public:

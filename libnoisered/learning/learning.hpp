@@ -11,7 +11,9 @@
 // Policies
 #define EGREEDY   2
 #define SOFTMAX   3
-
+/**
+ * @brief (currently unfinished)
+ */
 class LearningManager
 {
 	typedef std::vector<double> Vector;

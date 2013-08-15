@@ -2,12 +2,13 @@
 #define WAVELET_ESTIMATION_H
 #include "estimation_algorithm.h"
 
+
+#include "wavelets/cwt_noise_estimator.h"
 /**
  * @brief The WaveletEstimation class
  *
  * Wavelet estimation algorithm.
  */
-#include "wavelets/cwt_noise_estimator.h"
 class WaveletEstimation : public Estimation
 {
 	public:

@@ -3,6 +3,10 @@
 #include "subtraction_algorithm.h"
 
 #include "../learning/learning.hpp"
+
+/**
+ * @brief The LearningSS class (currently unfinished)
+ */
 class LearningSS : public Subtraction
 {
 	public:

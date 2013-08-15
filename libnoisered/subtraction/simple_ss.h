@@ -2,6 +2,11 @@
 #define SIMPLE_SS_H
 #include "subtraction_algorithm.h"
 
+/**
+ * @brief The SimpleSpectralSubtraction class
+ *
+ * Performs basic spectral subtraction.
+ */
 class SimpleSpectralSubtraction : public Subtraction
 {
 	public:

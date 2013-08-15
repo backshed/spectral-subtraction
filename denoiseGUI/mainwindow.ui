@@ -121,7 +121,7 @@
       <rect>
        <x>20</x>
        <y>100</y>
-       <width>81</width>
+       <width>121</width>
        <height>16</height>
       </rect>
      </property>
@@ -228,7 +228,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>Simple noise estim.</string>
+      <string>Simple.</string>
      </property>
      <property name="checked">
       <bool>true</bool>
@@ -247,7 +247,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>Martin noise estim.</string>
+      <string>Martin.</string>
      </property>
      <property name="checked">
       <bool>false</bool>
@@ -266,7 +266,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>Enable wavelets</string>
+      <string>Wavelets</string>
      </property>
     </widget>
    </widget>
@@ -465,7 +465,7 @@
      <x>0</x>
      <y>0</y>
      <width>482</width>
-     <height>21</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
