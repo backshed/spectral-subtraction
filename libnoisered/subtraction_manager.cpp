@@ -16,12 +16,7 @@
 
 SubtractionManager::SubtractionManager(int fft_Size, int sampling_Rate):
 	_fftSize(fft_Size),
-	_samplingRate(sampling_Rate),
-	_data(nullptr),
-	_origData(nullptr),
-	_tabLength(0),
-	_useOLA(false),
-	_bypass(false)
+	_samplingRate(sampling_Rate)
 {
 	onFFTSizeUpdate();
 }
@@ -66,6 +61,7 @@ void SubtractionManager::execute()
 void SubtractionManager::onFFTSizeUpdate()
 {
 	if(_bypass) return;
+
 	_spectrumSize = _fftSize / 2 + 1;
 	_ola_frame_increment = _fftSize / 2;
 	_std_frame_increment = _fftSize;
@@ -76,8 +72,6 @@ void SubtractionManager::onFFTSizeUpdate()
 	_spectrum = fftw_alloc_complex(_spectrumSize);
 
 	// Initialize the fftw plans
-	if(plan_fw) fftw_destroy_plan(plan_fw);
-	if(plan_bw) fftw_destroy_plan(plan_bw);
 	plan_fw = fftw_plan_dft_r2c_1d(_fftSize, in, _spectrum, FFTW_ESTIMATE);
 	plan_bw = fftw_plan_dft_c2r_1d(_fftSize, _spectrum, out, FFTW_ESTIMATE);
 
@@ -102,22 +96,22 @@ void SubtractionManager::copyOutput(unsigned int pos)
 		copyOutputSimple(pos);
 }
 
-void SubtractionManager::clean()
+void SubtractionManager::FFTClean()
 {
-	fftw_free(in);
-	fftw_free(out);
+	if(in) fftw_free(in);
+	if(out) fftw_free(out);
 
-	fftw_free(_spectrum);
+	if(_spectrum) fftw_free(_spectrum);
 
-	fftw_destroy_plan(plan_fw);
-	fftw_destroy_plan(plan_bw);
+	if(plan_fw) fftw_destroy_plan(plan_fw);
+	if(plan_bw) fftw_destroy_plan(plan_bw);
 
 	fftw_cleanup();
 }
 
 SubtractionManager::~SubtractionManager()
 {
-	clean();
+	FFTClean();
 
 	delete[] _data;
 	delete[] _origData;
@@ -360,7 +354,7 @@ unsigned int SubtractionManager::getSamplingRate() const
 void SubtractionManager::setSamplingRate(unsigned int value)
 {
 	_samplingRate = value;
-	clean();
+	FFTClean();
 	onFFTSizeUpdate();
 }
 
@@ -467,7 +461,7 @@ unsigned int SubtractionManager::FFTSize() const
 void SubtractionManager::setFftSize(unsigned int value)
 {
 	_fftSize = value;
-	clean();
+	FFTClean();
 	onFFTSizeUpdate();
 }
 

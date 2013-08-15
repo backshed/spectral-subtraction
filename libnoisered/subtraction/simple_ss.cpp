@@ -26,7 +26,7 @@ void SimpleSpectralSubtraction::operator()(fftw_complex *input_spectrum, double*
 		Apower = y - _alpha * noise_spectrum[i];
 		Bpower = _beta * y;
 
-		magnitude = sqrt((Apower > Bpower) ? Apower : Bpower);
+		magnitude = sqrt(std::max(Apower, Bpower));
 		phase = std::atan2(input_spectrum[i][1], input_spectrum[i][0]);
 
 		input_spectrum[i][0] = magnitude * std::cos(phase);

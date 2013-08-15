@@ -252,7 +252,7 @@ class SubtractionManager
 		 * @brief Deletes most of the arrays.
 		 *
 		 */
-		void clean();
+		void FFTClean();
 
 		/**
 		 * @brief Initializes the needed arrays when a change of FFT size is performed.
@@ -320,15 +320,15 @@ class SubtractionManager
 		unsigned int _samplingRate; /**< TODO */
 
 		// Storage
-		double *_data; /**< TODO */
-		double *_origData; /**< TODO */
-		unsigned int _tabLength; /**< TODO */
+		double *_data = nullptr; /**< TODO */
+		double *_origData = nullptr; /**< TODO */
+		unsigned int _tabLength = 0; /**< TODO */
 
-		bool _useOLA;
+		bool _useOLA = false;
 		unsigned int _ola_frame_increment; /**< TODO */
 		unsigned int _std_frame_increment; /**< TODO */
 
-		unsigned int _iterations; /**< TODO */
+		unsigned int _iterations = 1; /**< TODO */
 
 		// Arrays used for storing data
 		double *in = nullptr; /**< TODO */
@@ -344,7 +344,7 @@ class SubtractionManager
 		std::shared_ptr<Estimation>  estimation;
 
 		// For measurements
-		bool _bypass;
+		bool _bypass = false;
 };
 
 #endif // SUBTRACTIONCONFIGURATION_H

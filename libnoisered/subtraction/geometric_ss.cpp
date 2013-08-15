@@ -25,8 +25,12 @@ void GeometricSpectralSubtraction::onDataUpdate()
 
 void GeometricSpectralSubtraction::onFFTSizeUpdate()
 {
+	delete[] prev_gamma;
+	delete[] prev_halfchi;
 	prev_gamma = new double[conf.spectrumSize()];
 	prev_halfchi = new double[conf.spectrumSize()];
+
+	onDataUpdate();
 }
 
 
@@ -51,8 +55,7 @@ void GeometricSpectralSubtraction::operator ()(fftw_complex* input_spectrum, dou
 		prev_gamma[i] = gamma;
 
 		// 4) compute Chi
-		chi = geom_alpha * prev_halfchi[i] + (1.0 - geom_alpha) * pow(sqrt(gamma) - 1.0, 2.0);
-		chi = (twentysixdb > chi) ? twentysixdb : chi;
+		chi = std::max(twentysixdb, geom_alpha * prev_halfchi[i] + (1.0 - geom_alpha) * pow(sqrt(gamma) - 1.0, 2.0));
 
 		// 5) compute gain
 		h = std::min(1.0, std::sqrt(

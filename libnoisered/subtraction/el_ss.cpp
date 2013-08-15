@@ -2,8 +2,9 @@
 #include <cmath>
 #include <fstream>
 #include <clocale>
-#include <iostream>
+#include <sstream>
 #include "subtraction_manager.h"
+
 EqualLoudnessSpectralSubtraction::EqualLoudnessSpectralSubtraction(SubtractionManager &configuration):
 	SimpleSpectralSubtraction(configuration)
 {
@@ -24,7 +25,7 @@ void EqualLoudnessSpectralSubtraction::operator()(fftw_complex *input_spectrum, 
 		Apower = y - alpha * noise_spectrum[i];
 		Bpower = beta * y;
 
-		magnitude = std::sqrt((Apower > Bpower) ? Apower : Bpower);
+		magnitude = std::sqrt(std::max(Apower, Bpower));
 		phase = std::atan2(input_spectrum[i][1], input_spectrum[i][0]);
 
 		input_spectrum[i][0] = magnitude * std::cos(phase);
@@ -43,7 +44,6 @@ EqualLoudnessSpectralSubtraction::~EqualLoudnessSpectralSubtraction()
 }
 
 
-// TODO C++ PLIZ
 void EqualLoudnessSpectralSubtraction::loadLoudnessContour()
 {
 	// loading data for loudness contour algo
@@ -57,14 +57,16 @@ void EqualLoudnessSpectralSubtraction::loadLoudnessContour()
 	// but fftw only compute non-symmetric part, so we only have to read one half of the file.
 	// We choose to read the first half, hence it is in reverse order.
 
-	char path[30];
-	sprintf(path, "60phon/loudness_%d.data", conf.FFTSize());
+	std::stringstream path;
+	path << "60phon/loudness_" << conf.FFTSize() << ".data";
 
-	std::ifstream ldata(path);
+	//TODO Check if file exists.
+
+	std::ifstream ldata(path.str().c_str());
 
 	delete[] loudness_contour;
 	loudness_contour = new double[conf.FFTSize() / 2 + 1];
-	loudness_contour[0] = 0;
+	std::fill_n(loudness_contour, conf.FFTSize() / 2 + 1, 0);
 
 	for (auto i = 0U; i < conf.FFTSize() / 2; ++i)
 	{

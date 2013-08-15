@@ -1,6 +1,5 @@
 #include "estimation_algorithm.h"
 #include <algorithm>
-
 #include "subtraction_manager.h"
 
 Estimation::Estimation(SubtractionManager &configuration):
@@ -20,6 +19,7 @@ bool Estimation::operator()(fftw_complex *)
 
 void Estimation::onFFTSizeUpdate()
 {
+	delete[] noise_power;
 	noise_power = new double[conf.FFTSize()];
 	onDataUpdate();
 }
