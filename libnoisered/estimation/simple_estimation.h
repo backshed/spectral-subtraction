@@ -13,8 +13,10 @@ class SimpleEstimation : public Estimation
 		SimpleEstimation(SubtractionManager& configuration);
 		virtual ~SimpleEstimation();
 		virtual bool operator()(fftw_complex* input_spectrum);
-		virtual void onFFTSizeUpdate();
-		virtual void onDataUpdate();
+
+	protected:
+		virtual void specific_onDataUpdate();
+		virtual void specific_onFFTSizeUpdate();
 
 
 	private:
@@ -29,7 +31,6 @@ class SimpleEstimation : public Estimation
 		 * @return bool True if the noise power estimation changed.
 		 */
 		bool update_noise(fftw_complex *in);
-
 		double noise_rms;
 
 };

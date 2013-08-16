@@ -15,9 +15,12 @@ class WaveletEstimation : public Estimation
 		WaveletEstimation(SubtractionManager& configuration);
 		virtual ~WaveletEstimation();
 		virtual bool operator()(fftw_complex* input_spectrum);
-		virtual void onFFTSizeUpdate();
-		virtual void onDataUpdate();
+
 		virtual double *noisePower();
+
+	protected:
+		virtual void specific_onFFTSizeUpdate();
+		virtual void specific_onDataUpdate();
 
 	private:
 		double cwt_amin = 0;
@@ -26,11 +29,9 @@ class WaveletEstimation : public Estimation
 
 		CWTNoiseEstimator cwt_noise_estimator; /**< TODO */
 
-
 		double *noise_power_reest = nullptr; /**< TODO */
 
-
-		fftw_plan plan_bw_temp; /**< TODO */
+		fftw_plan plan_bw_temp = nullptr; /**< TODO */
 		fftw_complex *tmp_spectrum = nullptr; /**< TODO */
 		double *tmp_out = nullptr; /**< TODO */
 

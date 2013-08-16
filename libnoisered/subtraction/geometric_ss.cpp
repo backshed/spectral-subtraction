@@ -7,7 +7,6 @@
 GeometricSpectralSubtraction::GeometricSpectralSubtraction(SubtractionManager &configuration):
 	Subtraction(configuration)
 {
-	algorithm = Algorithm::GeometricApproach;
 }
 
 GeometricSpectralSubtraction::~GeometricSpectralSubtraction()
@@ -40,7 +39,7 @@ void GeometricSpectralSubtraction::operator ()(fftw_complex* input_spectrum, dou
 	static const double twentysixdb = pow(10., -26. / 20.);
 	static const double thirteendb = pow(10., -20. / 20.);
 
-#pragma omp parallel for
+	#pragma omp parallel for
 	for (auto i = 0U; i < conf.spectrumSize(); ++i)
 	{
 		double gammai, gamma, chi, h, ymag, xmag;

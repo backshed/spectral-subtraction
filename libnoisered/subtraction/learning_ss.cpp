@@ -9,7 +9,6 @@ LearningSS::LearningSS(SubtractionManager& configuration):
 	Subtraction(configuration),
 	learning(4, std::vector<int>(2)) // Taille du vecteur : nb de paramètres ? échelle de paramètres ? alpha : 1 -> 50, beta : 0.01 -> 0.9
 {
-	algorithm = Algorithm::Standard;
 	learning.reset();
 }
 

@@ -12,21 +12,21 @@ Estimation::~Estimation()
 	delete[] noise_power;
 }
 
-bool Estimation::operator()(fftw_complex *)
-{
-	return true;
-}
 
 void Estimation::onFFTSizeUpdate()
 {
 	delete[] noise_power;
 	noise_power = new double[conf.FFTSize()];
 	onDataUpdate();
+
+	specific_onFFTSizeUpdate();
 }
 
 void Estimation::onDataUpdate()
 {
 	std::fill_n(noise_power, conf.FFTSize(), 0);
+
+	specific_onDataUpdate();
 }
 
 double *Estimation::noisePower()

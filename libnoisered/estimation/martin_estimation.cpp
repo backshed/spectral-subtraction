@@ -9,83 +9,31 @@
 
 #include "subtraction_manager.h"
 using namespace std;
-void MartinEstimation::mh_values(double d, double *m, double *h)
-{
-	static double dmh[3][18] =
-	{
-		{1, 2, 5, 8, 10, 15, 20, 30, 40, 60, 80, 120, 140, 160, 180, 220, 260, 300},
-		{0, .26, .48, .58, .61, .668, .705, .762, .8, .841, .865, .89, .9, .91, .92, .93, .935, .94},
-		{0, 0.15, 0.48, 0.78, 0.98, 1.55, 2, 2.3, 2.52, 3.1, 3.38, 4.15, 4.35, 4.25, 3.9, 4.1, 4.7, 5}
-	};
-	int ichosen = -1, jchosen = -1;
-	for (auto i = 0U; i < 18; ++i)
-	{
-		if (dmh[0][i] >= d)
-		{
-			ichosen = i;
-			jchosen = i - 1;
-			break;
-		}
-	}
-	if (ichosen == -1)
-	{
-		ichosen = 17;
-		jchosen = 17;
-	}
 
-	if (d == dmh[0][ichosen])
-	{
-		*m = dmh[1][ichosen];
-		*h = dmh[2][ichosen];
-	}
-	else
-	{
-		double qj = std::sqrt(dmh[0][jchosen]);
-		double qi = std::sqrt(dmh[0][ichosen]);
-		double q  = std::sqrt(d);
-		*h = dmh[2][ichosen] + (q - qi) * (dmh[2][jchosen] - dmh[2][ichosen]) / (qj - qi);
-		*m = dmh[1][ichosen] + (qi * qj / q - qj) * (dmh[1][jchosen] - dmh[1][ichosen]) / (qi - qj);
-	}
-}
-
-
-MartinEstimation::MartinEstimation(SubtractionManager& configuration):
-	Estimation(configuration)
-{
-	algorithm = Algorithm::Martin;
-
-}
-
-MartinEstimation::~MartinEstimation()
-{
-
-}
-
-
-
-void martinEstimation(fftw_complex *spectrum, int nrf, double *x, double tinc, bool reinit)
+// Note to future self : ban the static keyword in the 9th circle of hell
+void martinEstimation(fftw_complex *spectrum, int nrf, double *x, double tinc, bool reinit, bool lastcall)
 {
 	static int subwc;
 	static int segment_number;
-	static double *yft = 0;
-	static double *p = 0;
-	static double *sn2 = 0;
-	static double *pb = 0;
-	static double *pminu = 0;
-	static double *pb2 = 0;
-	static double *actmin = 0;
-	static double *actminsub = 0;
+	static double *yft = nullptr;
+	static double *p = nullptr;
+	static double *sn2 = nullptr;
+	static double *pb = nullptr;
+	static double *pminu = nullptr;
+	static double *pb2 = nullptr;
+	static double *actmin = nullptr;
+	static double *actminsub = nullptr;
 
-	static double *ah = 0;
-	static double *b = 0;
-	static double *qeqi = 0;
-	static double *bmind = 0;
-	static double *bminv = 0;
-	static double *lmin = 0;
-	static double *qisq = 0;
-	static bool *kmod = 0;
-	static bool *lminflag = 0;
-	static double **actbuf = 0;
+	static double *ah = nullptr;
+	static double *b = nullptr;
+	static double *qeqi = nullptr;
+	static double *bmind = nullptr;
+	static double *bminv = nullptr;
+	static double *lmin = nullptr;
+	static double *qisq = nullptr;
+	static bool *kmod = nullptr;
+	static bool *lminflag = nullptr;
+	static double **actbuf = nullptr;
 
 	static MartinNoiseParams qq;
 
@@ -104,6 +52,38 @@ void martinEstimation(fftw_complex *spectrum, int nrf, double *x, double tinc, b
 	static double qeqimin;
 	static double nsms[4];
 
+	if(lastcall)
+	{
+		delete[] ah;
+		delete[] b;
+		delete[] qeqi;
+		delete[] bmind;
+		delete[] bminv;
+		delete[] lmin;
+		delete[] qisq;
+		delete[] kmod;
+
+		delete[] yft;
+		delete[] p;
+		delete[] sn2;
+		delete[] pb;
+		delete[] pminu;
+		delete[] pb2;
+		delete[] lminflag;
+		delete[] actmin;
+		delete[] actminsub;
+
+		if (actbuf)
+		{
+			for (int i = 0; i < nu; ++i)
+			{
+				delete[] actbuf[i];
+			}
+			delete[] actbuf;
+		}
+
+		return;
+	}
 
 	// Initialisation
 	if (reinit)
@@ -158,49 +138,49 @@ void martinEstimation(fftw_complex *spectrum, int nrf, double *x, double tinc, b
 		qeqimax = 1. / qq.qeqmin;  // maximum value of Qeq inverse (23)
 		qeqimin = 1. / qq.qeqmax; // minumum value of Qeq per frame inverse
 
-		if (ah) delete ah;
+		if (ah) delete[] ah;
 		ah = new double[nrf];
-		if (b) delete b;
+		if (b) delete[] b;
 		b = new double[nrf];
-		if (qeqi) delete qeqi;
+		if (qeqi) delete[] qeqi;
 		qeqi = new double[nrf];
-		if (bmind) delete bmind;
+		if (bmind) delete[] bmind;
 		bmind = new double[nrf];
-		if (bminv) delete bminv;
+		if (bminv) delete[] bminv;
 		bminv = new double[nrf];
-		if (lmin) delete lmin;
+		if (lmin) delete[] lmin;
 		lmin = new double[nrf];
-		if (qisq) delete qisq;
+		if (qisq) delete[] qisq;
 		qisq = new double[nrf];
-		if (kmod) delete kmod;
+		if (kmod) delete[] kmod;
 		kmod = new bool[nrf];
 
-		if (yft) delete yft;
+		if (yft) delete[] yft;
 		yft = new double[nrf];
-		if (p) delete p;
+		if (p) delete[] p;
 		p = new double[nrf];
-		if (sn2) delete sn2;
+		if (sn2) delete[] sn2;
 		sn2 = new double[nrf];
-		if (pb) delete pb;
+		if (pb) delete[] pb;
 		pb = new double[nrf];
-		if (pminu) delete pminu;
+		if (pminu) delete[] pminu;
 		pminu = new double[nrf];
-		if (pb2) delete pb2;
+		if (pb2) delete[] pb2;
 		pb2 = new double[nrf];
-		if (lminflag) delete lminflag;
+		if (lminflag) delete[] lminflag;
 		lminflag = new bool[nrf];
-		if (actmin) delete actmin;
+		if (actmin) delete[] actmin;
 		actmin = new double[nrf];
-		if (actminsub) delete actminsub;
+		if (actminsub) delete[] actminsub;
 		actminsub = new double[nrf];
 
 		if (actbuf)
 		{
 			for (int i = 0; i < nu; ++i)
 			{
-				delete actbuf[i];
+				delete[] actbuf[i];
 			}
-			delete actbuf;
+			delete[] actbuf;
 		}
 		actbuf = new double*[nu];
 		for (int i = 0; i < nu; ++i)
@@ -339,9 +319,90 @@ void martinEstimation(fftw_complex *spectrum, int nrf, double *x, double tinc, b
 	}
 }
 
+
+void MartinEstimation::mh_values(double d, double *m, double *h)
+{
+	static double dmh[3][18] =
+	{
+		{1, 2, 5, 8, 10, 15, 20, 30, 40, 60, 80, 120, 140, 160, 180, 220, 260, 300},
+		{0, .26, .48, .58, .61, .668, .705, .762, .8, .841, .865, .89, .9, .91, .92, .93, .935, .94},
+		{0, 0.15, 0.48, 0.78, 0.98, 1.55, 2, 2.3, 2.52, 3.1, 3.38, 4.15, 4.35, 4.25, 3.9, 4.1, 4.7, 5}
+	};
+	int ichosen = -1, jchosen = -1;
+	for (auto i = 0U; i < 18; ++i)
+	{
+		if (dmh[0][i] >= d)
+		{
+			ichosen = i;
+			jchosen = i - 1;
+			break;
+		}
+	}
+	if (ichosen == -1)
+	{
+		ichosen = 17;
+		jchosen = 17;
+	}
+
+	if (d == dmh[0][ichosen])
+	{
+		*m = dmh[1][ichosen];
+		*h = dmh[2][ichosen];
+	}
+	else
+	{
+		double qj = std::sqrt(dmh[0][jchosen]);
+		double qi = std::sqrt(dmh[0][ichosen]);
+		double q  = std::sqrt(d);
+		*h = dmh[2][ichosen] + (q - qi) * (dmh[2][jchosen] - dmh[2][ichosen]) / (qj - qi);
+		*m = dmh[1][ichosen] + (qi * qj / q - qj) * (dmh[1][jchosen] - dmh[1][ichosen]) / (qi - qj);
+	}
+}
+
+
+MartinEstimation::MartinEstimation(SubtractionManager& configuration):
+	Estimation(configuration)
+{
+}
+
+MartinEstimation::~MartinEstimation()
+{
+	martinEstimation(nullptr, 0, nullptr, 0, false, true);
+	return;
+	delete[] ah;
+	delete[] b;
+	delete[] qeqi;
+	delete[] bmind;
+	delete[] bminv;
+	delete[] lmin;
+	delete[] qisq;
+	delete[] kmod;
+
+	delete[] yft;
+	delete[] p;
+	delete[] sn2;
+	delete[] pb;
+	delete[] pminu;
+	delete[] pb2;
+	delete[] lminflag;
+	delete[] actmin;
+	delete[] actminsub;
+
+	if (actbuf)
+	{
+		for (auto i = 0U; i < nu; ++i)
+		{
+			delete[] actbuf[i];
+		}
+		delete[] actbuf;
+	}
+}
+
+
+
 bool MartinEstimation::operator()(fftw_complex *input_spectrum)
 {
-	martinEstimation(input_spectrum,  conf.spectrumSize(), noise_power, ((double) conf.getFrameIncrement()) / ((double) conf.getSamplingRate()), reinit);
+	martinEstimation(input_spectrum,  conf.spectrumSize(), noise_power, ((double) conf.getFrameIncrement()) / ((double) conf.getSamplingRate()), reinit, false);
 	reinit = false;
 	return true;
 
@@ -478,10 +539,9 @@ bool MartinEstimation::operator()(fftw_complex *input_spectrum)
 
 
 
-void MartinEstimation::onFFTSizeUpdate()
+void MartinEstimation::specific_onFFTSizeUpdate()
 {
-	Estimation::onFFTSizeUpdate();
-
+	return;
 	delete[] ah;
 	ah = new double[conf.spectrumSize()];
 	delete[] b;
@@ -520,11 +580,12 @@ void MartinEstimation::onFFTSizeUpdate()
 }
 
 // reinit
-void MartinEstimation::onDataUpdate()
+void MartinEstimation::specific_onDataUpdate()
 {
 	reinit = true;
 	return;
-	Estimation::onDataUpdate();
+
+
 	double tinc = conf.getFrameIncrement(); //TODO : this is wrong. It's a time, not a sample number.
 	segment_number = 0;
 	ibuf = 0;

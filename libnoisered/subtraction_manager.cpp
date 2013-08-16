@@ -111,6 +111,9 @@ void SubtractionManager::FFTClean()
 
 SubtractionManager::~SubtractionManager()
 {
+	subtraction.reset();
+	estimation.reset();
+
 	FFTClean();
 
 	delete[] _data;
@@ -379,12 +382,13 @@ void SubtractionManager::readParametersFromFile()
 		std::make_pair("wavelets", std::shared_ptr<Estimation>(new WaveletEstimation(*this)))
 	};
 
-	static const std::map<std::string, Subtraction::Algorithm> algo
+	enum Algorithm { Standard, EqualLoudness, GeometricApproach, Learning, Bypass};
+	static const std::map<std::string, Algorithm> algo
 	{
-		std::make_pair("std", Subtraction::Algorithm::Standard),
-		std::make_pair("el", Subtraction::Algorithm::EqualLoudness),
-		std::make_pair("ga", Subtraction::Algorithm::GeometricApproach),
-		std::make_pair("bypass", Subtraction::Algorithm::Bypass)
+		std::make_pair("std", Algorithm::Standard),
+		std::make_pair("el", Algorithm::EqualLoudness),
+		std::make_pair("ga", Algorithm::GeometricApproach),
+		std::make_pair("bypass", Algorithm::Bypass)
 	};
 
 	std::ifstream f("subtraction.conf");
@@ -418,7 +422,7 @@ void SubtractionManager::readParametersFromFile()
 	{
 		switch(algo.at(alg))
 		{
-			case Subtraction::Algorithm::Standard:
+			case Algorithm::Standard:
 			{
 				// Check for memory leak.
 				SimpleSpectralSubtraction* subtraction = new SimpleSpectralSubtraction(*this);
@@ -427,7 +431,7 @@ void SubtractionManager::readParametersFromFile()
 				setSubtractionImplementation(std::shared_ptr<Subtraction>(subtraction));
 				break;
 			}
-			case Subtraction::Algorithm::EqualLoudness:
+			case Algorithm::EqualLoudness:
 			{
 				EqualLoudnessSpectralSubtraction* zubtraction = new EqualLoudnessSpectralSubtraction(*this);
 				zubtraction->setAlpha(alpha);
@@ -437,9 +441,8 @@ void SubtractionManager::readParametersFromFile()
 				setSubtractionImplementation(std::shared_ptr<Subtraction>(zubtraction));
 				break;
 			}
-			case Subtraction::Algorithm::GeometricApproach:
+			case Algorithm::GeometricApproach:
 			{
-
 				setSubtractionImplementation(std::shared_ptr<Subtraction>(new GeometricSpectralSubtraction(*this)));
 				break;
 			}

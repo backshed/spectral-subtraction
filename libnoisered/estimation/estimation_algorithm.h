@@ -12,17 +12,6 @@ class SubtractionManager;
 class Estimation
 {
 	public:
-		/**
-		 * @brief Algorithm used to estimate noise.
-		 *
-		 */
-		enum class Algorithm { Simple, Wavelets, Martin, Bypass };
-		/**
-		 * @brief algorithm Algorithm used to perform noise estimation. Must be set in subclass constructor.
-		 */
-		Algorithm algorithm = Algorithm::Bypass; /**< TODO */
-
-
 		Estimation(SubtractionManager& configuration);
 		virtual ~Estimation();
 		/**
@@ -30,7 +19,7 @@ class Estimation
 		 * @param input_spectrum Input from which the algorithm estimates
 		 * @return True if a reestimation was performed
 		 */
-		virtual bool operator()(fftw_complex* input_spectrum);
+		virtual bool operator()(fftw_complex* input_spectrum) = 0;
 		/**
 		 * @brief onFFTSizeUpdate Actions to perform if the FFT size changes.
 		 *
@@ -53,6 +42,9 @@ class Estimation
 		virtual double* noisePower();
 
 	protected:
+		virtual void specific_onFFTSizeUpdate() = 0;
+		virtual void specific_onDataUpdate() = 0;
+
 		SubtractionManager& conf;
 		double* noise_power = nullptr;
 };

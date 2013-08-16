@@ -7,7 +7,6 @@
 SimpleSpectralSubtraction::SimpleSpectralSubtraction(SubtractionManager& configuration):
 	Subtraction(configuration)
 {
-	algorithm = Algorithm::Standard;
 }
 
 SimpleSpectralSubtraction::~SimpleSpectralSubtraction()

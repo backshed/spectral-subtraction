@@ -7,7 +7,6 @@
 SimpleEstimation::SimpleEstimation(SubtractionManager &configuration):
 	Estimation(configuration)
 {
-	algorithm = Algorithm::Simple;
 }
 
 SimpleEstimation::~SimpleEstimation()
@@ -25,20 +24,16 @@ bool SimpleEstimation::operator()(fftw_complex *input_spectrum)
 	return false;
 }
 
-void SimpleEstimation::onFFTSizeUpdate()
+void SimpleEstimation::specific_onDataUpdate()
 {
-	Estimation::onFFTSizeUpdate();
-}
-
-// reinit
-void SimpleEstimation::onDataUpdate()
-{
-	Estimation::onDataUpdate();
 	noise_rms = 100000;
 }
 
+void SimpleEstimation::specific_onFFTSizeUpdate()
+{
 
-// Function to check whether there is noise in the signal
+}
+
 bool SimpleEstimation::update_noise(fftw_complex *in)
 {
 	// We estimate the RMS power and compare it to previous noise power

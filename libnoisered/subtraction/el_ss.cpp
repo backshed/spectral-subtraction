@@ -8,7 +8,6 @@
 EqualLoudnessSpectralSubtraction::EqualLoudnessSpectralSubtraction(SubtractionManager &configuration):
 	SimpleSpectralSubtraction(configuration)
 {
-	algorithm = Algorithm::EqualLoudness;
 }
 
 

@@ -104,11 +104,16 @@ The \texttt{Estimation} and \texttt{Subtraction} objects are functors. I choose 
 \label{diag_api_chords}
 \end{center}
 \end{figure} 
-\newpage
+
+The \texttt{Subtraction} class is little more than an interface, with only the constructors and destructors not being pure virtual. However, the \texttt{Estimation} class needs to keep track of the current noise estimation (in the form of an array of \texttt{doubles}). For this, I choose to use the \textbf{Template} design pattern:
+
+Calling \texttt{Estimation::onFFTSizeUpdate()} or \texttt{Estimation::onDataUpdate()} will perform some actions needed for the noise estimation array, like resizing it, and make a subsequent call to \texttt{Estimation::specific\_onFFTSizeUpdate()} or \texttt{Estimation::specific\_onDataUpdate()}, which are left pure virtual in the base class. It is up to the real algorithms to implement them.
+
+\paragraph{Core algorithm}
 Finally, a very important algorithm is \texttt{SubtractionManager::execute()} because it is the one that gets called when the data and parameters are ready.
 
-The code is very short : 
-\begin{lstlisting}[caption=SubtractionManager::execute() in subtraction\_manager.cpp]
+Thanks to the care taken in the design, the code is very short and extremely generic: 
+\begin{lstlisting}[caption=\texttt{SubtractionManager::execute()} in subtraction\_manager.cpp]
 for (auto iter = 0U; iter < iterations(); ++iter)
 {
 	for (auto sample_n = 0U; sample_n < getLength(); sample_n += getFrameIncrement())

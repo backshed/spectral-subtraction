@@ -13,17 +13,6 @@ class SubtractionManager;
 class Subtraction
 {
 	public:
-		/**
-		 * @brief Algorithm used to perform subtraction.
-		 */
-		enum class Algorithm { Standard, EqualLoudness, GeometricApproach, Learning, Bypass};
-		/**
-		 * @brief algorithm Algorithm used to perform subtraction. Must be set in subclass constructor.
-		 *
-		 * TODO : perhaps change to a magic number ?
-		 */
-		Algorithm algorithm = Algorithm::Bypass; /**< TODO */
-
 
 		Subtraction(SubtractionManager& configuration);
 		virtual ~Subtraction();
@@ -32,21 +21,21 @@ class Subtraction
 		 * @param input_spectrum Input spectrum to subtract
 		 * @param noise_spectrum Estimated noise spectrum for this frame.
 		 */
-		virtual void operator()(fftw_complex* input_spectrum, double* noise_spectrum);
+		virtual void operator()(fftw_complex* input_spectrum, double* noise_spectrum) = 0;
 
 		/**
 		 * @brief onFFTSizeUpdate Actions to perform if the FFT size changes.
 		 *
 		 * Most of the buffers will have to change.
 		 */
-		virtual void onFFTSizeUpdate();
+		virtual void onFFTSizeUpdate() = 0;
 
 		/**
 		 * @brief onDataUpdate Actions to perform if the data changes a lot.
 		 *
 		 * For instance, discard previous data saved by the algorithms which would not have sense anymore.
 		 */
-		virtual void onDataUpdate();
+		virtual void onDataUpdate() = 0;
 
 	protected:
 		SubtractionManager& conf;

@@ -12,7 +12,7 @@ namespace Eval
 			ret += tab[i] * tab[i];
 		}
 		return ret;
-		// Doesn't work because iterator is forwarded two times
+		// Doesn't work because iterator is forwarded two times?
 		//	return std::inner_product(tab, tab+length, tab, 0);
 	}
 
