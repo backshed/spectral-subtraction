@@ -105,7 +105,7 @@ The \texttt{Estimation} and \texttt{Subtraction} objects are functors. I choose 
 \end{center}
 \end{figure} 
 
-The \texttt{Subtraction} class is little more than an interface, with only the constructors and destructors not being pure virtual. However, the \texttt{Estimation} class needs to keep track of the current noise estimation (in the form of an array of \texttt{doubles}). For this, I choose to use the \textbf{Template} design pattern:
+The \texttt{Subtraction} class is little more than an interface, with only the constructors and destructors not being pure virtual. However, the \texttt{Estimation} class needs to keep track of the current noise estimation (in the form of an array of \texttt{doubles}). For this, I choose to use the \textbf{Template method pattern}:
 
 Calling \texttt{Estimation::onFFTSizeUpdate()} or \texttt{Estimation::onDataUpdate()} will perform some actions needed for the noise estimation array, like resizing it, and make a subsequent call to \texttt{Estimation::specific\_onFFTSizeUpdate()} or \texttt{Estimation::specific\_onDataUpdate()}, which are left pure virtual in the base class. It is up to the real algorithms to implement them.
 
