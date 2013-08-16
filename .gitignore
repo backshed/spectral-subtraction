@@ -37,3 +37,14 @@ Makefile
 *.pdb
 *.manifest
 TemporaryGeneratedFile_*
+
+# LaTeX stuff
+*.synctex.gz
+build-*
+*.toc
+*.aux
+*.bbl
+*.blg
+*.glo
+*.ist
+*.out
