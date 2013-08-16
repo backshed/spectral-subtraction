@@ -9,8 +9,8 @@ lred:
 	$(MAKE) -C build/libnoisered/release/
 
 juliusinit:
-	wget $(JULIUS_URL)
-	tar -zxvf $(JULIUS_NAME).tar.gz
+	wget -nv $(JULIUS_URL) -O $(JULIUS_NAME).tar.gz
+	tar -zxf $(JULIUS_NAME).tar.gz
 	(export CC="gcc-4.8" && export CFLAGS="-O3 -march=native" && cd $(JULIUS_NAME) && ./configure)
 
 
