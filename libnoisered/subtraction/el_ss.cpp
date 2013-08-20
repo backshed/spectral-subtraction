@@ -2,8 +2,6 @@
 #include <cmath>
 #include <fstream>
 #include <clocale>
-#include <map>
-#include <sstream>
 #include "mathutils/math_util.h"
 #include "mathutils/spline.hpp"
 #include "subtraction_manager.h"
@@ -67,6 +65,7 @@ void EqualLoudnessSpectralSubtraction::loadLoudnessContour()
 	loudness_contour = new double[conf.spectrumSize()];
 
 	const double freq_bin_span = double(conf.getSamplingRate()) / conf.FFTSize();
+
 	for(auto i = 0U; i < conf.spectrumSize(); ++i)
 	{
 		loudness_contour[i] = spline(i * freq_bin_span);

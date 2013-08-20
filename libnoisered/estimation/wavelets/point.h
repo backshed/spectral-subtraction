@@ -1,5 +1,4 @@
-#ifndef POINT_H
-#define POINT_H
+#pragma once
 
 #include "pair.h"
 /**
@@ -42,4 +41,4 @@ struct Point : public Pair
 
 };
 
-#endif // POINT_H
+#pragma once

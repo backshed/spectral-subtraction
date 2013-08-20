@@ -1,6 +1,5 @@
 #include "simple_ss.h"
 #include <cmath>
-#include <algorithm>
 #include "mathutils/math_util.h"
 #include "subtraction_manager.h"
 
@@ -27,7 +26,7 @@ void SimpleSpectralSubtraction::operator()(fftw_complex *input_spectrum, double*
 		Apower = power - _alpha * noise_spectrum[i];
 		Bpower = _beta * power;
 
-		magnitude = sqrt(std::max(Apower, Bpower));
+		magnitude = std::sqrt(std::max(Apower, Bpower));
 
 		input_spectrum[i][0] = magnitude * std::cos(phase);
 		input_spectrum[i][1] = magnitude * std::sin(phase);

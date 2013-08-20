@@ -3,9 +3,12 @@ CONFIG += console c++11
 CONFIG -= app_bundle
 CONFIG -= qt
 
+DESTDIR = $$PWD/../output
+
 SOURCES += main.cpp
-QMAKE_CXXFLAGS_RELEASE += -std=c++11 -fopenmp -O3 -march=native -D_GLIBCXX_PARALLEL
-QMAKE_LFLAGS_RELEASE += -fopenmp
+QMAKE_CXXFLAGS += -std=c++11 -fopenmp -D_GLIBCXX_PARALLEL
+QMAKE_CXXFLAGS_RELEASE += -O3 -march=native
+QMAKE_LFLAGS += -fopenmp
 
 
 unix:!macx: LIBS += -L$$PWD/../output/ -lnoisered

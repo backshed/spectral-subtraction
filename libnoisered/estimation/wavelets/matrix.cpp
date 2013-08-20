@@ -1,5 +1,4 @@
 #include "matrix.h"
-#include <algorithm>
 
 Matrix::Matrix(size_type cols, size_type rows):
 	std::vector<std::vector<double>>(cols, std::vector<double>(rows)),

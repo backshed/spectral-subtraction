@@ -1,5 +1,5 @@
-#ifndef PAIR_H
-#define PAIR_H
+#pragma once
+
 // x for upper, y for lower
 /**
  * @brief Represents a pair of ints.
@@ -24,4 +24,4 @@ struct Pair
 	void display();
 };
 
-#endif // PAIR_H
+#pragma once

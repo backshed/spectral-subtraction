@@ -1,7 +1,4 @@
-#ifndef AREA_H
-#define AREA_H
-
-
+#pragma once
 #include "matrix.h"
 
 /**
@@ -124,4 +121,3 @@ class Area
 
 		unsigned int medianHeight = 0; /**< TODO */
 };
-#endif // AREA_H

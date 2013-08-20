@@ -1,10 +1,9 @@
 #include "wavelet_estimation.h"
 #include "simple_estimation.h"
 #include "../subtraction/subtraction_algorithm.h"
-#include <algorithm>
-
-#include <iostream>
 #include "subtraction_manager.h"
+
+#include <algorithm>
 
 WaveletEstimation::WaveletEstimation(SubtractionManager &configuration):
 	Estimation(configuration)

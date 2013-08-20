@@ -1,6 +1,4 @@
-#ifndef MATRIX_H
-#define MATRIX_H
-
+#pragma once
 #include <vector>
 #include "point.h"
 
@@ -127,6 +125,3 @@ class Matrix : public std::vector<std::vector<double>>
 
 		std::vector<std::vector<double>> _mask; /**< TODO */
 };
-
-
-#endif // MATRIX_H

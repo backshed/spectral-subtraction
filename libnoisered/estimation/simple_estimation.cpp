@@ -1,9 +1,9 @@
+#include <cmath>
+#include <functional>
+
+#include "subtraction_manager.h"
 #include "simple_estimation.h"
 #include "mathutils/math_util.h"
-
-#include <cmath>
-#include <algorithm>
-#include "subtraction_manager.h"
 
 SimpleEstimation::SimpleEstimation(SubtractionManager &configuration):
 	Estimation(configuration)

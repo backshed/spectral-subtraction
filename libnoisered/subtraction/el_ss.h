@@ -55,7 +55,7 @@ class EqualLoudnessSpectralSubtraction : public SimpleSpectralSubtraction
 
 	private:
 		/**
-		 * @brief Loads corresponding loudness contour data, for EL-SS.
+		 * @brief Loads loudness contour data and interpolates it.
 		 *
 		 * @param config Configuration.
 		 */

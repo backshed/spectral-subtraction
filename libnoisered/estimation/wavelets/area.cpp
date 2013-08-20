@@ -70,7 +70,6 @@ void Area::plotContour(Matrix &m, unsigned int i, unsigned int j)
 				pairList[i - x0].y = j;
 			}
 		}
-		;
 	};
 
 	for (auto k = 0U; k < 2U; ++k)

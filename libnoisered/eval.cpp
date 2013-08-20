@@ -1,6 +1,6 @@
 #include <cmath>
-#include <numeric>
-#include <algorithm>
+#include <functional>
+
 #include "mathutils/math_util.h"
 
 namespace Eval

@@ -1,6 +1,4 @@
-#ifndef CWT_NOISE_ESTIMATOR_H
-#define CWT_NOISE_ESTIMATOR_H
-
+#pragma once
 #include <vector>
 #include <functional>
 #include <cwtlib>
@@ -163,4 +161,3 @@ class CWTNoiseEstimator
 		unsigned int getFFTBin(int pixel);
 };
 
-#endif // CWT_NOISE_ESTIMATOR_H

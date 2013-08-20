@@ -163,14 +163,12 @@ unsigned int SubtractionManager::readFile(char *str)
 	_origData = new double[_tabLength];
 	_data = new double[_tabLength];
 
-	// We have to get signal between -1 and 1
-	static const double normalizationFactor = pow(2.0, sizeof(short) * 8 - 1.0);
-
 	unsigned int pos = 0;
 	short sample;
-	while (ifile.read((char *)&sample, sizeof(short)) && pos < _tabLength)
+
+	while (ifile.read((char *)&sample, sizeof(short)))
 	{
-		_origData[pos++] = sample / normalizationFactor;
+		_origData[pos++] = MathUtil::ShortToDouble(sample);
 	}
 
 	ifile.close();
@@ -425,12 +423,12 @@ void SubtractionManager::readParametersFromFile()
 			}
 			case Algorithm::EqualLoudness:
 			{
-				EqualLoudnessSpectralSubtraction* zubtraction = new EqualLoudnessSpectralSubtraction(*this);
-				zubtraction->setAlpha(alpha);
-				zubtraction->setBeta(beta);
-				zubtraction->setAlphawt(alphawt);
-				zubtraction->setBetawt(betawt);
-				setSubtractionImplementation(std::shared_ptr<Subtraction>(zubtraction));
+				EqualLoudnessSpectralSubtraction* subtraction = new EqualLoudnessSpectralSubtraction(*this);
+				subtraction->setAlpha(alpha);
+				subtraction->setBeta(beta);
+				subtraction->setAlphawt(alphawt);
+				subtraction->setBetawt(betawt);
+				setSubtractionImplementation(std::shared_ptr<Subtraction>(subtraction));
 				break;
 			}
 			case Algorithm::GeometricApproach:
