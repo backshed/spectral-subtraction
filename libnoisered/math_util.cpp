@@ -4,26 +4,36 @@
 
 namespace MathUtil
 {
-	static auto ToPower = [&] (fftw_complex val)
+	double CplxToPower(fftw_complex val)
 	{
-		return std::pow(val[0], 2) + std::pow(val[1], 2);
-	};
-	static auto ToPhase = [&] (fftw_complex val)
-	{
-		return std::atan2(val[1], val[0]);
-	};
-
-	// This functions computes the power and the phase vector of the in argument.
-	void compute_power_and_phase(fftw_complex *in, double *powoutput, double *phaseoutput, unsigned int size)
-	{
-		std::transform(in, in + size, powoutput, ToPower);
-		std::transform(in, in + size, phaseoutput, ToPhase);
+		return std::pow(val[0], 2.0) + std::pow(val[1], 2.0);
 	}
 
-	// This functions computes the power of a given spectrum.
-	void compute_power(fftw_complex *in, double *powoutput, unsigned int size)
+	double CplxToPhase(fftw_complex val)
 	{
-		std::transform(in, in + size, powoutput, ToPower);
+		return std::atan2(val[1], val[0]);
+	}
+
+
+	double energy(double *tab, unsigned int length)
+	{
+		return mapReduce_n(tab, length, 0.0, [] (double x) { return std::pow(x, 2);}, std::plus<double>());
+	}
+
+	double abssum(double *tab, unsigned int length)
+	{
+		return mapReduce_n(tab, length, 0.0, [] (double x) { return std::abs(x); },  std::plus<double>());
+	}
+
+	void computePowerAndPhaseSpectrum(fftw_complex *in, double *powoutput, double *phaseoutput, unsigned int size)
+	{
+		std::transform(in, in + size, powoutput, CplxToPower);
+		std::transform(in, in + size, phaseoutput, CplxToPhase);
+	}
+
+	void computePowerSpectrum(fftw_complex *in, double *powoutput, unsigned int size)
+	{
+		std::transform(in, in + size, powoutput, CplxToPower);
 	}
 
 	double ShortToDouble(short x)
@@ -37,5 +47,4 @@ namespace MathUtil
 		const double denormalizationFactor = pow(2.0, sizeof(short) * 8 - 1.0);
 		return x * denormalizationFactor;
 	}
-
 }

@@ -2,6 +2,7 @@
 #include "../math_util.h"
 
 #include <cmath>
+#include <algorithm>
 #include "subtraction_manager.h"
 
 SimpleEstimation::SimpleEstimation(SubtractionManager &configuration):
@@ -16,9 +17,9 @@ SimpleEstimation::~SimpleEstimation()
 
 bool SimpleEstimation::operator()(fftw_complex *input_spectrum)
 {
-	if (update_noise(input_spectrum))
+	if (updateNoise(input_spectrum))
 	{
-		MathUtil::compute_power(input_spectrum, noise_power, conf.spectrumSize());
+		MathUtil::computePowerSpectrum(input_spectrum, noise_power, conf.spectrumSize());
 		return true;
 	}
 	return false;
@@ -34,18 +35,14 @@ void SimpleEstimation::specific_onFFTSizeUpdate()
 
 }
 
-bool SimpleEstimation::update_noise(fftw_complex *in)
+bool SimpleEstimation::updateNoise(fftw_complex *in)
 {
 	// We estimate the RMS power and compare it to previous noise power
-	double current_rms = 0;
-	for (auto i = 0U; i < conf.spectrumSize(); ++i)
-		current_rms += std::pow(in[i][0], 2) + std::pow(in[i][1], 2); // std::transform ?
-
-	current_rms = std::sqrt(current_rms / conf.spectrumSize());
+	double current_rms = std::sqrt(MathUtil::mapReduce_n(in, conf.spectrumSize(), 0.0, MathUtil::CplxToPower, std::plus<double>()) / conf.spectrumSize());
 
 	//if we find more or less the same power, it might be noise
-	if (current_rms <  noise_rms
-			|| (current_rms >= noise_rms && current_rms <= noise_rms * 1.02))
+	if (current_rms <  noise_rms ||
+	   (current_rms >= noise_rms && current_rms <= noise_rms * 1.02))
 	{
 		noise_rms = current_rms;
 		return true;

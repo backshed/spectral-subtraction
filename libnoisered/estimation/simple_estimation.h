@@ -30,7 +30,7 @@ class SimpleEstimation : public Estimation
 		 * @param old_rms Previous RMS value.
 		 * @return bool True if the noise power estimation changed.
 		 */
-		bool update_noise(fftw_complex *in);
+		bool updateNoise(fftw_complex *in);
 		double noise_rms;
 
 };

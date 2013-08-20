@@ -192,7 +192,7 @@ void martinEstimation(fftw_complex *spectrum, int nrf, double *x, double tinc, b
 			}
 		}
 
-		MathUtil::compute_power(spectrum, yft, nrf);
+		MathUtil::computePowerSpectrum(spectrum, yft, nrf);
 		for (int i = 0; i < nrf; ++i)
 		{
 			p[i] = yft[i];
@@ -207,7 +207,7 @@ void martinEstimation(fftw_complex *spectrum, int nrf, double *x, double tinc, b
 	}
 	else
 	{
-		MathUtil::compute_power(spectrum, yft, nrf);
+		MathUtil::computePowerSpectrum(spectrum, yft, nrf);
 		segment_number++;
 	}
 
@@ -407,7 +407,7 @@ bool MartinEstimation::operator()(fftw_complex *input_spectrum)
 	return true;
 
 
-	MathUtil::compute_power(input_spectrum, yft, conf.spectrumSize());
+	MathUtil::computePowerSpectrum(input_spectrum, yft, conf.spectrumSize());
 	if(segment_number == 0)
 	{
 		for (auto i = 0U; i < conf.spectrumSize(); ++i)
