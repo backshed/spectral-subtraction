@@ -1,6 +1,4 @@
-#ifndef ESTIMATION_ALGORITHM_H
-#define ESTIMATION_ALGORITHM_H
-
+#pragma once
 #include <fftw3.h>
 class SubtractionManager;
 
@@ -48,5 +46,3 @@ class Estimation
 		SubtractionManager& conf;
 		double* noise_power = nullptr;
 };
-
-#endif // ESTIMATION_ALGORITHM_H

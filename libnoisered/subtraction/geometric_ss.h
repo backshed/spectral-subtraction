@@ -1,6 +1,4 @@
-#ifndef GEOMETRIC_SS_H
-#define GEOMETRIC_SS_H
-
+#pragma once
 #include "subtraction_algorithm.h"
 /**
  * @brief The GeometricSpectralSubtraction class
@@ -28,5 +26,3 @@ class GeometricSpectralSubtraction : public Subtraction
 		double *prev_gamma = nullptr; /**< TODO */
 		double *prev_halfchi = nullptr; /**< TODO */
 };
-
-#endif // GEOMETRIC_SS_H

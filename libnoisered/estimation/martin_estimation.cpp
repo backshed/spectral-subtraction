@@ -1,6 +1,6 @@
 #include "martin_estimation.h"
 #include <cmath>
-#include "../math_util.h"
+#include "mathutils/math_util.h"
 #include <climits>
 #include <cfloat>
 #include <numeric>

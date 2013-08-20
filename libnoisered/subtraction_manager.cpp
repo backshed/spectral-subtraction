@@ -1,18 +1,10 @@
 #include "subtraction_manager.h"
 #include <algorithm>
 #include <fstream>
-#include <functional>
 #include <iostream>
 #include <map>
-#include <chrono>
-#include "math_util.h"
+#include "mathutils/math_util.h"
 
-
-//Linux only, for audio out (fifo)
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
 
 SubtractionManager::SubtractionManager(int fft_Size, int sampling_Rate):
 	_fftSize(fft_Size),

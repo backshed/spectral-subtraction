@@ -1,6 +1,4 @@
-#ifndef MATHUTIL_H
-#define MATHUTIL_H
-
+#pragma once
 #include <fftw3.h>
 
 //! Mathematic utilities.
@@ -132,5 +130,3 @@ namespace MathUtil
 	short DoubleToShort(double x);
 
 }
-
-#endif // MATHUTIL_H

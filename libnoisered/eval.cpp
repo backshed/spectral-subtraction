@@ -1,7 +1,8 @@
 #include <cmath>
 #include <numeric>
 #include <algorithm>
-#include "math_util.h"
+#include "mathutils/math_util.h"
+
 namespace Eval
 {
 	double NRR(double *original, double *reduced, unsigned int length)

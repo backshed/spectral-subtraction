@@ -1,15 +1,4 @@
-#ifndef _EVAL_H
-#define _EVAL_H
-
-/*******************************
- * This file is the header
- * for the different functions
- * used for evaluating quality
- * of noise-reduction algorithms.
- *
- * Written by Jean-Mickael Celerier
- * for the ASPL.
- *******************************/
+#pragma once
 
 //! Useful evaluation functions, like NRR and SDR.
 namespace Eval
@@ -41,4 +30,3 @@ namespace Eval
 	*/
 	double SDR(double *original, double *reduced, unsigned int length);
 }
-#endif

@@ -2,8 +2,10 @@
 #include <cmath>
 #include <fstream>
 #include <clocale>
+#include <map>
 #include <sstream>
-#include "math_util.h"
+#include "mathutils/math_util.h"
+#include "mathutils/spline.hpp"
 #include "subtraction_manager.h"
 
 EqualLoudnessSpectralSubtraction::EqualLoudnessSpectralSubtraction(SubtractionManager &configuration):
@@ -44,7 +46,6 @@ EqualLoudnessSpectralSubtraction::~EqualLoudnessSpectralSubtraction()
 	delete[] loudness_contour;
 }
 
-
 void EqualLoudnessSpectralSubtraction::loadLoudnessContour()
 {
 	// loading data for loudness contour algo
@@ -53,27 +54,23 @@ void EqualLoudnessSpectralSubtraction::loadLoudnessContour()
 	// Because on french OS linux will try to read numbers with commas instead of dots
 #endif
 
-	// NOTE : the loudnes_xxx (ex. : xxx = 512)
-	// refers to a spectrum with symmetrical coefficients
-	// but fftw only compute non-symmetric part, so we only have to read one half of the file.
-	// We choose to read the first half, hence it is in reverse order.
-
-	std::stringstream path;
-	path << "60phon/loudness_" << conf.FFTSize() << ".data";
-
-	//TODO Check if file exists.
-
-	std::ifstream ldata(path.str().c_str());
-
-	delete[] loudness_contour;
-	loudness_contour = new double[conf.FFTSize() / 2 + 1];
-	std::fill_n(loudness_contour, conf.FFTSize() / 2 + 1, 0);
-
-	for (auto i = 0U; i < conf.FFTSize() / 2; ++i)
+	std::ifstream ldata("60phon/loudness_real.data");
+	MathUtil::Spline spline;
+	double freq, val;
+	while(ldata >> freq >> val)
 	{
-		ldata >> loudness_contour[(conf.FFTSize() / 2) - i];
+		spline.addPoint(freq, val);
 	}
 	ldata.close();
+
+	delete[] loudness_contour;
+	loudness_contour = new double[conf.spectrumSize()];
+
+	const double freq_bin_span = double(conf.getSamplingRate()) / conf.FFTSize();
+	for(auto i = 0U; i < conf.spectrumSize(); ++i)
+	{
+		loudness_contour[i] = spline(i * freq_bin_span);
+	}
 }
 
 void EqualLoudnessSpectralSubtraction::onDataUpdate()

@@ -1,7 +1,6 @@
-#ifndef LEARNING_SS_H
-#define LEARNING_SS_H
-#include "subtraction_algorithm.h"
+#pragma once
 
+#include "subtraction_algorithm.h"
 #include "../learning/learning.hpp"
 
 /**
@@ -62,6 +61,3 @@ class LearningSS : public Subtraction
 		LearningManager learning;
 
 };
-
-
-#endif // LEARNING_SS_H

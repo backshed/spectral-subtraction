@@ -1,6 +1,2 @@
-#ifndef DEFINES_H
-#define DEFINES_H
-
-
+#pragma once
 #define PLOT_CWT
-#endif // DEFINES_H

@@ -1,6 +1,4 @@
-#ifndef BASE_SUBTRACTION_ALGORITHM_H
-#define BASE_SUBTRACTION_ALGORITHM_H
-
+#pragma once
 #include <fftw3.h>
 
 class SubtractionManager;
@@ -40,5 +38,3 @@ class Subtraction
 	protected:
 		SubtractionManager& conf;
 };
-
-#endif // BASE_SUBTRACTION_ALGORITHM_H

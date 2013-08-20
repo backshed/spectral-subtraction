@@ -1,5 +1,4 @@
-#ifndef SUBTRACTIONCONFIGURATION_H
-#define SUBTRACTIONCONFIGURATION_H
+#pragma once
 
 #include <fftw3.h>
 #include <memory>
@@ -346,5 +345,3 @@ class SubtractionManager
 		// For measurements
 		bool _bypass = false;
 };
-
-#endif // SUBTRACTIONCONFIGURATION_H

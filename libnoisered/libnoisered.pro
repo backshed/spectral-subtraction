@@ -30,7 +30,6 @@ UI_DIR = $${BUILDDIR}/ui
 
 
 SOURCES += \
-	math_util.cpp \
 	estimation/wavelets/point.cpp \
 	estimation/wavelets/pair.cpp \
 	estimation/wavelets/matrix.cpp \
@@ -51,11 +50,11 @@ SOURCES += \
 	estimation/martin_estimation.cpp \
 	estimation/wavelet_estimation.cpp \
 	subtraction_manager.cpp \
-    subtraction/learning_ss.cpp
+	subtraction/learning_ss.cpp \
+	mathutils/math_util.cpp
 
 
 HEADERS += \
-	math_util.h \
 	estimation/wavelets/point.h \
 	estimation/wavelets/pair.h \
 	estimation/wavelets/matrix.h \
@@ -81,6 +80,8 @@ HEADERS += \
 	estimation/wavelet_estimation.h \
 	subtraction/algorithms.h \
 	estimation/algorithms.h \
+	mathutils/spline.hpp \
 	subtraction_manager.h \
-    subtraction/learning_ss.h
+	subtraction/learning_ss.h \
+	mathutils/math_util.h
 

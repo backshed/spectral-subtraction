@@ -1,5 +1,4 @@
-#ifndef EL_SS_H
-#define EL_SS_H
+#pragma once
 #include "simple_ss.h"
 
 /**
@@ -69,5 +68,3 @@ class EqualLoudnessSpectralSubtraction : public SimpleSpectralSubtraction
 
 
 };
-
-#endif // EL_SS_H

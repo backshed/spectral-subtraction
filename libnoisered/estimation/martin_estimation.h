@@ -1,6 +1,4 @@
-#ifndef MARTIN_ESTIMATION_H
-#define MARTIN_ESTIMATION_H
-
+#pragma once
 #include "estimation_algorithm.h"
 
 struct MartinNoiseParams
@@ -93,5 +91,3 @@ class MartinEstimation: public Estimation
 		double nsms[4];
 
 };
-
-#endif // MARTIN_ESTIMATION_H

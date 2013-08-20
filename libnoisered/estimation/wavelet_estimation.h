@@ -1,5 +1,4 @@
-#ifndef WAVELET_ESTIMATION_H
-#define WAVELET_ESTIMATION_H
+#pragma once
 #include "estimation_algorithm.h"
 
 
@@ -36,5 +35,3 @@ class WaveletEstimation : public Estimation
 		double *tmp_out = nullptr; /**< TODO */
 
 };
-
-#endif // WAVELET_ESTIMATION_H

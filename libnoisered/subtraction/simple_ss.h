@@ -1,5 +1,4 @@
-#ifndef SIMPLE_SS_H
-#define SIMPLE_SS_H
+#pragma once
 #include "subtraction_algorithm.h"
 
 /**
@@ -56,5 +55,3 @@ class SimpleSpectralSubtraction : public Subtraction
 		double _beta; /**< TODO */
 
 };
-
-#endif // SIMPLE_SS_H

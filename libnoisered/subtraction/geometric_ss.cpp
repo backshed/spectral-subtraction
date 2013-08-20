@@ -1,7 +1,7 @@
 #include "geometric_ss.h"
 #include <cmath>
 #include <algorithm>
-#include <math_util.h>
+#include "mathutils/math_util.h"
 #include "subtraction_manager.h"
 
 GeometricSpectralSubtraction::GeometricSpectralSubtraction(SubtractionManager &configuration):

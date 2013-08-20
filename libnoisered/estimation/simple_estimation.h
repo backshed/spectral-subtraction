@@ -1,5 +1,4 @@
-#ifndef SIMPLE_ESTIMATION_H
-#define SIMPLE_ESTIMATION_H
+#pragma once
 #include "estimation_algorithm.h"
 
 /**
@@ -34,5 +33,3 @@ class SimpleEstimation : public Estimation
 		double noise_rms;
 
 };
-
-#endif // SIMPLE_ESTIMATION_H
