@@ -62,11 +62,11 @@ void SubtractionManager::onFFTSizeUpdate()
 	in = fftw_alloc_real(_fftSize);
 	out = fftw_alloc_real(_fftSize);
 
-	_spectrum = fftw_alloc_complex(_spectrumSize);
+	_spectrum = reinterpret_cast<std::complex<double>*>(fftw_alloc_complex(_spectrumSize));
 
 	// Initialize the fftw plans
-	plan_fw = fftw_plan_dft_r2c_1d(_fftSize, in, _spectrum, FFTW_ESTIMATE);
-	plan_bw = fftw_plan_dft_c2r_1d(_fftSize, _spectrum, out, FFTW_ESTIMATE);
+	plan_fw = fftw_plan_dft_r2c_1d(_fftSize, in, reinterpret_cast<fftw_complex*>(_spectrum), FFTW_ESTIMATE);
+	plan_bw = fftw_plan_dft_c2r_1d(_fftSize, reinterpret_cast<fftw_complex*>(_spectrum), out, FFTW_ESTIMATE);
 
 	if(estimation) estimation->onFFTSizeUpdate();
 	if(subtraction) subtraction->onFFTSizeUpdate();
@@ -297,7 +297,7 @@ void SubtractionManager::backwardFFT()
 	fftw_execute(plan_bw);
 }
 
-fftw_complex *SubtractionManager::spectrum()
+std::complex<double> *SubtractionManager::spectrum()
 {
 	return _spectrum;
 }

@@ -37,11 +37,11 @@ struct MartinNoiseParams
  */
 class MartinEstimation: public Estimation
 {
-		friend void martinEstimation(fftw_complex *spectrum, int nrf, double *x, double tinc, bool reinit, bool lastcall);
+		friend void martinEstimation(std::complex<double> *spectrum, int nrf, double *x, double tinc, bool reinit, bool lastcall);
 	public:
 		MartinEstimation(SubtractionManager& configuration);
 		virtual ~MartinEstimation();
-		virtual bool operator()(fftw_complex* input_spectrum);
+		virtual bool operator()(std::complex<double>* input_spectrum);
 
 	protected:
 		virtual void specific_onFFTSizeUpdate();

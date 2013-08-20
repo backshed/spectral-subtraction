@@ -21,7 +21,7 @@ WaveletEstimation::~WaveletEstimation()
 	fftw_destroy_plan(plan_bw_temp);
 }
 
-bool WaveletEstimation::operator()(fftw_complex *input_spectrum)
+bool WaveletEstimation::operator()(std::complex<double> *input_spectrum)
 {
 	bool reinit = true; //TODO be CAREFUL
 	static bool computeMax = false;
@@ -66,8 +66,8 @@ void WaveletEstimation::specific_onFFTSizeUpdate()
 	noise_power_reest = new double[conf.FFTSize()];
 
 	tmp_out = fftw_alloc_real(conf.FFTSize());
-	tmp_spectrum = fftw_alloc_complex(conf.spectrumSize());
-	plan_bw_temp = fftw_plan_dft_c2r_1d(conf.FFTSize(), tmp_spectrum, tmp_out, FFTW_ESTIMATE);
+	tmp_spectrum = reinterpret_cast<std::complex<double>*>(fftw_alloc_complex(conf.spectrumSize()));
+	plan_bw_temp = fftw_plan_dft_c2r_1d(conf.FFTSize(), reinterpret_cast<fftw_complex*>(tmp_spectrum), tmp_out, FFTW_ESTIMATE);
 }
 
 double *WaveletEstimation::noisePower()

@@ -1,5 +1,6 @@
 #pragma once
-#include <fftw3.h>
+#include <complex>
+
 class SubtractionManager;
 
 /**
@@ -17,7 +18,7 @@ class Estimation
 		 * @param input_spectrum Input from which the algorithm estimates
 		 * @return True if a reestimation was performed
 		 */
-		virtual bool operator()(fftw_complex* input_spectrum) = 0;
+		virtual bool operator()(std::complex<double>* input_spectrum) = 0;
 		/**
 		 * @brief Actions to perform if the FFT size changes.
 		 *

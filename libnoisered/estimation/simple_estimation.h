@@ -11,7 +11,7 @@ class SimpleEstimation : public Estimation
 	public:
 		SimpleEstimation(SubtractionManager& configuration);
 		virtual ~SimpleEstimation();
-		virtual bool operator()(fftw_complex* input_spectrum);
+		virtual bool operator()(std::complex<double>* input_spectrum);
 
 	protected:
 		virtual void specific_onDataUpdate();
@@ -29,7 +29,7 @@ class SimpleEstimation : public Estimation
 		 * @param old_rms Previous RMS value.
 		 * @return bool True if the noise power estimation changed.
 		 */
-		bool updateNoise(fftw_complex *in);
+		bool updateNoise(std::complex<double> *in);
 		double noise_rms;
 
 };

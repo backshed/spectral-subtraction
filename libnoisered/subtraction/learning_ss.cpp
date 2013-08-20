@@ -3,6 +3,7 @@
 #include "learning_ss.h"
 #include "subtraction_manager.h"
 #include "eval.h"
+#include "mathutils/math_util.h"
 
 LearningSS::LearningSS(SubtractionManager& configuration):
 	Subtraction(configuration),
@@ -16,23 +17,22 @@ LearningSS::~LearningSS()
 
 }
 
-void LearningSS::operator()(fftw_complex *input_spectrum, double* noise_spectrum)
+void LearningSS::operator()(std::complex<double> *input_spectrum, double* noise_spectrum)
 {
 	learning.startLearn();
 	for (auto i = 0U; i < conf.spectrumSize(); ++i)
 	{
-		double Apower, Bpower, magnitude, phase, y;
+		double Apower, Bpower, magnitude, phase, power;
 
-		y = std::pow(input_spectrum[i][0], 2) + std::pow(input_spectrum[i][1], 2);
+		power = std::norm(input_spectrum[i]);
+		phase = std::arg(input_spectrum[i]);
 
-		Apower = y - _alpha * noise_spectrum[i];
-		Bpower = _beta * y;
+		Apower = power - _alpha * noise_spectrum[i];
+		Bpower = _beta * power;
 
-		magnitude = sqrt((Apower > Bpower) ? Apower : Bpower);
-		phase = std::atan2(input_spectrum[i][1], input_spectrum[i][0]);
+		magnitude = std::sqrt(std::max(Apower, Bpower));
 
-		input_spectrum[i][0] = magnitude * std::cos(phase);
-		input_spectrum[i][1] = magnitude * std::sin(phase);
+		input_spectrum[i] = {magnitude * std::cos(phase), magnitude * std::sin(phase)};
 	}
 	learning.setReward(computeReward());
 	learning.nextStep();

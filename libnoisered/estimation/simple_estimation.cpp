@@ -15,7 +15,7 @@ SimpleEstimation::~SimpleEstimation()
 
 }
 
-bool SimpleEstimation::operator()(fftw_complex *input_spectrum)
+bool SimpleEstimation::operator()(std::complex<double> *input_spectrum)
 {
 	if (updateNoise(input_spectrum))
 	{
@@ -35,7 +35,7 @@ void SimpleEstimation::specific_onFFTSizeUpdate()
 
 }
 
-bool SimpleEstimation::updateNoise(fftw_complex *in)
+bool SimpleEstimation::updateNoise(std::complex<double> *in)
 {
 	// We estimate the RMS power and compare it to previous noise power
 	double current_rms = std::sqrt(MathUtil::mapReduce_n(in, conf.spectrumSize(), 0.0, MathUtil::CplxToPower, std::plus<double>()) / conf.spectrumSize());

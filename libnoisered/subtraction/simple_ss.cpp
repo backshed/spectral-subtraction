@@ -14,23 +14,22 @@ SimpleSpectralSubtraction::~SimpleSpectralSubtraction()
 
 }
 
-void SimpleSpectralSubtraction::operator()(fftw_complex *input_spectrum, double* noise_spectrum)
+void SimpleSpectralSubtraction::operator()(std::complex<double> *input_spectrum, double* noise_spectrum)
 {
 #pragma omp parallel for
 	for (auto i = 0U; i < conf.spectrumSize(); ++i)
 	{
 		double Apower, Bpower, magnitude, phase, power;
 
-		power = MathUtil::CplxToPower(input_spectrum[i]);
-		phase = MathUtil::CplxToPhase(input_spectrum[i]);
+		power = std::norm(input_spectrum[i]);
+		phase = std::arg(input_spectrum[i]);
 
 		Apower = power - _alpha * noise_spectrum[i];
 		Bpower = _beta * power;
 
 		magnitude = std::sqrt(std::max(Apower, Bpower));
 
-		input_spectrum[i][0] = magnitude * std::cos(phase);
-		input_spectrum[i][1] = magnitude * std::sin(phase);
+		input_spectrum[i] = {magnitude * std::cos(phase), magnitude * std::sin(phase)};
 	}
 }
 

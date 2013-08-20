@@ -245,7 +245,7 @@ class SubtractionManager
 		 */
 		void backwardFFT();
 
-		fftw_complex *spectrum();
+		std::complex<double> *spectrum();
 
 		/**
 		 * @brief Deletes most of the arrays.
@@ -333,7 +333,7 @@ class SubtractionManager
 		double *in = nullptr; /**< TODO */
 		double *out = nullptr; /**< TODO */
 
-		fftw_complex *_spectrum = nullptr; /**< TODO */
+		std::complex<double> *_spectrum = nullptr; /**< TODO */
 
 		fftw_plan plan_fw = nullptr; /**< TODO */
 		fftw_plan plan_bw = nullptr; /**< TODO */

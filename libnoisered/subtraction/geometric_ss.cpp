@@ -34,7 +34,7 @@ void GeometricSpectralSubtraction::onFFTSizeUpdate()
 }
 
 
-void GeometricSpectralSubtraction::operator ()(fftw_complex* input_spectrum, double* noise_spectrum)
+void GeometricSpectralSubtraction::operator ()(std::complex<double>* input_spectrum, double* noise_spectrum)
 {
 	static const double geom_alpha = 0.98, geom_beta = 0.98;
 	static const double twentysixdb = pow(10., -26. / 20.);
@@ -46,8 +46,8 @@ void GeometricSpectralSubtraction::operator ()(fftw_complex* input_spectrum, dou
 		double gammai, gamma, chi, h, ymagn, xmagn, phase;
 
 		// 1) Magnitude spectrum
-		ymagn = std::sqrt(MathUtil::CplxToPower(input_spectrum[i]));
-		phase = MathUtil::CplxToPhase(input_spectrum[i]);
+		ymagn = std::abs(input_spectrum[i]);
+		phase = std::arg(input_spectrum[i]);
 
 		// 3) compute Gamma
 		gammai = std::max(thirteendb, std::pow(ymagn, 2.0) / noise_spectrum[i]);
@@ -69,7 +69,6 @@ void GeometricSpectralSubtraction::operator ()(fftw_complex* input_spectrum, dou
 		prev_halfchi[i] = std::pow(xmagn, 2.0) / noise_spectrum[i];
 
 		// 7) reverse FFT
-		input_spectrum[i][0] = xmagn * std::cos(phase);
-		input_spectrum[i][1] = xmagn * std::sin(phase);
+		input_spectrum[i] = {xmagn * std::cos(phase), xmagn * std::sin(phase)};
 	}
 }

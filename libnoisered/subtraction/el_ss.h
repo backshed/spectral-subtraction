@@ -18,7 +18,7 @@ class EqualLoudnessSpectralSubtraction : public SimpleSpectralSubtraction
 		 * @param input_spectrum Input spectrum.
 		 * @param noise_power Estimated noise power.
 		 */
-		virtual void operator()(fftw_complex* input_spectrum, double* noise_spectrum) override;
+		virtual void operator()(std::complex<double>* input_spectrum, double* noise_spectrum) override;
 		virtual void onFFTSizeUpdate() override;
 		virtual void onDataUpdate() override;
 

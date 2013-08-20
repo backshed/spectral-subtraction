@@ -1,18 +1,18 @@
 #include <cmath>
 #include <algorithm>
-
+#include <functional>
 #include "math_util.h"
 
 namespace MathUtil
 {
-	double CplxToPower(fftw_complex val)
+	double CplxToPower(std::complex<double> val)
 	{
-		return std::pow(val[0], 2.0) + std::pow(val[1], 2.0);
+		return std::norm(val);
 	}
 
-	double CplxToPhase(fftw_complex val)
+	double CplxToPhase(std::complex<double> val)
 	{
-		return std::atan2(val[1], val[0]);
+		return std::arg(val);
 	}
 
 	double energy(double *tab, unsigned int length)
@@ -25,13 +25,13 @@ namespace MathUtil
 		return mapReduce_n(tab, length, 0.0, [] (double x) { return std::abs(x); },  std::plus<double>());
 	}
 
-	void computePowerAndPhaseSpectrum(fftw_complex *in, double *powoutput, double *phaseoutput, unsigned int size)
+	void computePowerAndPhaseSpectrum(std::complex<double> *in, double *powoutput, double *phaseoutput, unsigned int size)
 	{
 		std::transform(in, in + size, powoutput, CplxToPower);
 		std::transform(in, in + size, phaseoutput, CplxToPhase);
 	}
 
-	void computePowerSpectrum(fftw_complex *in, double *powoutput, unsigned int size)
+	void computePowerSpectrum(std::complex<double> *in, double *powoutput, unsigned int size)
 	{
 		std::transform(in, in + size, powoutput, CplxToPower);
 	}

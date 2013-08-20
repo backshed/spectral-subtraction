@@ -11,7 +11,7 @@
 using namespace std;
 
 // Note to future self : ban the static keyword in the 9th circle of hell
-void martinEstimation(fftw_complex *spectrum, int nrf, double *x, double tinc, bool reinit, bool lastcall)
+void martinEstimation(std::complex<double> *spectrum, int nrf, double *x, double tinc, bool reinit, bool lastcall)
 {
 	static int subwc;
 	static int segment_number;
@@ -400,7 +400,7 @@ MartinEstimation::~MartinEstimation()
 
 
 
-bool MartinEstimation::operator()(fftw_complex *input_spectrum)
+bool MartinEstimation::operator()(std::complex<double> *input_spectrum)
 {
 	martinEstimation(input_spectrum,  conf.spectrumSize(), noise_power, ((double) conf.getFrameIncrement()) / ((double) conf.getSamplingRate()), reinit, false);
 	reinit = false;

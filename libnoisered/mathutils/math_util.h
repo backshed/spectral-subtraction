@@ -1,22 +1,22 @@
 #pragma once
-#include <fftw3.h>
+#include <complex>
 
 //! Mathematic utilities.
 namespace MathUtil
 {
 	/**
-	 * @brief Converts a fftw_complex into a double corresponding to its power.
+	 * @brief Converts a complex into a double corresponding to its power.
 	 * @param val Complex value
 	 * @return x^2 + y^2
 	 */
-	double CplxToPower(fftw_complex val);
+	double CplxToPower(std::complex<double> val);
 
 	/**
-	 * @brief Converts a fftw_complex into a double corresponding to its phase.
+	 * @brief Converts a complex into a double corresponding to its phase.
 	 * @param val Complex value
 	 * @return arc tan(y, x)
 	 */
-	double CplxToPhase(fftw_complex val);
+	double CplxToPhase(std::complex<double> val);
 
 
 
@@ -28,7 +28,7 @@ namespace MathUtil
 	 * @param phaseoutput Phase output.
 	 * @param size Size of array.
 	 */
-	void computePowerAndPhaseSpectrum(fftw_complex *in, double *powoutput, double *phaseoutput, unsigned int size);
+	void computePowerAndPhaseSpectrum(std::complex<double> *in, double *powoutput, double *phaseoutput, unsigned int size);
 
 
 	/**
@@ -105,7 +105,7 @@ namespace MathUtil
 	 * @param powoutput Power output.
 	 * @param size Size of array.
 	 */
-	void computePowerSpectrum(fftw_complex *in, double *powoutput, unsigned int size);
+	void computePowerSpectrum(std::complex<double> *in, double *powoutput, unsigned int size);
 
 	/**
 	 * @brief energy Returns the average energy for a full spectrum

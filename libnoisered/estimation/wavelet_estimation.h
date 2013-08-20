@@ -1,7 +1,7 @@
 #pragma once
+#include <fftw3.h>
+
 #include "estimation_algorithm.h"
-
-
 #include "wavelets/cwt_noise_estimator.h"
 /**
  * @brief The WaveletEstimation class
@@ -13,7 +13,7 @@ class WaveletEstimation : public Estimation
 	public:
 		WaveletEstimation(SubtractionManager& configuration);
 		virtual ~WaveletEstimation();
-		virtual bool operator()(fftw_complex* input_spectrum);
+		virtual bool operator()(std::complex<double>* input_spectrum);
 
 		virtual double *noisePower();
 
@@ -31,7 +31,7 @@ class WaveletEstimation : public Estimation
 		double *noise_power_reest = nullptr; /**< TODO */
 
 		fftw_plan plan_bw_temp = nullptr; /**< TODO */
-		fftw_complex *tmp_spectrum = nullptr; /**< TODO */
+		std::complex<double> *tmp_spectrum = nullptr; /**< TODO */
 		double *tmp_out = nullptr; /**< TODO */
 
 };

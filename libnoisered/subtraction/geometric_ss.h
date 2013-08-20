@@ -17,7 +17,7 @@ class GeometricSpectralSubtraction : public Subtraction
 		 * @param input_spectrum Input spectrum.
 		 * @param noise_power Estimated noise power.
 		 */
-		virtual void operator()(fftw_complex* input_spectrum, double* noise_spectrum);
+		virtual void operator()(std::complex<double>* input_spectrum, double* noise_spectrum);
 
 		virtual void onFFTSizeUpdate();
 		virtual void onDataUpdate();
