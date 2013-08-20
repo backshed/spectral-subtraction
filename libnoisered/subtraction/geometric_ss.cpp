@@ -1,7 +1,7 @@
 #include "geometric_ss.h"
 #include <cmath>
 #include <algorithm>
-
+#include <math_util.h>
 #include "subtraction_manager.h"
 
 GeometricSpectralSubtraction::GeometricSpectralSubtraction(SubtractionManager &configuration):
@@ -42,13 +42,14 @@ void GeometricSpectralSubtraction::operator ()(fftw_complex* input_spectrum, dou
 	#pragma omp parallel for
 	for (auto i = 0U; i < conf.spectrumSize(); ++i)
 	{
-		double gammai, gamma, chi, h, ymag, xmag;
+		double gammai, gamma, chi, h, ymagn, xmagn, phase;
 
 		// 1) Magnitude spectrum
-		ymag = std::sqrt(std::pow(input_spectrum[i][0], 2.0) + std::pow(input_spectrum[i][1], 2.0));
+		ymagn = std::sqrt(MathUtil::CplxToPower(input_spectrum[i]));
+		phase = MathUtil::CplxToPhase(input_spectrum[i]);
 
 		// 3) compute Gamma
-		gammai = std::max(thirteendb, std::pow(ymag, 2.0) / noise_spectrum[i]);
+		gammai = std::max(thirteendb, std::pow(ymagn, 2.0) / noise_spectrum[i]);
 
 		gamma = geom_beta * prev_gamma[i] + (1.0 - geom_beta) * gammai;
 		prev_gamma[i] = gamma;
@@ -63,13 +64,11 @@ void GeometricSpectralSubtraction::operator ()(fftw_complex* input_spectrum, dou
 						 ));
 
 		// 6) compute enhanced magnitude spectrum
-		xmag = h * ymag;
-		prev_halfchi[i] = std::pow(xmag, 2.0) / noise_spectrum[i];
+		xmagn = h * ymagn;
+		prev_halfchi[i] = std::pow(xmagn, 2.0) / noise_spectrum[i];
 
 		// 7) reverse FFT
-		double orig_phase = std::atan2(input_spectrum[i][1], input_spectrum[i][0]);
-
-		input_spectrum[i][0] = xmag * std::cos(orig_phase);
-		input_spectrum[i][1] = xmag * std::sin(orig_phase);
+		input_spectrum[i][0] = xmagn * std::cos(phase);
+		input_spectrum[i][1] = xmagn * std::sin(phase);
 	}
 }

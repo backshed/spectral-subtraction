@@ -3,6 +3,7 @@
 #include <fstream>
 #include <clocale>
 #include <sstream>
+#include "math_util.h"
 #include "subtraction_manager.h"
 
 EqualLoudnessSpectralSubtraction::EqualLoudnessSpectralSubtraction(SubtractionManager &configuration):
@@ -13,19 +14,20 @@ EqualLoudnessSpectralSubtraction::EqualLoudnessSpectralSubtraction(SubtractionMa
 
 void EqualLoudnessSpectralSubtraction::operator()(fftw_complex *input_spectrum, double *noise_spectrum)
 {
+	#pragma omp parallel for
 	for (auto i = 0U; i < conf.spectrumSize(); ++i)
 	{
-		double Apower, Bpower, magnitude, phase, y, alpha, beta;
+		double Apower, Bpower, magnitude, phase, power, alpha, beta;
 		alpha = _alpha - _alphawt * (loudness_contour[i] - 60);
-		beta  = _beta - _betawt  * (loudness_contour[i] - 60);
+		beta  = _beta  - _betawt  * (loudness_contour[i] - 60);
 
-		y = std::pow(input_spectrum[i][0], 2) + std::pow(input_spectrum[i][1], 2);
+		power = MathUtil::CplxToPower(input_spectrum[i]);
+		phase = MathUtil::CplxToPhase(input_spectrum[i]);
 
-		Apower = y - alpha * noise_spectrum[i];
-		Bpower = beta * y;
+		Apower = power - alpha * noise_spectrum[i];
+		Bpower = beta * power;
 
 		magnitude = std::sqrt(std::max(Apower, Bpower));
-		phase = std::atan2(input_spectrum[i][1], input_spectrum[i][0]);
 
 		input_spectrum[i][0] = magnitude * std::cos(phase);
 		input_spectrum[i][1] = magnitude * std::sin(phase);

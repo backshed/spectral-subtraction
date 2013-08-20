@@ -14,7 +14,6 @@ namespace MathUtil
 		return std::atan2(val[1], val[0]);
 	}
 
-
 	double energy(double *tab, unsigned int length)
 	{
 		return mapReduce_n(tab, length, 0.0, [] (double x) { return std::pow(x, 2);}, std::plus<double>());

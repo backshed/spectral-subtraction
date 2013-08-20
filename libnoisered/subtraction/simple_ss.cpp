@@ -1,7 +1,7 @@
 #include "simple_ss.h"
 #include <cmath>
 #include <algorithm>
-
+#include "math_util.h"
 #include "subtraction_manager.h"
 
 SimpleSpectralSubtraction::SimpleSpectralSubtraction(SubtractionManager& configuration):
@@ -16,17 +16,18 @@ SimpleSpectralSubtraction::~SimpleSpectralSubtraction()
 
 void SimpleSpectralSubtraction::operator()(fftw_complex *input_spectrum, double* noise_spectrum)
 {
+#pragma omp parallel for
 	for (auto i = 0U; i < conf.spectrumSize(); ++i)
 	{
-		double Apower, Bpower, magnitude, phase, y;
+		double Apower, Bpower, magnitude, phase, power;
 
-		y = std::pow(input_spectrum[i][0], 2) + std::pow(input_spectrum[i][1], 2);
+		power = MathUtil::CplxToPower(input_spectrum[i]);
+		phase = MathUtil::CplxToPhase(input_spectrum[i]);
 
-		Apower = y - _alpha * noise_spectrum[i];
-		Bpower = _beta * y;
+		Apower = power - _alpha * noise_spectrum[i];
+		Bpower = _beta * power;
 
 		magnitude = sqrt(std::max(Apower, Bpower));
-		phase = std::atan2(input_spectrum[i][1], input_spectrum[i][0]);
 
 		input_spectrum[i][0] = magnitude * std::cos(phase);
 		input_spectrum[i][1] = magnitude * std::sin(phase);
