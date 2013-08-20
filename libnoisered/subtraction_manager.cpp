@@ -1,8 +1,9 @@
-#include "subtraction_manager.h"
 #include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <map>
+
+#include "subtraction_manager.h"
 #include "mathutils/math_util.h"
 
 

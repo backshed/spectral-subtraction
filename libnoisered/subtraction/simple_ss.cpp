@@ -1,5 +1,6 @@
-#include "simple_ss.h"
 #include <cmath>
+
+#include "simple_ss.h"
 #include "mathutils/math_util.h"
 #include "subtraction_manager.h"
 

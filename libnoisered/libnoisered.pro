@@ -60,7 +60,6 @@ HEADERS += \
 	estimation/wavelets/pair.h \
 	estimation/wavelets/matrix.h \
 	eval.h \
-	defines.h \
 	estimation/wavelets/cwt_noise_estimator.h \
 	estimation/wavelets/area.h \
 	learning/state.hpp \

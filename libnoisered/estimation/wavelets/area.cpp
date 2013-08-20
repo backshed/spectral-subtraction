@@ -1,8 +1,8 @@
-#include "area.h"
 #include <cmath>
 #include <climits>
 #include <iostream>
 
+#include "area.h"
 Area::Area(Matrix &m):
 	m(m),
 	minHeight(INT_MAX)

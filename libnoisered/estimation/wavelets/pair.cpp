@@ -1,5 +1,7 @@
-#include "pair.h"
 #include <iostream>
+
+#include "pair.h"
+
 
 Pair::Pair(int x, int y):
 	x(x), y(y)

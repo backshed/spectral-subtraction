@@ -1,15 +1,16 @@
-#include "defines.h"
-
 #include <functional>
 #include <algorithm>
 #include <iostream>
 #include <fstream>
+
+#include "subtraction_manager.h"
 #include "cwt_noise_estimator.h"
-#include <subtraction_manager.h>
 
 #define AMIN 0                  /* A min  */
 #define ASTP 0.05               /* A step */
 #define AMAX 64                 /* A max  */
+
+#define PLOT_CWT
 
 CWTNoiseEstimator::CWTNoiseEstimator():
 	areaParams(nullptr),

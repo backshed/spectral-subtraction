@@ -1,6 +1,7 @@
-#include "math_util.h"
 #include <cmath>
 #include <algorithm>
+
+#include "math_util.h"
 
 namespace MathUtil
 {

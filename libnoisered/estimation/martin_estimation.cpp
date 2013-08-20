@@ -1,6 +1,4 @@
-#include "martin_estimation.h"
 #include <cmath>
-#include "mathutils/math_util.h"
 #include <climits>
 #include <cfloat>
 #include <numeric>
@@ -8,6 +6,8 @@
 #include <iostream>
 
 #include "subtraction_manager.h"
+#include "mathutils/math_util.h"
+#include "martin_estimation.h"
 using namespace std;
 
 // Note to future self : ban the static keyword in the 9th circle of hell

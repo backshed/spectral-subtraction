@@ -1,6 +1,7 @@
-#include "geometric_ss.h"
 #include <cmath>
 #include <algorithm>
+
+#include "geometric_ss.h"
 #include "mathutils/math_util.h"
 #include "subtraction_manager.h"
 

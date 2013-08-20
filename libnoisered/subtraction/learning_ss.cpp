@@ -1,6 +1,6 @@
-#include "learning_ss.h"
 #include <cmath>
 
+#include "learning_ss.h"
 #include "subtraction_manager.h"
 #include "eval.h"
 

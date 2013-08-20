@@ -1,7 +1,8 @@
-#include "el_ss.h"
 #include <cmath>
 #include <fstream>
 #include <clocale>
+
+#include "el_ss.h"
 #include "mathutils/math_util.h"
 #include "mathutils/spline.hpp"
 #include "subtraction_manager.h"

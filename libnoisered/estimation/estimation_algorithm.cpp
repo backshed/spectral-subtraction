@@ -1,5 +1,6 @@
-#include "estimation_algorithm.h"
 #include <algorithm>
+
+#include "estimation_algorithm.h"
 #include "subtraction_manager.h"
 
 Estimation::Estimation(SubtractionManager &configuration):
