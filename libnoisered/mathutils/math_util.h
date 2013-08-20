@@ -4,7 +4,18 @@
 //! Mathematic utilities.
 namespace MathUtil
 {
+	/**
+	 * @brief Converts a fftw_complex into a double corresponding to its power.
+	 * @param val Complex value
+	 * @return x^2 + y^2
+	 */
 	double CplxToPower(fftw_complex val);
+
+	/**
+	 * @brief Converts a fftw_complex into a double corresponding to its phase.
+	 * @param val Complex value
+	 * @return arc tan(y, x)
+	 */
 	double CplxToPhase(fftw_complex val);
 
 

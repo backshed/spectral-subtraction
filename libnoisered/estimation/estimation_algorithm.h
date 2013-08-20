@@ -13,20 +13,20 @@ class Estimation
 		Estimation(SubtractionManager& configuration);
 		virtual ~Estimation();
 		/**
-		 * @brief operator () Executes the estimation algorithm.
+		 * @brief Executes the estimation algorithm.
 		 * @param input_spectrum Input from which the algorithm estimates
 		 * @return True if a reestimation was performed
 		 */
 		virtual bool operator()(fftw_complex* input_spectrum) = 0;
 		/**
-		 * @brief onFFTSizeUpdate Actions to perform if the FFT size changes.
+		 * @brief Actions to perform if the FFT size changes.
 		 *
 		 * Most of the buffers will have to change.
 		 */
 		virtual void onFFTSizeUpdate();
 
 		/**
-		 * @brief onDataUpdate Actions to perform if the data changes a lot.
+		 * @brief Actions to perform if the data changes a lot.
 		 *
 		 * For instance, discard previous data saved by the algorithms which would not have sense anymore.
 		 * In particular, reset the noise estimation.
@@ -40,7 +40,14 @@ class Estimation
 		virtual double* noisePower();
 
 	protected:
+		/**
+		 * @brief To reimplement in subsequent classes if there is custom data to change.
+		 */
 		virtual void specific_onFFTSizeUpdate() = 0;
+
+		/**
+		 * @brief To reimplement in subsequent classes if there is custom data to change.
+		 */
 		virtual void specific_onDataUpdate() = 0;
 
 		SubtractionManager& conf;
