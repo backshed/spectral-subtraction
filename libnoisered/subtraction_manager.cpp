@@ -5,12 +5,14 @@
 
 #include "subtraction_manager.h"
 #include "mathutils/math_util.h"
+#include "fft/fftwmanager.h"
 
 
 SubtractionManager::SubtractionManager(int fft_Size, int sampling_Rate):
-	_fftSize(fft_Size),
-	_samplingRate(sampling_Rate)
+	_samplingRate(sampling_Rate),
+	fft(new FFTWManager)
 {
+	fft->updateSize(fft_Size);
 	onFFTSizeUpdate();
 }
 
@@ -32,18 +34,18 @@ void SubtractionManager::execute()
 		for (auto sample_n = 0U; sample_n < getLength(); sample_n += getFrameIncrement())
 		{
 			copyInput(sample_n);
-			forwardFFT();
+			fft->forward();
 
 			if(dataSource() == DataSource::File && sample_n == 0)
 				onDataUpdate();
 
 			// Noise estimation
-			(*getEstimationImplementation())(spectrum());
+			(*getEstimationImplementation())(fft->spectrum());
 
 			// Spectral subtraction
-			(*getSubtractionImplementation())(spectrum(), getEstimationImplementation()->noisePower());
+			(*getSubtractionImplementation())(fft->spectrum(), getEstimationImplementation()->noisePower());
 
-			backwardFFT();
+			fft->backward();
 			copyOutput(sample_n);
 		}
 	}
@@ -55,18 +57,8 @@ void SubtractionManager::onFFTSizeUpdate()
 {
 	if(_bypass) return;
 
-	_spectrumSize = _fftSize / 2 + 1;
-	_ola_frame_increment = _fftSize / 2;
-	_std_frame_increment = _fftSize;
-
-	in = fftw_alloc_real(_fftSize);
-	out = fftw_alloc_real(_fftSize);
-
-	_spectrum = reinterpret_cast<std::complex<double>*>(fftw_alloc_complex(_spectrumSize));
-
-	// Initialize the fftw plans
-	plan_fw = fftw_plan_dft_r2c_1d(_fftSize, in, reinterpret_cast<fftw_complex*>(_spectrum), FFTW_ESTIMATE);
-	plan_bw = fftw_plan_dft_c2r_1d(_fftSize, reinterpret_cast<fftw_complex*>(_spectrum), out, FFTW_ESTIMATE);
+	_ola_frame_increment = fft->size() / 2;
+	_std_frame_increment = fft->size();
 
 	if(estimation) estimation->onFFTSizeUpdate();
 	if(subtraction) subtraction->onFFTSizeUpdate();
@@ -89,29 +81,14 @@ void SubtractionManager::copyOutput(unsigned int pos)
 		copyOutputSimple(pos);
 }
 
-void SubtractionManager::FFTClean()
-{
-	if(in) fftw_free(in);
-	if(out) fftw_free(out);
-
-	if(_spectrum) fftw_free(_spectrum);
-
-	if(plan_fw) fftw_destroy_plan(plan_fw);
-	if(plan_bw) fftw_destroy_plan(plan_bw);
-
-	fftw_cleanup();
-}
 
 SubtractionManager::~SubtractionManager()
 {
 	subtraction.reset();
 	estimation.reset();
 
-	FFTClean();
-
 	delete[] _data;
 	delete[] _origData;
-
 }
 
 void SubtractionManager::initDataArray()
@@ -213,27 +190,27 @@ void SubtractionManager::writeBuffer(short *buffer)
 void SubtractionManager::copyInputSimple(unsigned int pos)
 {
 	// Data copying
-	if (_fftSize <= _tabLength - pos)
+	if (fft->size() <= _tabLength - pos)
 	{
-		std::copy_n(_data + pos, _fftSize, in);
+		std::copy_n(_data + pos, fft->size(), fft->input());
 	}
 	else
 	{
-		std::copy_n(_data + pos, _tabLength - pos, in);
-		std::fill_n(in + _tabLength - pos, _fftSize - (_tabLength - pos), 0);
+		std::copy_n(_data + pos, _tabLength - pos, fft->input());
+		std::fill_n(fft->input() + _tabLength - pos, fft->size() - (_tabLength - pos), 0);
 	}
 }
 
 void SubtractionManager::copyOutputSimple(unsigned int pos)
 {
-	auto normalizeFFT = [&](double x) { return x / _fftSize; };
-	if (_fftSize <= _tabLength - pos)
+	auto normalizeFFT = [&](double x) { return x / fft->size(); };
+	if (fft->size() <= _tabLength - pos)
 	{
-		std::transform(out, out + _fftSize, _data + pos, normalizeFFT);
+		std::transform(fft->output(), fft->output() + fft->size(), _data + pos, normalizeFFT);
 	}
 	else //fileSize - pos < fftSize
 	{
-		std::transform(out, out + _tabLength - pos, _data + pos, normalizeFFT);
+		std::transform(fft->output(), fft->output() + _tabLength - pos, _data + pos, normalizeFFT);
 	}
 }
 
@@ -242,15 +219,15 @@ void SubtractionManager::copyInputOLA(unsigned int pos)
 	// Data copying
 	if (_ola_frame_increment <= _tabLength - pos) // last case
 	{
-		std::copy_n(_data + pos, _ola_frame_increment, in);
-		std::fill_n(in + _ola_frame_increment, _ola_frame_increment, 0);
+		std::copy_n(_data + pos, _ola_frame_increment, fft->input());
+		std::fill_n(fft->input() + _ola_frame_increment, _ola_frame_increment, 0);
 
 		std::fill_n(_data + pos, _ola_frame_increment, 0);
 	}
 	else
 	{
-		std::copy_n(_data + pos, _tabLength - pos, in);
-		std::fill_n(in + _tabLength - pos, _ola_frame_increment - (_tabLength - pos), 0);
+		std::copy_n(_data + pos, _tabLength - pos, fft->input());
+		std::fill_n(fft->input() + _tabLength - pos, _ola_frame_increment - (_tabLength - pos), 0);
 
 		std::fill_n(_data + pos, _tabLength - pos, 0);
 	}
@@ -260,9 +237,9 @@ void SubtractionManager::copyOutputOLA(unsigned int pos)
 {
 	// Lock here
 	//ola_mutex.lock();
-	for (auto j = 0U; (j < _fftSize) && (pos + j < _tabLength); ++j)
+	for (auto j = 0U; (j < fft->size()) && (pos + j < _tabLength); ++j)
 	{
-		_data[pos + j] += out[j] / _fftSize;
+		_data[pos + j] += fft->output()[j] / fft->size();
 	}
 	// Unlock here
 	//ola_mutex.unlock();
@@ -287,20 +264,6 @@ void SubtractionManager::setOLA(bool val)
 	_useOLA = val;
 }
 
-void SubtractionManager::forwardFFT()
-{
-	fftw_execute(plan_fw);
-}
-
-void SubtractionManager::backwardFFT()
-{
-	fftw_execute(plan_bw);
-}
-
-std::complex<double> *SubtractionManager::spectrum()
-{
-	return _spectrum;
-}
 
 SubtractionManager::DataSource SubtractionManager::dataSource() const
 {
@@ -348,7 +311,6 @@ unsigned int SubtractionManager::getSamplingRate() const
 void SubtractionManager::setSamplingRate(unsigned int value)
 {
 	_samplingRate = value;
-	FFTClean();
 	onFFTSizeUpdate();
 }
 
@@ -449,17 +411,17 @@ void SubtractionManager::readParametersFromFile()
 
 unsigned int SubtractionManager::FFTSize() const
 {
-	return _fftSize;
+	return fft->size();
 }
 
 void SubtractionManager::setFftSize(unsigned int value)
 {
-	_fftSize = value;
-	FFTClean();
+	fft->updateSize(value);
+
 	onFFTSizeUpdate();
 }
 
 unsigned int SubtractionManager::spectrumSize() const
 {
-	return _spectrumSize;
+	return fft->spectrumSize();
 }

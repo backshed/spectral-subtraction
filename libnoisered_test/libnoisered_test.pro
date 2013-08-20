@@ -6,9 +6,9 @@ CONFIG -= qt
 DESTDIR = $$PWD/../output
 
 SOURCES += main.cpp
-QMAKE_CXXFLAGS += -std=c++11 -fopenmp -D_GLIBCXX_PARALLEL
-QMAKE_CXXFLAGS_RELEASE += -O3 -march=native
-QMAKE_LFLAGS += -fopenmp
+QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CXXFLAGS_RELEASE += -O3 -march=native -fopenmp -D_GLIBCXX_PARALLEL
+QMAKE_LFLAGS_RELEASE += -fopenmp
 
 
 unix:!macx: LIBS += -L$$PWD/../output/ -lnoisered

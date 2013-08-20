@@ -11,8 +11,8 @@ TEMPLATE = lib
 CONFIG += staticlib c++11
 DESTDIR = $$PWD/../output
 LIBS += -lcwt -lfftw3
-QMAKE_CXXFLAGS += -std=c++11 -fopenmp -D_GLIBCXX_PARALLEL
-QMAKE_CXXFLAGS_RELEASE += -O3 -march=native
+QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CXXFLAGS_RELEASE += -O3 -march=native -fopenmp -D_GLIBCXX_PARALLEL
 QMAKE_CXX = g++-4.8
 BASEPATH = ../build/libnoisered
 
@@ -52,7 +52,9 @@ SOURCES += \
 	estimation/wavelet_estimation.cpp \
 	subtraction_manager.cpp \
 	subtraction/learning_ss.cpp \
-	mathutils/math_util.cpp
+	mathutils/math_util.cpp \
+	fft/fftmanager.cpp \
+	fft/fftwmanager.cpp
 
 
 HEADERS += \
@@ -83,5 +85,7 @@ HEADERS += \
 	mathutils/spline.hpp \
 	subtraction_manager.h \
 	subtraction/learning_ss.h \
-	mathutils/math_util.h
+	mathutils/math_util.h \
+	fft/fftmanager.h \
+	fft/fftwmanager.h
 

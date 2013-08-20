@@ -5,6 +5,7 @@
 
 #include "subtraction/algorithms.h"
 #include "estimation/algorithms.h"
+#include "fft/fftmanager.h"
 /**
  * @brief Main class.
  *
@@ -314,9 +315,9 @@ class SubtractionManager
 		//*** Members ***//
 		DataSource _dataSource;
 
-		unsigned int _fftSize; /**< TODO */
-		unsigned int _spectrumSize; /**< TODO */
 		unsigned int _samplingRate; /**< TODO */
+		std::shared_ptr<FFTManager> fft;
+
 
 		// Storage
 		double *_data = nullptr; /**< TODO */
@@ -329,18 +330,10 @@ class SubtractionManager
 
 		unsigned int _iterations = 1; /**< TODO */
 
-		// Arrays used for storing data
-		double *in = nullptr; /**< TODO */
-		double *out = nullptr; /**< TODO */
-
-		std::complex<double> *_spectrum = nullptr; /**< TODO */
-
-		fftw_plan plan_fw = nullptr; /**< TODO */
-		fftw_plan plan_bw = nullptr; /**< TODO */
-
 		// Algorithms
 		std::shared_ptr<Subtraction> subtraction;
 		std::shared_ptr<Estimation>  estimation;
+
 
 		// For measurements
 		bool _bypass = false;
