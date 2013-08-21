@@ -3,7 +3,7 @@
 #include <estimation/algorithms.h>
 
 #include <iostream>
-#define DEBUG(i) std::cerr << "OK " << (i) << std::endl;
+#define DEBUG(i) // std::cerr << "OK " << (i) << std::endl;
 int main()
 {
 	short tab[4096] = {0};
