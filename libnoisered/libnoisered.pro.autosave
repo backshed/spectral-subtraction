@@ -2,7 +2,7 @@ QT       -= core gui
 
 TARGET = noisered
 TEMPLATE = lib
-CONFIG += staticlib c++11 openmp
+CONFIG += staticlib c++11
 DESTDIR = $$PWD/../output
 LIBS += -lcwt -lfftw3
 

@@ -270,14 +270,14 @@ SubtractionManager::DataSource SubtractionManager::dataSource() const
 	return _dataSource;
 }
 
-std::shared_ptr<Estimation> SubtractionManager::getEstimationImplementation() const
+Estimation *SubtractionManager::getEstimationImplementation() const
 {
-	return estimation;
+	return estimation.get();
 }
 
-void SubtractionManager::setEstimationImplementation(std::shared_ptr<Estimation> value)
+void SubtractionManager::setEstimationImplementation(Estimation *value)
 {
-	estimation = std::move(value);
+	estimation.reset(value);
 	estimation->onFFTSizeUpdate();
 }
 
@@ -292,14 +292,14 @@ unsigned int SubtractionManager::getFrameIncrement()
 	return _useOLA? _ola_frame_increment : _std_frame_increment;
 }
 
-std::shared_ptr<Subtraction> SubtractionManager::getSubtractionImplementation() const
+Subtraction *SubtractionManager::getSubtractionImplementation() const
 {
-	return subtraction;
+	return subtraction.get();
 }
 
-void SubtractionManager::setSubtractionImplementation(std::shared_ptr<Subtraction> value)
+void SubtractionManager::setSubtractionImplementation(Subtraction* value)
 {
-	subtraction = std::move(value);
+	subtraction.reset(value);
 	subtraction->onFFTSizeUpdate();
 }
 
@@ -328,11 +328,11 @@ void SubtractionManager::setSamplingRate(unsigned int value)
 void SubtractionManager::readParametersFromFile()
 {
 	_bypass = false;
-	std::map<std::string, std::shared_ptr<Estimation>> noise_est
+	std::map<std::string, Estimation*> noise_est
 	{
-		std::make_pair("std", std::shared_ptr<Estimation>(new SimpleEstimation(*this))),
-		std::make_pair("martin", std::shared_ptr<Estimation>(new MartinEstimation(*this))),
-		std::make_pair("wavelets", std::shared_ptr<Estimation>(new WaveletEstimation(*this)))
+		std::make_pair("std", new SimpleEstimation(*this)),
+		std::make_pair("martin", new MartinEstimation(*this)),
+		std::make_pair("wavelets", new WaveletEstimation(*this))
 	};
 
 	enum Algorithm { Standard, EqualLoudness, GeometricApproach, Learning, Bypass};
@@ -381,7 +381,7 @@ void SubtractionManager::readParametersFromFile()
 				SimpleSpectralSubtraction* subtraction = new SimpleSpectralSubtraction(*this);
 				subtraction->setAlpha(alpha);
 				subtraction->setBeta(beta);
-				setSubtractionImplementation(std::shared_ptr<Subtraction>(subtraction));
+				setSubtractionImplementation(subtraction);
 				break;
 			}
 			case Algorithm::EqualLoudness:
@@ -391,12 +391,12 @@ void SubtractionManager::readParametersFromFile()
 				subtraction->setBeta(beta);
 				subtraction->setAlphawt(alphawt);
 				subtraction->setBetawt(betawt);
-				setSubtractionImplementation(std::shared_ptr<Subtraction>(subtraction));
+				setSubtractionImplementation(subtraction);
 				break;
 			}
 			case Algorithm::GeometricApproach:
 			{
-				setSubtractionImplementation(std::shared_ptr<Subtraction>(new GeometricSpectralSubtraction(*this)));
+				setSubtractionImplementation(new GeometricSpectralSubtraction(*this));
 				break;
 			}
 			default:

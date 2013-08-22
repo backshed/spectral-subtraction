@@ -6,6 +6,11 @@
 #include "subtraction/algorithms.h"
 #include "estimation/algorithms.h"
 #include "fft/fftmanager.h"
+
+typedef std::shared_ptr<Subtraction> Subtraction_p;
+typedef std::shared_ptr<Estimation> Estimation_p;
+typedef std::shared_ptr<FFTManager> FFT_p;
+
 /**
  * @brief Main class.
  *
@@ -168,12 +173,12 @@ class SubtractionManager
 		 * @brief getSubtractionImplementation
 		 * @return Used subtraction algorithm.
 		 */
-		std::shared_ptr<Subtraction> getSubtractionImplementation() const;
+		Subtraction* getSubtractionImplementation() const;
 		/**
 		 * @brief setSubtractionImplementation
 		 * @param value Subtraction to use.
 		 */
-		void setSubtractionImplementation(std::shared_ptr<Subtraction> value);
+		void setSubtractionImplementation(Subtraction *value);
 
 		/**
 		 * @brief getFrameIncrement
@@ -188,13 +193,13 @@ class SubtractionManager
 		 * @brief getEstimationImplementation
 		 * @return Used estimation algorithm.
 		 */
-		std::shared_ptr<Estimation> getEstimationImplementation() const;
+		Estimation* getEstimationImplementation() const;
 
 		/**
 		 * @brief setEstimationImplementation
 		 * @param value Estimation to use.
 		 */
-		void setEstimationImplementation(std::shared_ptr<Estimation> value);
+		void setEstimationImplementation(Estimation* value);
 
 		/**
 		 * @brief bypass
@@ -228,39 +233,13 @@ class SubtractionManager
 		void execute();
 
 	private:
-
-
 		DataSource dataSource() const;
-
-		/**
-		 * @brief forwardFFT
-		 *
-		 * From time domain to spectral domain.
-		 */
-		void forwardFFT();
-
-		/**
-		 * @brief backwardFFT Performs a backward FFT
-		 *
-		 * From spectral domain to time domain.
-		 */
-		void backwardFFT();
-
-		std::complex<double> *spectrum();
-
-		/**
-		 * @brief Deletes most of the arrays.
-		 *
-		 */
-		void FFTClean();
 
 		/**
 		 * @brief Initializes the needed arrays when a change of FFT size is performed.
 		 *
 		 */
 		void onFFTSizeUpdate();
-
-
 
 		//*** Data copying algorithms ***//
 		/**
@@ -316,8 +295,11 @@ class SubtractionManager
 		DataSource _dataSource;
 
 		unsigned int _samplingRate; /**< TODO */
-		std::shared_ptr<FFTManager> fft;
+		FFT_p fft;
 
+		// Algorithms
+		Subtraction_p subtraction;
+		Estimation_p  estimation;
 
 		// Storage
 		double *_data = nullptr; /**< TODO */
@@ -329,10 +311,6 @@ class SubtractionManager
 		unsigned int _std_frame_increment; /**< TODO */
 
 		unsigned int _iterations = 1; /**< TODO */
-
-		// Algorithms
-		std::shared_ptr<Subtraction> subtraction;
-		std::shared_ptr<Estimation>  estimation;
 
 
 		// For measurements

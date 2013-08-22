@@ -1,6 +1,6 @@
 #pragma once
 #include <complex>
-
+#include <functional>
 //! Mathematic utilities.
 namespace MathUtil
 {

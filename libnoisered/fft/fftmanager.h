@@ -10,7 +10,18 @@ class FFTManager
 		double* input();
 		double* output();
 
+		/**
+		 * @brief forwardFFT
+		 *
+		 * From time domain to spectral domain.
+		 */
 		virtual void forward() = 0;
+
+		/**
+		 * @brief backwardFFT Performs a backward FFT
+		 *
+		 * From spectral domain to time domain.
+		 */
 		virtual void backward() = 0;
 
 		std::complex<double>* spectrum();

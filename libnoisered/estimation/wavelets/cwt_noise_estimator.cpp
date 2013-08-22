@@ -3,7 +3,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "subtraction_manager.h"
+#include "../../subtraction_manager.h"
 #include "cwt_noise_estimator.h"
 
 #define AMIN 0                  /* A min  */

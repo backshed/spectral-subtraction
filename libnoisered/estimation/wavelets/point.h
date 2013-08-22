@@ -25,7 +25,7 @@ struct Point : public Pair
 		 * @param y
 		 * @param invalid
 		 */
-		Point(int x, int y, int invalid = false);
+		Point(int x, int y, bool invalid = false);
 
 		/**
 		 * @brief Checks validity.
@@ -37,7 +37,7 @@ struct Point : public Pair
 		double val = 0; /**< TODO */
 
 	private:
-		bool invalid; /**< TODO */
+		bool invalid = false; /**< TODO */
 
 };
 
