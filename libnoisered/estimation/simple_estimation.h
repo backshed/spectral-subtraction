@@ -29,7 +29,7 @@ class SimpleEstimation : public Estimation
 		 * @param old_rms Previous RMS value.
 		 * @return bool True if the noise power estimation changed.
 		 */
-		bool updateNoise(std::complex<double> *in);
+		bool updateNoise(const std::complex<double> * const in);
 		double noise_rms;
 
 };

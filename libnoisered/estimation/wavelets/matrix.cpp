@@ -1,6 +1,6 @@
 #include "matrix.h"
 
-Matrix::Matrix(size_type cols, size_type rows):
+Matrix::Matrix(const size_type cols, const size_type rows):
 	std::vector<std::vector<double>>(cols, std::vector<double>(rows)),
 								  _mask(cols, std::vector<double>(rows))
 {
@@ -8,7 +8,7 @@ Matrix::Matrix(size_type cols, size_type rows):
 	_tmp_rows = rows;
 }
 
-bool Matrix::is_adjacent_to_zero(int i, int j)
+bool Matrix::is_adjacent_to_zero(const size_type i, const size_type j)
 {
 	return (
 			   //~ m[i+1][j+1] == 0 ||
@@ -28,7 +28,7 @@ bool Matrix::is_adjacent_to_zero(int i, int j)
 		   ;
 }
 
-Point Matrix::next_adjacent_to_zero(unsigned int i, unsigned int j, unsigned int x0)
+Point Matrix::next_adjacent_to_zero(const size_type i, const size_type j, const size_type  x0)
 {
 	if (is_adjacent_to_zero(i + 1, j + 1)) return Point(i + 1, j + 1);
 	if (is_adjacent_to_zero(i + 1, j))   return Point(i + 1, j);
@@ -54,7 +54,7 @@ unsigned int Matrix::getColPadding() const
 	return _colPadding;
 }
 
-void Matrix::setColPadding(const unsigned int &value)
+void Matrix::setColPadding(const size_type &value)
 {
 	_colPadding = value;
 }
@@ -64,22 +64,22 @@ unsigned int Matrix::getRowPadding() const
 	return _rowPadding;
 }
 
-void Matrix::setRowPadding(const unsigned int &value)
+void Matrix::setRowPadding(const size_type &value)
 {
 	_rowPadding = value;
 }
 
-bool Matrix::isMasked(unsigned int i, unsigned int j)
+bool Matrix::isMasked(const size_type i, const size_type j)
 {
 	return _mask[i][j] == mask_value;
 }
 
-void Matrix::mask(unsigned int i, unsigned int j)
+void Matrix::mask(const size_type i, const size_type j)
 {
 	_mask[i][j] = mask_value;
 }
 
-void Matrix::unmask(unsigned int i, unsigned int j)
+void Matrix::unmask(const size_type i, const size_type j)
 {
 	_mask[i][j] = 0;
 }

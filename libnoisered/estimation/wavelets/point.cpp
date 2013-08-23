@@ -5,7 +5,7 @@ Point::Point():
 	invalid(false)
 { }
 
-Point::Point(int x, int y, bool invalid):
+Point::Point(const unsigned int x, const unsigned int y, const bool invalid):
 	Pair(x, y),
 	invalid(invalid)
 { }

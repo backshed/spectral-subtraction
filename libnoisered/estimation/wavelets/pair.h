@@ -15,7 +15,7 @@ struct Pair
 	 * @param x
 	 * @param y
 	 */
-	Pair(int x, int y);
+	Pair(const unsigned int x, const unsigned int y);
 	unsigned int x, y; /**< TODO */
 	/**
 	 * @brief Debug : displays the value of the point on stdout.

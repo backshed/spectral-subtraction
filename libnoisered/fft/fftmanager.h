@@ -1,33 +1,66 @@
 #pragma once
 #include <complex>
-// Compter nombre d'instances et faire cleanup sur la dernière.
+
+/**
+ * @brief Interface to follow for implementation of FFT algorithms.
+ */
 class FFTManager
 {
 	public:
 		FFTManager();
 		virtual ~FFTManager();
 
-		double* input();
-		double* output();
+		/**
+		 * @brief input
+		 * @return a pointer to the input data.
+		 */
+		double* input() const;
 
 		/**
-		 * @brief forwardFFT
+		 * @brief output
+		 * @return a pointer to the output data.
+		 */
+		double* output() const;
+
+		/**
+		 * @brief Forward FFT.
 		 *
 		 * From time domain to spectral domain.
 		 */
-		virtual void forward() = 0;
+		virtual void forward() const = 0;
 
 		/**
-		 * @brief backwardFFT Performs a backward FFT
+		 * @brief Backward FFT
 		 *
 		 * From spectral domain to time domain.
 		 */
-		virtual void backward() = 0;
+		virtual void backward() const = 0;
 
-		std::complex<double>* spectrum();
+		/**
+		 * @brief Spectrum
+		 * @return The spectrum
+		 */
+		std::complex<double>* spectrum() const;
 
-		unsigned int spectrumSize();
-		unsigned int size();
+		/**
+		 * @brief Spectrum size
+		 * @return Returns the size of the spectrum array.
+		 */
+		virtual unsigned int spectrumSize() const;
+
+		/**
+		 * @brief Normalization factor
+		 *
+		 * Sometimes, the fft implementation might give an output which needs to be normalized.
+		 * @return The factor by which every sample of the ouput must be multiplied.
+		 */
+		virtual double normalizationFactor() const = 0;
+
+		/**
+		 * @brief size
+		 * @return FFT size.
+		 */
+		unsigned int size() const;
 
 		virtual void updateSize(const unsigned int);
 

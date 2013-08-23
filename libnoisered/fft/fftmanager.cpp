@@ -13,27 +13,27 @@ FFTManager::~FFTManager()
 }
 
 
-double *FFTManager::input()
+double *FFTManager::input() const
 {
 	return _in;
 }
 
-double *FFTManager::output()
+double *FFTManager::output() const
 {
 	return _out;
 }
 
-std::complex<double> *FFTManager::spectrum()
+std::complex<double> *FFTManager::spectrum() const
 {
 	return _spectrum;
 }
 
-unsigned int FFTManager::spectrumSize()
+unsigned int FFTManager::spectrumSize() const
 {
 	return _fftSize / 2 + 1;
 }
 
-unsigned int FFTManager::size()
+unsigned int FFTManager::size() const
 {
 	return _fftSize;
 }

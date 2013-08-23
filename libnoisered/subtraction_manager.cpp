@@ -8,7 +8,7 @@
 #include "fft/fftwmanager.h"
 
 
-SubtractionManager::SubtractionManager(int fft_Size, int sampling_Rate):
+SubtractionManager::SubtractionManager(const unsigned int fft_Size, const unsigned int sampling_Rate):
 	_samplingRate(sampling_Rate),
 	fft(new FFTWManager)
 {
@@ -65,7 +65,7 @@ void SubtractionManager::onFFTSizeUpdate()
 }
 
 
-void SubtractionManager::copyInput(unsigned int pos)
+void SubtractionManager::copyInput(const unsigned int pos)
 {
 	if(_useOLA)
 		copyInputOLA(pos);
@@ -73,7 +73,7 @@ void SubtractionManager::copyInput(unsigned int pos)
 		copyInputSimple(pos);
 }
 
-void SubtractionManager::copyOutput(unsigned int pos)
+void SubtractionManager::copyOutput(const unsigned int pos)
 {
 	if(_useOLA)
 		copyOutputOLA(pos);
@@ -101,13 +101,13 @@ unsigned int SubtractionManager::iterations() const
 	return _iterations;
 }
 
-void SubtractionManager::setIterations(int value)
+void SubtractionManager::setIterations(const unsigned int value)
 {
-	_iterations = std::max(value, 1);
+	_iterations = std::max(value, 1U);
 }
 
 
-double *SubtractionManager::getData()
+double *SubtractionManager::getData() const
 {
 	return _data;
 }
@@ -124,12 +124,12 @@ double *SubtractionManager::getNoisyData()
 	return _origData;
 }
 
-unsigned int SubtractionManager::getLength()
+unsigned int SubtractionManager::getLength() const
 {
 	return _tabLength;
 }
 
-unsigned int SubtractionManager::readFile(char *str)
+unsigned int SubtractionManager::readFile(const char * const str)
 {
 	std::ifstream ifile(str, std::ios_base::ate | std::ios_base::binary);
 	_tabLength = ifile.tellg() / (sizeof(short) / sizeof(char));
@@ -154,10 +154,11 @@ unsigned int SubtractionManager::readFile(char *str)
 	return _tabLength;
 }
 
-unsigned int SubtractionManager::readBuffer(short *buffer, int length)
+unsigned int SubtractionManager::readBuffer(const short * const buffer, const unsigned int length)
 {
-	_tabLength = length;
 	if(_bypass) return length;
+
+	_tabLength = length;
 
 	delete[] _origData;
 	delete[] _data;
@@ -176,7 +177,7 @@ unsigned int SubtractionManager::readBuffer(short *buffer, int length)
 	return _tabLength;
 }
 
-void SubtractionManager::writeBuffer(short *buffer)
+void SubtractionManager::writeBuffer(short * const buffer) const
 {
 	if(_bypass) return;
 	std::transform(_data, _data + _tabLength, buffer, MathUtil::DoubleToShort);
@@ -187,7 +188,7 @@ void SubtractionManager::writeBuffer(short *buffer)
 	//                [] (short val) {return (val << 8) | ((val >> 8) & 0xFF)});
 }
 
-void SubtractionManager::copyInputSimple(unsigned int pos)
+void SubtractionManager::copyInputSimple(const unsigned int pos)
 {
 	// Data copying
 	if (fft->size() <= _tabLength - pos)
@@ -201,9 +202,9 @@ void SubtractionManager::copyInputSimple(unsigned int pos)
 	}
 }
 
-void SubtractionManager::copyOutputSimple(unsigned int pos)
+void SubtractionManager::copyOutputSimple(const unsigned int pos)
 {
-	auto normalizeFFT = [&](double x) { return x / fft->size(); };
+	auto normalizeFFT = [&](double x) { return x * fft->normalizationFactor(); };
 	if (fft->size() <= _tabLength - pos)
 	{
 		std::transform(fft->output(), fft->output() + fft->size(), _data + pos, normalizeFFT);
@@ -214,7 +215,7 @@ void SubtractionManager::copyOutputSimple(unsigned int pos)
 	}
 }
 
-void SubtractionManager::copyInputOLA(unsigned int pos)
+void SubtractionManager::copyInputOLA(const unsigned int pos)
 {
 	// Data copying
 	if (_ola_frame_increment <= _tabLength - pos) // last case
@@ -233,7 +234,7 @@ void SubtractionManager::copyInputOLA(unsigned int pos)
 	}
 }
 
-void SubtractionManager::copyOutputOLA(unsigned int pos)
+void SubtractionManager::copyOutputOLA(const unsigned int pos)
 {
 	// Lock here
 	//ola_mutex.lock();
@@ -259,7 +260,7 @@ void SubtractionManager::disableOLA()
 	_useOLA = false;
 }
 
-void SubtractionManager::setOLA(bool val)
+void SubtractionManager::setOLA(const bool val)
 {
 	_useOLA = val;
 }
@@ -275,7 +276,7 @@ Estimation *SubtractionManager::getEstimationImplementation() const
 	return estimation.get();
 }
 
-void SubtractionManager::setEstimationImplementation(Estimation *value)
+void SubtractionManager::setEstimationImplementation(Estimation *const value)
 {
 	estimation.reset(value);
 	estimation->onFFTSizeUpdate();
@@ -287,7 +288,7 @@ bool SubtractionManager::bypass()
 }
 
 
-unsigned int SubtractionManager::getFrameIncrement()
+unsigned int SubtractionManager::getFrameIncrement() const
 {
 	return _useOLA? _ola_frame_increment : _std_frame_increment;
 }
@@ -297,7 +298,7 @@ Subtraction *SubtractionManager::getSubtractionImplementation() const
 	return subtraction.get();
 }
 
-void SubtractionManager::setSubtractionImplementation(Subtraction* value)
+void SubtractionManager::setSubtractionImplementation(Subtraction * const value)
 {
 	subtraction.reset(value);
 	subtraction->onFFTSizeUpdate();
@@ -308,7 +309,7 @@ unsigned int SubtractionManager::getSamplingRate() const
 	return _samplingRate;
 }
 
-void SubtractionManager::setSamplingRate(unsigned int value)
+void SubtractionManager::setSamplingRate(const unsigned int value)
 {
 	_samplingRate = value;
 	onFFTSizeUpdate();

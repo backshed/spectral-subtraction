@@ -26,14 +26,19 @@ FFTWManager::~FFTWManager()
 		fftw_cleanup();
 }
 
-void FFTWManager::forward()
+void FFTWManager::forward() const
 {
 	fftw_execute(plan_fw);
 }
 
-void FFTWManager::backward()
+void FFTWManager::backward() const
 {
 	fftw_execute(plan_bw);
+}
+
+double FFTWManager::normalizationFactor() const
+{
+	return 1.0 / size();
 }
 
 void FFTWManager::updateSize(const unsigned int n)

@@ -12,14 +12,14 @@ class Subtraction
 {
 	public:
 
-		Subtraction(SubtractionManager& configuration);
+		Subtraction(const SubtractionManager& configuration);
 		virtual ~Subtraction();
 		/**
 		 * @brief Functor : performs the subtraction algorithm.
 		 * @param input_spectrum Input spectrum to subtract
 		 * @param noise_spectrum Estimated noise spectrum for this frame.
 		 */
-		virtual void operator()(std::complex<double>* input_spectrum, double* noise_spectrum) = 0;
+		virtual void operator()(std::complex<double>* const input_spectrum, const double* const noise_spectrum) = 0;
 
 		/**
 		 * @brief Actions to perform if the FFT size changes.
@@ -36,5 +36,5 @@ class Subtraction
 		virtual void onDataUpdate() = 0;
 
 	protected:
-		SubtractionManager& conf;
+		const SubtractionManager& conf;
 };

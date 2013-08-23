@@ -7,13 +7,13 @@
 #include "mathutils/spline.hpp"
 #include "subtraction_manager.h"
 
-EqualLoudnessSpectralSubtraction::EqualLoudnessSpectralSubtraction(SubtractionManager &configuration):
+EqualLoudnessSpectralSubtraction::EqualLoudnessSpectralSubtraction(const SubtractionManager &configuration):
 	SimpleSpectralSubtraction(configuration)
 {
 }
 
 
-void EqualLoudnessSpectralSubtraction::operator()(std::complex<double> *input_spectrum, double *noise_spectrum)
+void EqualLoudnessSpectralSubtraction::operator()(std::complex<double>* const input_spectrum, const double * const noise_spectrum)
 {
 	#pragma omp parallel for
 	for (auto i = 0U; i < conf.spectrumSize(); ++i)
@@ -52,8 +52,10 @@ void EqualLoudnessSpectralSubtraction::loadLoudnessContour()
 	// Because on french OS linux will try to read numbers with commas instead of dots
 #endif
 
-	std::ifstream ldata("60phon/loudness_real.data");
 	MathUtil::Spline spline;
+
+	std::ifstream ldata("60phon/loudness_real.data");
+
 	double freq, val;
 	while(ldata >> freq >> val)
 	{
@@ -83,7 +85,7 @@ double EqualLoudnessSpectralSubtraction::alphawt() const
 	return _alphawt;
 }
 
-void EqualLoudnessSpectralSubtraction::setAlphawt(double value)
+void EqualLoudnessSpectralSubtraction::setAlphawt(const double value)
 {
 	_alphawt = std::max(value, 0.000001);
 }
@@ -92,7 +94,7 @@ double EqualLoudnessSpectralSubtraction::betawt() const
 	return _betawt;
 }
 
-void EqualLoudnessSpectralSubtraction::setBetawt(double value)
+void EqualLoudnessSpectralSubtraction::setBetawt(const double value)
 {
 	_betawt = std::max(value, 0.000001);
 }

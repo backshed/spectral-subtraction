@@ -3,7 +3,7 @@
 #include "pair.h"
 
 
-Pair::Pair(int x, int y):
+Pair::Pair(const unsigned int x, const unsigned int y):
 	x(x), y(y)
 {
 }

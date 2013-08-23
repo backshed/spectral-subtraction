@@ -25,7 +25,7 @@ struct Point : public Pair
 		 * @param y
 		 * @param invalid
 		 */
-		Point(int x, int y, bool invalid = false);
+		Point(const unsigned int x, const unsigned int y, const bool invalid = false);
 
 		/**
 		 * @brief Checks validity.

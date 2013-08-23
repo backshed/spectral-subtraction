@@ -43,9 +43,9 @@ void Area::plotArea(Matrix &m)
 	}
 }
 
-void Area::plotContour(Matrix &m, unsigned int i, unsigned int j)
+void Area::plotContour(Matrix &m, Matrix::size_type i, Matrix::size_type j)
 {
-	int i_orig = i, j_orig = j;
+	auto i_orig = i, j_orig = j;
 
 	x0 = i;
 	Point p;

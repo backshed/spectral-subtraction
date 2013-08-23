@@ -46,7 +46,7 @@ class Area
 		 * @param i Column.
 		 * @param j Line.
 		 */
-		void plotContour(Matrix &m, unsigned int i, unsigned int j);
+		void plotContour(Matrix &m, Matrix::size_type i, Matrix::size_type j);
 
 		/**
 		 * @brief Computes useful parameters from the values in the matrix.

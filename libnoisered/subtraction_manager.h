@@ -26,7 +26,7 @@ class SubtractionManager
 		 * @param fft_Size Wanted size of FFT. 256 or 512 are good choices. Must be a power of two.
 		 * @param sampling_Rate Sampling rate of the audio.
 		 */
-		SubtractionManager(int fft_Size, int sampling_Rate);
+		SubtractionManager(const unsigned int fft_Size, const unsigned int sampling_Rate);
 
 		/**
 		 * @brief Destructor.
@@ -39,7 +39,7 @@ class SubtractionManager
 		 *
 		 * @return double Pointer to the modified buffer.
 		 */
-		double *getData();
+		double *getData() const;
 
 		/**
 		 * @brief Generates all the data needed from the given parameters
@@ -53,7 +53,7 @@ class SubtractionManager
 		 *
 		 * @return unsigned int size.
 		 */
-		unsigned int getLength();
+		unsigned int getLength() const;
 
 		/**
 		 * @brief Returns the original buffer, to perform NRR computation for instance.
@@ -68,7 +68,7 @@ class SubtractionManager
 		 * @param str Path to the file.
 		 * @return unsigned int Size of the file.
 		 */
-		unsigned int readFile(char *str);
+		unsigned int readFile(const char *const str);
 
 		/**
 		 * @brief Reads a buffer into the internal buffer.
@@ -77,14 +77,14 @@ class SubtractionManager
 		 * @param length Length of the buffer.
 		 * @return unsigned int Length of the buffer (useless?).
 		 */
-		unsigned int readBuffer(short *buffer, int length);
+		unsigned int readBuffer(const short *const buffer, const unsigned int length);
 
 		/**
 		 * @brief Writes into a buffer.
 		 *
 		 * @param buffer Pointer to the buffer to write to.
 		 */
-		void writeBuffer(short *buffer);
+		void writeBuffer(short * const buffer) const;
 
 		/**
 		 * @brief Undoes all change on the processed audio data.
@@ -107,7 +107,7 @@ class SubtractionManager
 		 *
 		 * @param value Number of iterations.
 		 */
-		void setIterations(int value);
+		void setIterations(const unsigned int value);
 
 
 		/**
@@ -125,7 +125,7 @@ class SubtractionManager
 		 *
 		 * @param value FFT size.
 		 */
-		void setFftSize(unsigned int value);
+		void setFftSize(const unsigned int value);
 
 		/**
 		 * @brief Returns the size of the spectrum.
@@ -151,7 +151,7 @@ class SubtractionManager
 		 *
 		 * @param value Sampling rate.
 		 */
-		void setSamplingRate(unsigned int value);
+		void setSamplingRate(const unsigned int value);
 
 		/**
 		 * @brief Reads parameters from subtraction.conf file.
@@ -178,7 +178,7 @@ class SubtractionManager
 		 * @brief setSubtractionImplementation
 		 * @param value Subtraction to use.
 		 */
-		void setSubtractionImplementation(Subtraction *value);
+		void setSubtractionImplementation(Subtraction * const value);
 
 		/**
 		 * @brief getFrameIncrement
@@ -187,7 +187,7 @@ class SubtractionManager
 		 *
 		 * @return Number of samples in each frame.
 		 */
-		unsigned int getFrameIncrement();
+		unsigned int getFrameIncrement() const;
 
 		/**
 		 * @brief getEstimationImplementation
@@ -199,7 +199,7 @@ class SubtractionManager
 		 * @brief setEstimationImplementation
 		 * @param value Estimation to use.
 		 */
-		void setEstimationImplementation(Estimation* value);
+		void setEstimationImplementation(Estimation * const value);
 
 		/**
 		 * @brief bypass
@@ -220,7 +220,7 @@ class SubtractionManager
 		 * @brief setOLA To set overlap-add with a boolean.
 		 * @param val True to enable, false to disable.
 		 */
-		void setOLA(bool val);
+		void setOLA(const bool val);
 		/**
 		 * @brief OLAenabled
 		 * @return true if overlap-add is enabled.
@@ -247,28 +247,28 @@ class SubtractionManager
 		 *
 		 * @param pos Sample where the copy must start.
 		 */
-		void copyInput(unsigned int pos);
+		void copyInput(const unsigned int pos);
 
 		/**
 		 * @brief copyOutput High level handler for output copying.
 		 *
 		 * @param pos Sample where the copy must start.
 		 */
-		void copyOutput(unsigned int pos);
+		void copyOutput(const unsigned int pos);
 
 		/**
 		 * @brief Copies untouched value into inner fft-sized buffer for transformation.
 		 *
 		 * @param pos Sample where the copy must start.
 		 */
-		void copyInputSimple(unsigned int pos);
+		void copyInputSimple(const unsigned int pos);
 
 		/**
 		 * @brief Copies subtracted values into file or large buffer after transformation.
 		 *
 		 * @param pos Sample where the copy must start.
 		 */
-		void copyOutputSimple(unsigned int pos);
+		void copyOutputSimple(const unsigned int pos);
 
 		/**
 		 * @brief Copies untouched value into inner fft-sized buffer for transformation.
@@ -277,7 +277,7 @@ class SubtractionManager
 		 *
 		 * @param pos
 		 */
-		void copyInputOLA(unsigned int pos);
+		void copyInputOLA(const unsigned int pos);
 
 		/**
 		 * @brief Copies subtracted values into file or large buffer after transformation.
@@ -288,7 +288,7 @@ class SubtractionManager
 		 *
 		 * @param pos
 		 */
-		void copyOutputOLA(unsigned int pos);
+		void copyOutputOLA(const unsigned int pos);
 
 
 		//*** Members ***//

@@ -9,16 +9,10 @@
 class EqualLoudnessSpectralSubtraction : public SimpleSpectralSubtraction
 {
 	public:
-		EqualLoudnessSpectralSubtraction(SubtractionManager& configuration);
+		EqualLoudnessSpectralSubtraction(const SubtractionManager& configuration);
 		~EqualLoudnessSpectralSubtraction();
 
-		/**
-		 * @brief Performs spectral subtraction, equal-loudness algorithm.
-		 *
-		 * @param input_spectrum Input spectrum.
-		 * @param noise_power Estimated noise power.
-		 */
-		virtual void operator()(std::complex<double>* input_spectrum, double* noise_spectrum) override;
+		virtual void operator()(std::complex<double>* const input_spectrum, const double * const noise_spectrum) override;
 		virtual void onFFTSizeUpdate() override;
 		virtual void onDataUpdate() override;
 
@@ -36,7 +30,7 @@ class EqualLoudnessSpectralSubtraction : public SimpleSpectralSubtraction
 		 *
 		 * @param value alpha_wt.
 		 */
-		void setAlphawt(double value);
+		void setAlphawt(const double value);
 
 		/**
 		 * @brief Returns weighted beta, for Equal-Loudness algorithm.
@@ -50,7 +44,7 @@ class EqualLoudnessSpectralSubtraction : public SimpleSpectralSubtraction
 		 *
 		 * @param value beta_wt.
 		 */
-		void setBetawt(double value);
+		void setBetawt(const double value);
 
 
 	private:

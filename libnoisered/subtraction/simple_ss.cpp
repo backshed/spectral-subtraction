@@ -4,7 +4,7 @@
 #include "mathutils/math_util.h"
 #include "subtraction_manager.h"
 
-SimpleSpectralSubtraction::SimpleSpectralSubtraction(SubtractionManager& configuration):
+SimpleSpectralSubtraction::SimpleSpectralSubtraction(const SubtractionManager& configuration):
 	Subtraction(configuration)
 {
 }
@@ -14,7 +14,7 @@ SimpleSpectralSubtraction::~SimpleSpectralSubtraction()
 
 }
 
-void SimpleSpectralSubtraction::operator()(std::complex<double> *input_spectrum, double* noise_spectrum)
+void SimpleSpectralSubtraction::operator()(std::complex<double> * const input_spectrum,const  double* const noise_spectrum)
 {
 #pragma omp parallel for
 	for (auto i = 0U; i < conf.spectrumSize(); ++i)
@@ -48,7 +48,7 @@ double SimpleSpectralSubtraction::alpha() const
 	return _alpha;
 }
 
-void SimpleSpectralSubtraction::setAlpha(double value)
+void SimpleSpectralSubtraction::setAlpha(const double value)
 {
 	_alpha = std::max(value, 0.000001);
 }
@@ -58,7 +58,7 @@ double SimpleSpectralSubtraction::beta() const
 	return _beta;
 }
 
-void SimpleSpectralSubtraction::setBeta(double value)
+void SimpleSpectralSubtraction::setBeta(const double value)
 {
 	_beta = std::max(value, 0.000001);
 }

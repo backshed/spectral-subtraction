@@ -35,7 +35,7 @@ void martinEstimation(std::complex<double> *spectrum, int nrf, double *x, double
 	static bool *lminflag = nullptr;
 	static double **actbuf = nullptr;
 
-	static MartinNoiseParams qq;
+	static MartinEstimation::MartinNoiseParams qq;
 
 	static int nu;
 	static int ibuf;

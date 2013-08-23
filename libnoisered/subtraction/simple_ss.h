@@ -9,7 +9,7 @@
 class SimpleSpectralSubtraction : public Subtraction
 {
 	public:
-		SimpleSpectralSubtraction(SubtractionManager& configuration);
+		SimpleSpectralSubtraction(const SubtractionManager& configuration);
 		~SimpleSpectralSubtraction();
 
 		/**
@@ -18,7 +18,7 @@ class SimpleSpectralSubtraction : public Subtraction
 		 * @param input_spectrum Input spectrum.
 		 * @param noise_power Estimated noise power.
 		 */
-		virtual void operator()(std::complex<double>* input_spectrum, double* noise_spectrum) override;
+		virtual void operator()(std::complex<double>* const input_spectrum, const double * const noise_spectrum) override;
 		virtual void onFFTSizeUpdate() override;
 		virtual void onDataUpdate() override;
 
@@ -34,7 +34,7 @@ class SimpleSpectralSubtraction : public Subtraction
 		 *
 		 * @param value alpha.
 		 */
-		void setAlpha(double value);
+		void setAlpha(const double value);
 
 		/**
 		 * @brief Returns beta.
@@ -48,7 +48,7 @@ class SimpleSpectralSubtraction : public Subtraction
 		 *
 		 * @param value beta.
 		 */
-		void setBeta(double value);
+		void setBeta(const double value);
 
 	protected:
 		double _alpha; /**< TODO */

@@ -5,7 +5,7 @@
 #include "mathutils/math_util.h"
 #include "subtraction_manager.h"
 
-GeometricSpectralSubtraction::GeometricSpectralSubtraction(SubtractionManager &configuration):
+GeometricSpectralSubtraction::GeometricSpectralSubtraction(const SubtractionManager &configuration):
 	Subtraction(configuration)
 {
 }
@@ -34,7 +34,7 @@ void GeometricSpectralSubtraction::onFFTSizeUpdate()
 }
 
 
-void GeometricSpectralSubtraction::operator ()(std::complex<double>* input_spectrum, double* noise_spectrum)
+void GeometricSpectralSubtraction::operator ()(std::complex<double>* const input_spectrum, const double * const noise_spectrum)
 {
 	static const double geom_alpha = 0.98, geom_beta = 0.98;
 	static const double twentysixdb = pow(10., -26. / 20.);

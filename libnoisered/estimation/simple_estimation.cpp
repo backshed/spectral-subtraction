@@ -35,7 +35,7 @@ void SimpleEstimation::specific_onFFTSizeUpdate()
 
 }
 
-bool SimpleEstimation::updateNoise(std::complex<double> *in)
+bool SimpleEstimation::updateNoise(const std::complex<double> * const in)
 {
 	// We estimate the RMS power and compare it to previous noise power
 	double current_rms = std::sqrt(MathUtil::mapReduce_n(in, conf.spectrumSize(), 0.0, MathUtil::CplxToPower, std::plus<double>()) / conf.spectrumSize());

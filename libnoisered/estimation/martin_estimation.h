@@ -1,22 +1,6 @@
 #pragma once
 #include "estimation_algorithm.h"
 
-struct MartinNoiseParams
-{
-	double taca;
-	double tamax;
-	double taminh;
-	double tpfall;
-	double tbmax;
-	double qeqmin;
-	double qeqmax;
-	double av;
-	double td;
-	int nu;
-	double qith[4];
-	double nsmdb[4];
-};
-
 
 /**
  * @brief Performs a noise estimation according to the Martin noise estimation algorithm.
@@ -73,7 +57,25 @@ class MartinEstimation: public Estimation
 		bool *lminflag = nullptr;
 		double **actbuf = nullptr;
 
-		MartinNoiseParams qq;
+		/**
+		 * @brief The MartinNoiseParams struct
+		 * Used for Martin Noise Estimation.
+		 */
+		struct MartinNoiseParams
+		{
+			double taca;
+			double tamax;
+			double taminh;
+			double tpfall;
+			double tbmax;
+			double qeqmin;
+			double qeqmax;
+			double av;
+			double td;
+			int nu;
+			double qith[4];
+			double nsmdb[4];
+		} qq;
 
 		unsigned int nu;
 		int ibuf;
