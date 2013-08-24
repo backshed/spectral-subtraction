@@ -56,7 +56,7 @@ void CWTNoiseEstimator::initialize(SubtractionManager &config)
 	areaParams = std::vector<CWTNoiseEstimator::areaParams_>(config.spectrumSize(), areaParams_());
 	s = Signal(config.FFTSize(), NULL, NULL, 1.0, "signal");
 
-	arr = Matrix(config.FFTSize() + 4, (AMAX - AMIN) / ASTP + 4);
+	arr = MaskedMatrix(config.FFTSize() + 4, (AMAX - AMIN) / ASTP + 4);
 	copyFromWT = new ArrayValueFilter([&](unsigned int i, unsigned int j) { arr[i][j] = wt->mag(j, i) / fftSize; });
 }
 

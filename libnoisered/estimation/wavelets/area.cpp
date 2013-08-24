@@ -8,7 +8,7 @@ Area::Area():
 {
 }
 
-void Area::removeArea(Matrix &m)
+void Area::removeArea(MaskedMatrix &m)
 {
 	for (auto i = x0; i < x0 + length; ++i)
 	{
@@ -20,7 +20,7 @@ void Area::removeArea(Matrix &m)
 	}
 }
 
-void Area::plotArea(Matrix &m)
+void Area::plotArea(MaskedMatrix &m)
 {
 	std::cout << "x0 " << x0 << "   length " << length << std::endl;
 	for (auto i = 0U; i < m.size(); ++i)
@@ -42,7 +42,7 @@ void Area::plotArea(Matrix &m)
 	}
 }
 
-void Area::plotContour(Matrix &m, Matrix::size_type i, Matrix::size_type j)
+void Area::plotContour(MaskedMatrix &m, MaskedMatrix::size_type i, MaskedMatrix::size_type j)
 {
 	auto i_orig = i, j_orig = j;
 
@@ -90,7 +90,7 @@ void Area::plotContour(Matrix &m, Matrix::size_type i, Matrix::size_type j)
 	m.mask(i_orig, j_orig);
 }
 
-void Area::computeParameters(Matrix &m)
+void Area::computeParameters(MaskedMatrix &m)
 {
 	for (auto i = x0 + 1; i < x0 + length - 1; ++i)
 	{

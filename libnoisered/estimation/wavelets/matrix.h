@@ -2,17 +2,14 @@
 #include <vector>
 #include "point.h"
 
-
-//TODO : make a pure matrix class and inherit from it to serve CWT purposes.
 /**
  * @brief Represents a double-valued matrix.
  *
  * Access is in column - row fashion, because this is more efficient for the algorithm used and for cache locality.
  *
  */
-class Matrix
+class MaskedMatrix
 {
-
 	public:
 		typedef std::vector<std::vector<double>>::size_type size_type;
 		/**
@@ -21,10 +18,10 @@ class Matrix
 		 * @param cols Number of columns.
 		 * @param rows Number of rows.
 		 */
-		Matrix(const size_type cols, const size_type rows);
-		Matrix();
+		MaskedMatrix(const size_type cols, const size_type rows);
+		MaskedMatrix();
 
-		Matrix& operator=(const Matrix&);
+		MaskedMatrix& operator=(const MaskedMatrix&);
 		//Matrix& operator=(Matrix&&);
 		std::vector<double>& operator[](size_type n);
 		size_type size();

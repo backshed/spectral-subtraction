@@ -90,7 +90,7 @@ class CWTNoiseEstimator
 		Signal s = Signal(); /**< TODO */
 		LinearRangeFunctor scales = LinearRangeFunctor(AMIN, ASTP, AMAX); /**< TODO */
 		WTransform *wt = nullptr; /**< TODO */
-		Matrix arr = Matrix(); /**< TODO */
+		MaskedMatrix arr = MaskedMatrix(); /**< TODO */
 		std::vector<Area> areas = std::vector<Area>(); /**< TODO */
 
 		/**
