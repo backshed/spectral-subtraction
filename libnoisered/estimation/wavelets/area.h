@@ -18,7 +18,7 @@ class Area
 		 *
 		 * @param m Matrix on which this area applies.
 		 */
-		Area(Matrix &m);
+		Area();
 
 		/**
 		 * @brief Removes the area from the mask.
@@ -108,13 +108,12 @@ class Area
 		const Point getMax() const;
 
 	private:
-		Matrix &m; /**< TODO */
-		Point max_pt; /**< TODO */
-		unsigned int minHeight; /**< TODO */
+		Point max_pt = Point(); /**< TODO */
+		unsigned int minHeight = 0; /**< TODO */
 		unsigned int maxHeight = 0; /**< TODO */
 		unsigned int x0 = 0; /**< TODO */
 		unsigned int length = 0; /**< TODO */
-		std::vector<Pair> pairList; /**< TODO */
+		std::vector<Pair> pairList = std::vector<Pair>(); /**< TODO */
 
 		double sumOfValues = 0; /**< TODO */
 		unsigned int numPixels = 0; /**< TODO */

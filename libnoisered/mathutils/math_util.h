@@ -120,7 +120,7 @@ namespace MathUtil
 	 * @param length Length of tab
 	 * @return Energy
 	 */
-	double energy(const double * const tab, const unsigned int length);
+	double energy(const double *tab, const unsigned int length);
 
 	/**
 	 * @brief abssum Returns the sum of the absolute values in an array
@@ -129,7 +129,7 @@ namespace MathUtil
 	 * @param length Length of tab
 	 * @return Sum of the absolute values
 	 */
-	double abssum(const double * const tab, const unsigned int length);
+	double abssum(const double *tab, const unsigned int length);
 
 	/**
 	 * @brief Puts a signed 16bit integer (red book) between the -1 / 1 range in double.

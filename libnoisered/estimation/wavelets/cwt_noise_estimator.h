@@ -15,6 +15,10 @@ using namespace cwtlib;
  */
 typedef std::function<void (unsigned int, unsigned int)> ArrayValueFilter;
 
+#define AMIN 0                  /* A min  */
+#define ASTP 0.05               /* A step */
+#define AMAX 64                 /* A max  */
+
 /**
  * @brief This class performs the proposed musical tone reduction method using wavelet transform.
  *
@@ -27,6 +31,9 @@ class CWTNoiseEstimator
 		 */
 		CWTNoiseEstimator();
 
+		CWTNoiseEstimator(const CWTNoiseEstimator&other);
+		const CWTNoiseEstimator& operator=(const CWTNoiseEstimator&);
+		~CWTNoiseEstimator();
 		/**
 		 * @brief Performs musical tones estimation.
 		 *
@@ -71,7 +78,7 @@ class CWTNoiseEstimator
 			int numAreas; /**< Number of areas */
 			double mean; /**< Mean value of these areas */
 		};
-		std::vector<CWTNoiseEstimator::areaParams_> *areaParams; /**< TODO */
+		std::vector<CWTNoiseEstimator::areaParams_> areaParams = std::vector<CWTNoiseEstimator::areaParams_>(); /**< TODO */
 
 		/**
 		 * @brief Clear area parameters.
@@ -80,11 +87,11 @@ class CWTNoiseEstimator
 		inline void clearAreaParams();
 
 		//**** For CWTLib ****//
-		Signal *s; /**< TODO */
-		LinearRangeFunctor *scales; /**< TODO */
-		WTransform *wt; /**< TODO */
-		Matrix *arr; /**< TODO */
-		std::vector<Area *> areas; /**< TODO */
+		Signal s = Signal(); /**< TODO */
+		LinearRangeFunctor scales = LinearRangeFunctor(AMIN, ASTP, AMAX); /**< TODO */
+		WTransform *wt = nullptr; /**< TODO */
+		Matrix arr = Matrix(); /**< TODO */
+		std::vector<Area> areas = std::vector<Area>(); /**< TODO */
 
 		/**
 		 * @brief Debug function.
@@ -131,7 +138,7 @@ class CWTNoiseEstimator
 		 */
 		void reestimateNoise(double *noise_power);
 
-		ArrayValueFilter *copyFromWT; /**< TODO */
+		ArrayValueFilter *copyFromWT = nullptr; /**< TODO */
 
 		/**
 		 * @brief Unused.
@@ -139,9 +146,9 @@ class CWTNoiseEstimator
 		 */
 		void createFilterBinsSeparation();
 
-		unsigned int fftSize; /**< TODO */
-		unsigned int spectrumSize; /**< TODO */
-		unsigned int samplingRate; /**< TODO */
+		unsigned int fftSize = 0; /**< TODO */
+		unsigned int spectrumSize = 0; /**< TODO */
+		unsigned int samplingRate = 0; /**< TODO */
 
 		/**
 		 * @brief Gets frequency from a vertical pixel in the WT.
@@ -159,4 +166,3 @@ class CWTNoiseEstimator
 		 */
 		unsigned int getFFTBin(int pixel);
 };
-

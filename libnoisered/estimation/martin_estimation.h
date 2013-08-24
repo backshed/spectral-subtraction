@@ -21,10 +21,10 @@
  */
 class MartinEstimation: public Estimation
 {
-		friend void martinEstimation(std::complex<double> *spectrum, int nrf, double *x, double tinc, bool reinit, bool lastcall);
 	public:
 		MartinEstimation(SubtractionManager& configuration);
 		virtual ~MartinEstimation();
+		virtual Estimation* clone() override;
 		virtual bool operator()(std::complex<double>* input_spectrum);
 
 	protected:
@@ -32,30 +32,10 @@ class MartinEstimation: public Estimation
 		virtual void specific_onDataUpdate();
 
 	private:
+		void algo(std::complex<double> *spectrum, int nrf, double *x, double tinc, bool reinit, bool lastcall);
 		static void mh_values(double d, double *m, double *h);
 
-		bool reinit = false;
-		int subwc;
-		int segment_number;
-		double *yft = nullptr;
-		double *p = nullptr;
-		double *sn2 = nullptr;
-		double *pb = nullptr;
-		double *pminu = nullptr;
-		double *pb2 = nullptr;
-		double *actmin = nullptr;
-		double *actminsub = nullptr;
-
-		double *ah = nullptr;
-		double *b = nullptr;
-		double *qeqi = nullptr;
-		double *bmind = nullptr;
-		double *bminv = nullptr;
-		double *lmin = nullptr;
-		double *qisq = nullptr;
-		bool *kmod = nullptr;
-		bool *lminflag = nullptr;
-		double **actbuf = nullptr;
+		bool _reinit = false;
 
 		/**
 		 * @brief The MartinNoiseParams struct
@@ -75,21 +55,5 @@ class MartinEstimation: public Estimation
 			int nu;
 			double qith[4];
 			double nsmdb[4];
-		} qq;
-
-		unsigned int nu;
-		int ibuf;
-		double ac;
-		double aca;
-		double acmax;
-		double amax;
-		double aminh;
-		double bmax;
-		double snrexp;
-		double nv, nd;
-		double md, hd, mv, hv;
-		double qeqimax;
-		double qeqimin;
-		double nsms[4];
-
+		};
 };

@@ -10,7 +10,10 @@ class EqualLoudnessSpectralSubtraction : public SimpleSpectralSubtraction
 {
 	public:
 		EqualLoudnessSpectralSubtraction(const SubtractionManager& configuration);
+		EqualLoudnessSpectralSubtraction(const EqualLoudnessSpectralSubtraction& el);
+		const EqualLoudnessSpectralSubtraction& operator=(const EqualLoudnessSpectralSubtraction& el);
 		~EqualLoudnessSpectralSubtraction();
+		virtual Subtraction* clone() override;
 
 		virtual void operator()(std::complex<double>* const input_spectrum, const double * const noise_spectrum) override;
 		virtual void onFFTSizeUpdate() override;
@@ -56,9 +59,6 @@ class EqualLoudnessSpectralSubtraction : public SimpleSpectralSubtraction
 		void loadLoudnessContour();
 		double *loudness_contour = nullptr; /**< TODO */
 
-
-		double _alphawt; /**< TODO */
-		double _betawt; /**< TODO */
-
-
+		double _alphawt = 0; /**< TODO */
+		double _betawt = 0; /**< TODO */
 };

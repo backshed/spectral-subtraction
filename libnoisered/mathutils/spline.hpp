@@ -49,6 +49,8 @@ class Spline : private std::vector<std::pair<double, double> >
 		//sets the first derivative (gradient) at the lower and upper
 		//end points
 		Spline():
+			_data(std::vector<SplineData>()),
+			_ddy(ublas::vector<double>()),
 			_valid(false),
 			_BCLow(FIXED_2ND_DERIV_BC), _BCHigh(FIXED_2ND_DERIV_BC),
 			_BCLowVal(0), _BCHighVal(0),
@@ -69,10 +71,10 @@ class Spline : private std::vector<std::pair<double, double> >
 
 		//Add a point to the spline, and invalidate it so its
 		//recalculated on the next access
-		inline void addPoint(double x, double y)
+		inline void addPoint(double x_tmp, double y_tmp)
 		{
 			_valid = false;
-			base::push_back(std::pair<double, double>(x, y));
+			base::push_back(std::pair<double, double>(x_tmp, y_tmp));
 		}
 
 		//Reset the boundary conditions
@@ -144,6 +146,8 @@ class Spline : private std::vector<std::pair<double, double> >
 
 			switch (_BCLow)
 			{
+				default:
+					break;
 				case FIXED_1ST_DERIV_BC:
 					return lx * _BCLowVal + y(0);
 				case FIXED_2ND_DERIV_BC:
@@ -167,6 +171,8 @@ class Spline : private std::vector<std::pair<double, double> >
 
 			switch (_BCHigh)
 			{
+				default:
+					break;
 				case FIXED_1ST_DERIV_BC:
 					return lx * _BCHighVal + y(size() - 1);
 				case FIXED_2ND_DERIV_BC:
@@ -243,6 +249,8 @@ class Spline : private std::vector<std::pair<double, double> >
 
 			switch (_type)
 			{
+				default:
+					break;
 				case LINEAR:
 				{
 					_data.resize(e);
@@ -286,6 +294,8 @@ class Spline : private std::vector<std::pair<double, double> >
 					//Boundary conditions
 					switch (_BCLow)
 					{
+						default:
+							break;
 						case FIXED_1ST_DERIV_BC:
 							C(0) = 6 * ((y(1) - y(0)) / h(0) - _BCLowVal);
 							A(0, 0) = 2 * h(0);
@@ -304,6 +314,8 @@ class Spline : private std::vector<std::pair<double, double> >
 
 					switch (_BCHigh)
 					{
+						default:
+							break;
 						case FIXED_1ST_DERIV_BC:
 							C(e) = 6 * (_BCHighVal - (y(e) - y(e - 1)) / h(e - 1));
 							A(e, e) = 2 * h(e - 1);

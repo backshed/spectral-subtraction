@@ -8,6 +8,10 @@ class FFTManager
 {
 	public:
 		FFTManager();
+		FFTManager(const FFTManager& fm);
+		const FFTManager& operator=(const FFTManager& fm);
+		virtual FFTManager* clone() = 0;
+
 		virtual ~FFTManager();
 
 		/**

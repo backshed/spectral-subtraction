@@ -14,6 +14,11 @@ SimpleSpectralSubtraction::~SimpleSpectralSubtraction()
 
 }
 
+Subtraction *SimpleSpectralSubtraction::clone()
+{
+	return new SimpleSpectralSubtraction(*this);
+}
+
 void SimpleSpectralSubtraction::operator()(std::complex<double> * const input_spectrum,const  double* const noise_spectrum)
 {
 #pragma omp parallel for
@@ -50,7 +55,7 @@ double SimpleSpectralSubtraction::alpha() const
 
 void SimpleSpectralSubtraction::setAlpha(const double value)
 {
-	_alpha = std::max(value, 0.000001);
+	_alpha = std::max(value,  0.0);
 }
 
 double SimpleSpectralSubtraction::beta() const
@@ -60,5 +65,5 @@ double SimpleSpectralSubtraction::beta() const
 
 void SimpleSpectralSubtraction::setBeta(const double value)
 {
-	_beta = std::max(value, 0.000001);
+	_beta = std::max(value,  0.0);
 }

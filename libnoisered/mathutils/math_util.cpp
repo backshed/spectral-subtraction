@@ -15,12 +15,12 @@ namespace MathUtil
 		return std::arg(val);
 	}
 
-	double energy(const double * const tab, const unsigned int length)
+	double energy(const double * tab, const unsigned int length)
 	{
 		return mapReduce_n(tab, length, 0.0, [] (double x) { return std::pow(x, 2);}, std::plus<double>());
 	}
 
-	double abssum(const double *const tab, const unsigned int length)
+	double abssum(const double * tab, const unsigned int length)
 	{
 		return mapReduce_n(tab, length, 0.0, [] (double x) { return std::abs(x); },  std::plus<double>());
 	}
@@ -44,7 +44,7 @@ namespace MathUtil
 
 	short DoubleToShort(const double x)
 	{
-		const double denormalizationFactor = std::pow(2.0, sizeof(short) * 8 - 1.0);
-		return x * denormalizationFactor;
+		const unsigned int denormalizationFactor = (int) std::pow(2, sizeof(short) * 8 - 1);
+		return (short) (x * denormalizationFactor);
 	}
 }

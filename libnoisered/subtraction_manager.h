@@ -27,7 +27,8 @@ class SubtractionManager
 		 * @param sampling_Rate Sampling rate of the audio.
 		 */
 		SubtractionManager(const unsigned int fft_Size, const unsigned int sampling_Rate);
-
+		SubtractionManager(const SubtractionManager& sm);
+		const SubtractionManager& operator=(const SubtractionManager& sm);
 		/**
 		 * @brief Destructor.
 		 *
@@ -68,7 +69,7 @@ class SubtractionManager
 		 * @param str Path to the file.
 		 * @return unsigned int Size of the file.
 		 */
-		unsigned int readFile(const char *const str);
+		unsigned int readFile(const char * str);
 
 		/**
 		 * @brief Reads a buffer into the internal buffer.
@@ -77,7 +78,7 @@ class SubtractionManager
 		 * @param length Length of the buffer.
 		 * @return unsigned int Length of the buffer (useless?).
 		 */
-		unsigned int readBuffer(const short *const buffer, const unsigned int length);
+		unsigned int readBuffer(const short * buffer, const unsigned int length);
 
 		/**
 		 * @brief Writes into a buffer.
@@ -178,7 +179,7 @@ class SubtractionManager
 		 * @brief setSubtractionImplementation
 		 * @param value Subtraction to use.
 		 */
-		void setSubtractionImplementation(Subtraction * const value);
+		void setSubtractionImplementation(Subtraction * value);
 
 		/**
 		 * @brief getFrameIncrement
@@ -199,7 +200,7 @@ class SubtractionManager
 		 * @brief setEstimationImplementation
 		 * @param value Estimation to use.
 		 */
-		void setEstimationImplementation(Estimation * const value);
+		void setEstimationImplementation(Estimation *value);
 
 		/**
 		 * @brief bypass
@@ -292,23 +293,25 @@ class SubtractionManager
 
 
 		//*** Members ***//
-		DataSource _dataSource;
+		DataSource _dataSource = DataSource::Buffer;
 
-		unsigned int _samplingRate; /**< TODO */
-		FFT_p fft;
+		unsigned int _samplingRate = 0; /**< TODO */
+		FFT_p _fft = nullptr;
 
 		// Algorithms
-		Subtraction_p subtraction;
-		Estimation_p  estimation;
+		Subtraction_p _subtraction = nullptr;
+		Estimation_p  _estimation = nullptr;
 
 		// Storage
-		double *_data = nullptr; /**< TODO */
-		double *_origData = nullptr; /**< TODO */
 		unsigned int _tabLength = 0; /**< TODO */
 
+		double *_data = nullptr; /**< TODO */
+		double *_origData = nullptr; /**< TODO */
+
+
 		bool _useOLA = false;
-		unsigned int _ola_frame_increment; /**< TODO */
-		unsigned int _std_frame_increment; /**< TODO */
+		unsigned int _ola_frame_increment = 0; /**< TODO */
+		unsigned int _std_frame_increment = 0; /**< TODO */
 
 		unsigned int _iterations = 1; /**< TODO */
 

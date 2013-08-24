@@ -12,6 +12,9 @@ class Estimation
 {
 	public:
 		Estimation(SubtractionManager& configuration);
+		Estimation(const Estimation& est);
+		const Estimation &operator=(const Estimation& est);
+		virtual Estimation* clone() = 0;
 		virtual ~Estimation();
 		/**
 		 * @brief Executes the estimation algorithm.

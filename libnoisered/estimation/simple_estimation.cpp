@@ -15,6 +15,11 @@ SimpleEstimation::~SimpleEstimation()
 
 }
 
+Estimation *SimpleEstimation::clone()
+{
+	return new SimpleEstimation(*this);
+}
+
 bool SimpleEstimation::operator()(std::complex<double> *input_spectrum)
 {
 	if (updateNoise(input_spectrum))

@@ -12,7 +12,11 @@ class FFTWManager : public FFTManager
 {
 	public:
 		FFTWManager();
+		FFTWManager(const FFTWManager& fm);
+		const FFTWManager &operator=(const FFTWManager& fm);
+
 		virtual ~FFTWManager();
+		virtual FFTManager* clone() override;
 
 		virtual void forward() const override;
 		virtual void backward() const override;

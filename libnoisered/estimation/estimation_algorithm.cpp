@@ -8,6 +8,22 @@ Estimation::Estimation(SubtractionManager &configuration):
 {
 }
 
+Estimation::Estimation(const Estimation &est):
+	conf(est.conf)
+{
+	noise_power = new double[conf.spectrumSize()];
+	std::copy_n(est.noise_power, conf.spectrumSize(), noise_power);
+}
+
+const Estimation &Estimation::operator=(const Estimation &est)
+{
+	delete[] noise_power;
+	noise_power = new double[conf.spectrumSize()];
+	std::copy_n(est.noise_power, conf.spectrumSize(), noise_power);
+
+	return *this;
+}
+
 Estimation::~Estimation()
 {
 	delete[] noise_power;

@@ -10,6 +10,34 @@ GeometricSpectralSubtraction::GeometricSpectralSubtraction(const SubtractionMana
 {
 }
 
+GeometricSpectralSubtraction::GeometricSpectralSubtraction(const GeometricSpectralSubtraction &gs):
+	Subtraction(gs)
+{
+	prev_gamma = new double[conf.spectrumSize()];
+	prev_halfchi = new double[conf.spectrumSize()];
+
+	std::copy_n(gs.prev_gamma, conf.spectrumSize(), prev_gamma);
+	std::copy_n(gs.prev_halfchi, conf.spectrumSize(), prev_halfchi);
+}
+
+const GeometricSpectralSubtraction &GeometricSpectralSubtraction::operator=(const GeometricSpectralSubtraction &gs)
+{
+	delete[] prev_gamma;
+	delete[] prev_halfchi;
+	prev_gamma = new double[conf.spectrumSize()];
+	prev_halfchi = new double[conf.spectrumSize()];
+
+	std::copy_n(gs.prev_gamma, conf.spectrumSize(), prev_gamma);
+	std::copy_n(gs.prev_halfchi, conf.spectrumSize(), prev_halfchi);
+
+	return *this;
+}
+
+Subtraction *GeometricSpectralSubtraction::clone()
+{
+	return new GeometricSpectralSubtraction(*this);
+}
+
 GeometricSpectralSubtraction::~GeometricSpectralSubtraction()
 {
 	delete[] prev_gamma;

@@ -11,6 +11,7 @@ class SimpleSpectralSubtraction : public Subtraction
 	public:
 		SimpleSpectralSubtraction(const SubtractionManager& configuration);
 		~SimpleSpectralSubtraction();
+		virtual Subtraction* clone() override;
 
 		/**
 		 * @brief Performs spectral subtraction, simple algorithm.
@@ -51,7 +52,7 @@ class SimpleSpectralSubtraction : public Subtraction
 		void setBeta(const double value);
 
 	protected:
-		double _alpha; /**< TODO */
-		double _beta; /**< TODO */
+		double _alpha =  0.0; /**< TODO */
+		double _beta =  0.0; /**< TODO */
 
 };

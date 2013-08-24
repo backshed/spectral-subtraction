@@ -13,12 +13,36 @@ WaveletEstimation::WaveletEstimation(SubtractionManager &configuration):
 	cwt_noise_estimator.initialize(conf);
 }
 
+WaveletEstimation::WaveletEstimation(const WaveletEstimation &we):
+	Estimation(we.conf)
+{
+	onFFTSizeUpdate();
+	std::copy_n(we.noise_power_reest, conf.spectrumSize(), noise_power_reest); /**< TODO */
+	std::copy_n(we.tmp_spectrum, conf.spectrumSize(), tmp_spectrum);
+	std::copy_n(we.tmp_out, conf.FFTSize(), tmp_out);
+}
+
+const WaveletEstimation &WaveletEstimation::operator=(const WaveletEstimation &we)
+{
+	onFFTSizeUpdate();
+	std::copy_n(we.noise_power_reest, conf.spectrumSize(), noise_power_reest); /**< TODO */
+	std::copy_n(we.tmp_spectrum, conf.spectrumSize(), tmp_spectrum);
+	std::copy_n(we.tmp_out, conf.FFTSize(), tmp_out);
+
+	return *this;
+}
+
 WaveletEstimation::~WaveletEstimation()
 {
 	delete[] noise_power_reest;
 	fftw_free(tmp_out);
 	fftw_free(tmp_spectrum);
 	fftw_destroy_plan(plan_bw_temp);
+}
+
+Estimation *WaveletEstimation::clone()
+{
+	return new WaveletEstimation(*this);
 }
 
 bool WaveletEstimation::operator()(std::complex<double> *input_spectrum)

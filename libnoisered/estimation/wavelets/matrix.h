@@ -10,9 +10,11 @@
  * Access is in column - row fashion, because this is more efficient for the algorithm used and for cache locality.
  *
  */
-class Matrix : public std::vector<std::vector<double>>
+class Matrix
 {
+
 	public:
+		typedef std::vector<std::vector<double>>::size_type size_type;
 		/**
 		 * @brief Constructor
 		 *
@@ -20,7 +22,12 @@ class Matrix : public std::vector<std::vector<double>>
 		 * @param rows Number of rows.
 		 */
 		Matrix(const size_type cols, const size_type rows);
+		Matrix();
 
+		Matrix& operator=(const Matrix&);
+		//Matrix& operator=(Matrix&&);
+		std::vector<double>& operator[](size_type n);
+		size_type size();
 		/**
 		 * @brief Returns true if a point is adjacent to zero.
 		 *
@@ -116,12 +123,10 @@ class Matrix : public std::vector<std::vector<double>>
 		void unmask(const size_type i, const size_type j);
 
 	private:
-		size_type _colPadding; /**< TODO */
+		size_type _colPadding = 0; /**< TODO */
+		size_type _rowPadding = 0; /**< TODO */
 
-		size_type _rowPadding; /**< TODO */
-
-		size_type _tmp_cols;
-		size_type _tmp_rows;
-
+		std::vector<std::vector<double>> _values; /**< TODO */
 		std::vector<std::vector<double>> _mask; /**< TODO */
+
 };

@@ -9,6 +9,10 @@ class GeometricSpectralSubtraction : public Subtraction
 {
 	public:
 		GeometricSpectralSubtraction(const SubtractionManager& configuration);
+		GeometricSpectralSubtraction(const GeometricSpectralSubtraction& gs);
+		const GeometricSpectralSubtraction &operator=(const GeometricSpectralSubtraction& gs);
+		virtual Subtraction* clone() override;
+
 		virtual ~GeometricSpectralSubtraction();
 
 		virtual void operator()(std::complex<double>* const input_spectrum, const double* const noise_spectrum) override;

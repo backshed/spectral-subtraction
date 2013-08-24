@@ -5,12 +5,12 @@
 
 namespace Eval
 {
-	double NRR(const double *const original, const double * const reduced, const unsigned int length)
+	double NRR(const double *original, const double *reduced, const unsigned int length)
 	{
 		return 10.0 * std::log10(MathUtil::energy(original, length) / MathUtil::energy(reduced, length));
 	}
 
-	double SDR(const double *const original, const double * const reduced, const unsigned int length)
+	double SDR(const double * original, const double * reduced, const unsigned int length)
 	{
 		double gamma = MathUtil::abssum(original, length) / MathUtil::abssum(reduced, length);
 

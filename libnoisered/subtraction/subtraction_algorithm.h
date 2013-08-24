@@ -14,6 +14,7 @@ class Subtraction
 
 		Subtraction(const SubtractionManager& configuration);
 		virtual ~Subtraction();
+		virtual Subtraction* clone() = 0;
 		/**
 		 * @brief Functor : performs the subtraction algorithm.
 		 * @param input_spectrum Input spectrum to subtract
