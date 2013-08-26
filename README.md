@@ -32,6 +32,7 @@ Everything is pre-compiled, just run :
  cd spectral-subtraction/output
  
 For japanese corpus:
+ fbterm
  ./julius_jp.sh 
  
 For english corpus:
