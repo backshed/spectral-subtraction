@@ -5,9 +5,37 @@
 #include "mathutils/math_util.h"
 #include "subtraction_manager.h"
 
-GeometricSpectralSubtraction::GeometricSpectralSubtraction(SubtractionManager &configuration):
+GeometricSpectralSubtraction::GeometricSpectralSubtraction(const SubtractionManager &configuration):
 	Subtraction(configuration)
 {
+}
+
+GeometricSpectralSubtraction::GeometricSpectralSubtraction(const GeometricSpectralSubtraction &gs):
+	Subtraction(gs)
+{
+	prev_gamma = new double[conf.spectrumSize()];
+	prev_halfchi = new double[conf.spectrumSize()];
+
+	std::copy_n(gs.prev_gamma, conf.spectrumSize(), prev_gamma);
+	std::copy_n(gs.prev_halfchi, conf.spectrumSize(), prev_halfchi);
+}
+
+const GeometricSpectralSubtraction &GeometricSpectralSubtraction::operator=(const GeometricSpectralSubtraction &gs)
+{
+	delete[] prev_gamma;
+	delete[] prev_halfchi;
+	prev_gamma = new double[conf.spectrumSize()];
+	prev_halfchi = new double[conf.spectrumSize()];
+
+	std::copy_n(gs.prev_gamma, conf.spectrumSize(), prev_gamma);
+	std::copy_n(gs.prev_halfchi, conf.spectrumSize(), prev_halfchi);
+
+	return *this;
+}
+
+Subtraction *GeometricSpectralSubtraction::clone()
+{
+	return new GeometricSpectralSubtraction(*this);
 }
 
 GeometricSpectralSubtraction::~GeometricSpectralSubtraction()
@@ -34,7 +62,7 @@ void GeometricSpectralSubtraction::onFFTSizeUpdate()
 }
 
 
-void GeometricSpectralSubtraction::operator ()(std::complex<double>* input_spectrum, double* noise_spectrum)
+void GeometricSpectralSubtraction::operator ()(std::complex<double>* const input_spectrum, const double * const noise_spectrum)
 {
 	static const double geom_alpha = 0.98, geom_beta = 0.98;
 	static const double twentysixdb = pow(10., -26. / 20.);

@@ -18,14 +18,14 @@ class Area
 		 *
 		 * @param m Matrix on which this area applies.
 		 */
-		Area(Matrix &m);
+		Area();
 
 		/**
 		 * @brief Removes the area from the mask.
 		 *
 		 * @param m
 		 */
-		void removeArea(Matrix &m);
+		void removeArea(MaskedMatrix &m);
 
 		/**
 		 * @brief Fills the area on the mask.
@@ -34,7 +34,7 @@ class Area
 		 *
 		 * @param m
 		 */
-		void plotArea(Matrix &m);
+		void plotArea(MaskedMatrix &m);
 
 		/**
 		 * @brief Detects and plots the contour of the area on the mask of the matrix.
@@ -46,7 +46,7 @@ class Area
 		 * @param i Column.
 		 * @param j Line.
 		 */
-		void plotContour(Matrix &m, unsigned int i, unsigned int j);
+		void plotContour(MaskedMatrix &m, MaskedMatrix::size_type i, MaskedMatrix::size_type j);
 
 		/**
 		 * @brief Computes useful parameters from the values in the matrix.
@@ -55,7 +55,7 @@ class Area
 		 *
 		 * @param m
 		 */
-		void computeParameters(Matrix &m);
+		void computeParameters(MaskedMatrix &m);
 
 		/**
 		 * @brief Prints the parameters to stdout.
@@ -108,13 +108,12 @@ class Area
 		const Point getMax() const;
 
 	private:
-		Matrix &m; /**< TODO */
-		Point max_pt; /**< TODO */
-		unsigned int minHeight; /**< TODO */
+		Point max_pt = Point(); /**< TODO */
+		unsigned int minHeight = 0; /**< TODO */
 		unsigned int maxHeight = 0; /**< TODO */
 		unsigned int x0 = 0; /**< TODO */
 		unsigned int length = 0; /**< TODO */
-		std::vector<Pair> pairList; /**< TODO */
+		std::vector<Pair> pairList = std::vector<Pair>(); /**< TODO */
 
 		double sumOfValues = 0; /**< TODO */
 		unsigned int numPixels = 0; /**< TODO */

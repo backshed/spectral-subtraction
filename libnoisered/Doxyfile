@@ -1876,3 +1876,6 @@ GENERATE_LEGEND        = YES
 # the various graphs.
 
 DOT_CLEANUP            = YES
+
+INPUT += introduction.md
+FILE_PATTERNS += *.md

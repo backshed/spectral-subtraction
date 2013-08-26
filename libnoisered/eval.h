@@ -14,7 +14,7 @@ namespace Eval
 	*
 	* @return double NRR.
 	*/
-	double NRR(double *original, double *reduced, unsigned int length);
+	double NRR(const double * original, const double * reduced, const unsigned int length);
 
 	// Computes speech distortion quantity
 	/**
@@ -28,5 +28,5 @@ namespace Eval
 	*
 	* @return double SDR.
 	*/
-	double SDR(double *original, double *reduced, unsigned int length);
+	double SDR(const double * original, const double * reduced, const unsigned int length);
 }

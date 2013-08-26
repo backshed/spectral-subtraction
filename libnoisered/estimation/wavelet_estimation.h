@@ -12,7 +12,11 @@ class WaveletEstimation : public Estimation
 {
 	public:
 		WaveletEstimation(SubtractionManager& configuration);
+		WaveletEstimation(const WaveletEstimation& we);
+		const WaveletEstimation& operator=(const WaveletEstimation& we);
+
 		virtual ~WaveletEstimation();
+		virtual Estimation* clone() override;
 		virtual bool operator()(std::complex<double>* input_spectrum);
 
 		virtual double *noisePower();
@@ -26,7 +30,7 @@ class WaveletEstimation : public Estimation
 		double cwt_astp = 0.05;
 		double cwt_amax = 64;
 
-		CWTNoiseEstimator cwt_noise_estimator; /**< TODO */
+		CWTNoiseEstimator cwt_noise_estimator = CWTNoiseEstimator(); /**< TODO */
 
 		double *noise_power_reest = nullptr; /**< TODO */
 

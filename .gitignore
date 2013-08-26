@@ -41,6 +41,8 @@ TemporaryGeneratedFile_*
 # LaTeX stuff
 *.synctex.gz
 build-*
+build/
+*.lib
 *.toc
 *.aux
 *.bbl

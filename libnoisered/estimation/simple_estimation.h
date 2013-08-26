@@ -11,6 +11,7 @@ class SimpleEstimation : public Estimation
 	public:
 		SimpleEstimation(SubtractionManager& configuration);
 		virtual ~SimpleEstimation();
+		virtual Estimation* clone() override;
 		virtual bool operator()(std::complex<double>* input_spectrum);
 
 	protected:
@@ -29,7 +30,7 @@ class SimpleEstimation : public Estimation
 		 * @param old_rms Previous RMS value.
 		 * @return bool True if the noise power estimation changed.
 		 */
-		bool updateNoise(std::complex<double> *in);
-		double noise_rms;
+		bool updateNoise(const std::complex<double> * const in);
+		double noise_rms = 100000;
 
 };

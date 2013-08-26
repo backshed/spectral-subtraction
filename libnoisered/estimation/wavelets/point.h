@@ -15,6 +15,7 @@ struct Point : public Pair
 		 * Initializes a valid point at (0, 0).
 		 */
 		Point();
+		virtual ~Point();
 
 		/**
 		 * @brief Constructor.
@@ -25,7 +26,7 @@ struct Point : public Pair
 		 * @param y
 		 * @param invalid
 		 */
-		Point(int x, int y, int invalid = false);
+		Point(const unsigned int _x, const unsigned int _y, const bool invalid = false);
 
 		/**
 		 * @brief Checks validity.
@@ -37,7 +38,7 @@ struct Point : public Pair
 		double val = 0; /**< TODO */
 
 	private:
-		bool invalid; /**< TODO */
+		bool _invalid = false; /**< TODO */
 
 };
 

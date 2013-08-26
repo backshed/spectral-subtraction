@@ -3,9 +3,22 @@
 
 unsigned int FFTWManager::_num_instances = 0;
 
-FFTWManager::FFTWManager()
+FFTWManager::FFTWManager():
+	FFTManager()
 {
 	_num_instances++;
+}
+
+FFTWManager::FFTWManager(const FFTWManager &fm):
+	FFTWManager()
+{
+	updateSize(fm._fftSize);
+}
+
+const FFTWManager &FFTWManager::operator=(const FFTWManager &fm)
+{
+	updateSize(fm._fftSize);
+	return *this;
 }
 
 FFTWManager::~FFTWManager()
@@ -26,14 +39,24 @@ FFTWManager::~FFTWManager()
 		fftw_cleanup();
 }
 
-void FFTWManager::forward()
+FFTManager *FFTWManager::clone()
+{
+	return new FFTWManager(*this);
+}
+
+void FFTWManager::forward() const
 {
 	fftw_execute(plan_fw);
 }
 
-void FFTWManager::backward()
+void FFTWManager::backward() const
 {
 	fftw_execute(plan_bw);
+}
+
+double FFTWManager::normalizationFactor() const
+{
+	return 1.0 / size();
 }
 
 void FFTWManager::updateSize(const unsigned int n)

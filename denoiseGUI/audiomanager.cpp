@@ -45,13 +45,13 @@ void AudioManager::exec()
 
 	if(data->useMartin)
 	{
-		s_mgr.setEstimationImplementation(std::shared_ptr<Estimation>(new MartinEstimation(s_mgr)));
+		s_mgr.setEstimationImplementation(new MartinEstimation(s_mgr));
 		s_mgr.enableOLA();
 	}
 	else if(data->enableWavelets)
-		s_mgr.setEstimationImplementation(std::shared_ptr<Estimation>(new WaveletEstimation(s_mgr)));
+		s_mgr.setEstimationImplementation(new WaveletEstimation(s_mgr));
 	else
-		s_mgr.setEstimationImplementation(std::shared_ptr<Estimation>(new SimpleEstimation(s_mgr)));
+		s_mgr.setEstimationImplementation(new SimpleEstimation(s_mgr));
 
 
 	switch(data->model)
@@ -62,7 +62,7 @@ void AudioManager::exec()
 			SimpleSpectralSubtraction* subtraction = new SimpleSpectralSubtraction(s_mgr);
 			subtraction->setAlpha(data->alphaBsc);
 			subtraction->setBeta(data->betaBsc);
-			s_mgr.setSubtractionImplementation(std::shared_ptr<Subtraction>(subtraction));
+			s_mgr.setSubtractionImplementation(subtraction);
 			break;
 		}
 		case DataHolder::EQUAL_LOUDNESS:
@@ -72,13 +72,13 @@ void AudioManager::exec()
 			subtraction->setBeta(data->betaBsc);
 			subtraction->setAlphawt(data->alphaWt);
 			subtraction->setBetawt(data->betaWt);
-			s_mgr.setSubtractionImplementation(std::shared_ptr<Subtraction>(subtraction));
+			s_mgr.setSubtractionImplementation(subtraction);
 			break;
 		}
 		case DataHolder::GA:
 		{
 			GeometricSpectralSubtraction* subtraction = new GeometricSpectralSubtraction(s_mgr);
-			s_mgr.setSubtractionImplementation(std::shared_ptr<Subtraction>(subtraction));
+			s_mgr.setSubtractionImplementation(subtraction);
 			s_mgr.enableOLA();
 			break;
 		}

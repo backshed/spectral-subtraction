@@ -8,19 +8,17 @@
 class GeometricSpectralSubtraction : public Subtraction
 {
 	public:
-		GeometricSpectralSubtraction(SubtractionManager& configuration);
+		GeometricSpectralSubtraction(const SubtractionManager& configuration);
+		GeometricSpectralSubtraction(const GeometricSpectralSubtraction& gs);
+		const GeometricSpectralSubtraction &operator=(const GeometricSpectralSubtraction& gs);
+		virtual Subtraction* clone() override;
+
 		virtual ~GeometricSpectralSubtraction();
 
-		/**
-		 * @brief Performs spectral subtraction, geometric algorithm.
-		 *
-		 * @param input_spectrum Input spectrum.
-		 * @param noise_power Estimated noise power.
-		 */
-		virtual void operator()(std::complex<double>* input_spectrum, double* noise_spectrum);
+		virtual void operator()(std::complex<double>* const input_spectrum, const double* const noise_spectrum) override;
 
-		virtual void onFFTSizeUpdate();
-		virtual void onDataUpdate();
+		virtual void onFFTSizeUpdate() override;
+		virtual void onDataUpdate() override;
 
 	private:
 		double *prev_gamma = nullptr; /**< TODO */

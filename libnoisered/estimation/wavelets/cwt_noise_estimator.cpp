@@ -3,30 +3,47 @@
 #include <iostream>
 #include <fstream>
 
-#include "subtraction_manager.h"
+#include "../../subtraction_manager.h"
 #include "cwt_noise_estimator.h"
 
-#define AMIN 0                  /* A min  */
-#define ASTP 0.05               /* A step */
-#define AMAX 64                 /* A max  */
+
 
 #define PLOT_CWT
 
-CWTNoiseEstimator::CWTNoiseEstimator():
-	areaParams(nullptr),
-	s(nullptr),
-	scales(nullptr),
-	arr(nullptr),
-	copyFromWT(nullptr)
+CWTNoiseEstimator::CWTNoiseEstimator()
 {
+}
+
+CWTNoiseEstimator::CWTNoiseEstimator(const CWTNoiseEstimator & other):
+	areaParams(other.areaParams),
+	s(other.s),
+	wt(other.wt->clone()),
+	arr(other.arr),
+	areas(other.areas),
+	copyFromWT(new ArrayValueFilter([&](unsigned int i, unsigned int j) { arr[i][j] = wt->mag(j, i) / fftSize; }))
+{
+}
+
+const CWTNoiseEstimator &CWTNoiseEstimator::operator=(const CWTNoiseEstimator & other)
+{
+	s = other.s;
+	areaParams = other.areaParams;
+	arr = other.arr;
+	areas = other.areas;
+
+	wt = other.wt->clone();
+	copyFromWT = new ArrayValueFilter([&](unsigned int i, unsigned int j) { arr[i][j] = wt->mag(j, i) / fftSize; });
+	return *this;
+}
+
+CWTNoiseEstimator::~CWTNoiseEstimator()
+{
+	delete wt;
+	delete copyFromWT;
 }
 
 void CWTNoiseEstimator::clean()
 {
-	delete areaParams;
-	delete s;
-	delete scales;
-	delete arr;
 	delete copyFromWT;
 }
 
@@ -36,11 +53,11 @@ void CWTNoiseEstimator::initialize(SubtractionManager &config)
 	spectrumSize = config.spectrumSize();
 	fftSize = config.FFTSize();
 
-	areaParams = new std::vector<CWTNoiseEstimator::areaParams_>(config.spectrumSize(), areaParams_());
-	s = new Signal(config.FFTSize(), NULL, NULL, 1.0, "signal");
-	scales = new LinearRangeFunctor(AMIN, ASTP, AMAX);
-	arr = new Matrix(config.FFTSize() + 4, (AMAX - AMIN) / ASTP + 4);
-	copyFromWT = new ArrayValueFilter([&](unsigned int i, unsigned int j) { (*arr)[i][j] = wt->mag(j, i) / fftSize; });
+	areaParams = std::vector<CWTNoiseEstimator::areaParams_>(config.spectrumSize(), areaParams_());
+	s = Signal(config.FFTSize(), NULL, NULL, 1.0, "signal");
+
+	arr = MaskedMatrix(config.FFTSize() + 4, (AMAX - AMIN) / ASTP + 4);
+	copyFromWT = new ArrayValueFilter([&](unsigned int i, unsigned int j) { arr[i][j] = wt->mag(j, i) / fftSize; });
 }
 
 void CWTNoiseEstimator::writeFiles(std::string dir, int file_no)
@@ -50,8 +67,8 @@ void CWTNoiseEstimator::writeFiles(std::string dir, int file_no)
 	{
 		for (auto j = 0U; j < wt->cols() + 2; j++)
 		{
-			std::string s = std::string(" " + std::to_string((*arr)[j][i]));
-			file.write(s.c_str(), s.length());
+			std::string s_tmp = std::string(" " + std::to_string(arr[j][i]));
+			file.write(s_tmp.c_str(), s_tmp.length());
 		}
 		file.write(std::string("\n").c_str(), 1);
 	}
@@ -64,8 +81,8 @@ void CWTNoiseEstimator::writeFiles(std::string dir, int file_no)
 	{
 		for (auto j = 0U; j < wt->cols() + 2; j++)
 		{
-			file.write(QString(" %1").arg((*arr)[j][i]).toLatin1().data());
-			//          file.write(QString(" %1").arg((arr->getMask())[j][i]).toLatin1().data());
+			file.write(QString(" %1").arg(arr[j][i]).toLatin1().data());
+			//          file.write(QString(" %1").arg((arr.getMask())[j][i]).toLatin1().data());
 		}
 		file.write("\n");
 	}
@@ -76,7 +93,7 @@ void CWTNoiseEstimator::writeFiles(std::string dir, int file_no)
 
 void CWTNoiseEstimator::computeCWT(double *signal)
 {
-	ReDataProxy data = s->reData();
+	ReDataProxy data = s.reData();
 
 	// remplir data
 	for (auto i = 0U; i < fftSize; ++i)
@@ -84,43 +101,41 @@ void CWTNoiseEstimator::computeCWT(double *signal)
 		data[i] = signal[i];
 	}
 
-	wt = CWTalgorithm::cwtft(*s, *scales, ComplexMorlet(), "NOPE");
-	arr->setColPadding(2);
-	arr->setRowPadding(2);
+	wt = CWTalgorithm::cwtft(s, scales, ComplexMorlet(), "NOPE");
+	arr.setColPadding(2);
+	arr.setRowPadding(2);
 }
 
 void CWTNoiseEstimator::computeAreas()
 {
 	areas.clear();
-	for (unsigned int i = arr->getColPadding(); i < wt->cols(); ++i)
-		for (unsigned int j = arr->getRowPadding(); j < wt->rows(); ++j)
-			if ((*arr)[i][j] > 0)
+	for (unsigned int i = arr.getColPadding(); i < wt->cols(); ++i)
+		for (unsigned int j = arr.getRowPadding(); j < wt->rows(); ++j)
+			if (arr[i][j] > 0)
 			{
-				if (arr->isMasked(i, j)) // already explored area
+				if (arr.isMasked(i, j)) // already explored area
 				{
-					while ((*arr)[i][++j] > 0); // need to find more efficient way, by using Area* and jumping
+					while (arr[i][++j] > 0); // need to find more efficient way, by using Area* and jumping
 				}
 				else
 				{
-					Area *a = new Area((*arr));
-					a->plotContour((*arr), i, j);
-					if (a->getWidth() > 1)
+					Area a;// = new Area();
+					a.plotContour(arr, i, j);
+					if (a.getWidth() > 1)
 					{
-						a->computeParameters((*arr));
-						if (a->verticalSize() < 100) // Limiting the frequency span of an area
+						a.computeParameters(arr);
+						if (a.verticalSize() < 100) // Limiting the frequency span of an area
 						{
 							areas.push_back(a);
 						}
 						else
 						{
-							a->removeArea((*arr));
-							delete a;
+							a.removeArea(arr);
 						}
 					}
 					else
 					{
-						a->removeArea((*arr));
-						delete a;
+						a.removeArea(arr);
 					}
 				}
 			}
@@ -133,11 +148,11 @@ void CWTNoiseEstimator::estimate(double *signal_in, double *noise_power, bool co
 
 	// Lambdas initialisation
 	ArrayValueFilter lowCeiling([&](unsigned int i, unsigned int j)
-		{ (*arr)[i][j] = ((*arr)[i][j] > ceil) ? (*arr)[i][j] : 0; });
+	{ arr[i][j] = (arr[i][j] > ceil) ? arr[i][j] : 0; });
 	ArrayValueFilter dblCeiling([&](unsigned int i, unsigned int j)
-		{ (*arr)[i][j] = ((*arr)[i][j] > ceil) ? (((*arr)[i][j] < upperceil) ? (*arr)[i][j] : 0) : 0; });
+	{ arr[i][j] = (arr[i][j] > ceil) ? ((arr[i][j] < upperceil) ? arr[i][j] : 0) : 0; });
 	ArrayValueFilter updateMax([&](unsigned int i, unsigned int j)
-		{ maxi = std::max(maxi, (*arr)[i][j]); });
+	{ maxi = std::max(maxi, arr[i][j]); });
 
 	computeCWT(signal_in);
 
@@ -151,7 +166,7 @@ void CWTNoiseEstimator::estimate(double *signal_in, double *noise_power, bool co
 	// Apply ceiling
 	//TODO Get a good ceiling estimation
 	//if (computeMax)
-		ceil = 0.03; // maxi - 10.0 / fftSize; // 0.03;
+	ceil = 0.03; // maxi - 10.0 / fftSize; // 0.03;
 	applyToArr({lowCeiling});
 
 
@@ -184,18 +199,17 @@ void CWTNoiseEstimator::createFilterBinsSeparation()
 void CWTNoiseEstimator::computeAreasParameters()
 {
 	// Computation of mean musical tone power for each frequency bin
-	areaParams->clear();
-	for (Area * area : areas)
+	areaParams.clear();
+	for (Area  area : areas)
 	{
-		if (area->getWidth() >= 2 && area->getNumPixels() > 4)
+		if (area.getWidth() >= 2 && area.getNumPixels() > 4)
 		{
-			//          int bin = std::min(spectrumSize - 1, std::max((unsigned int) 0, getFFTBin(area->getMedianHeight())));
-			int bin = std::min(spectrumSize - 1, std::max((unsigned int) 0, getFFTBin(area->getMax().y - 2)));
-			(*areaParams)[bin].numAreas += 1;
-			//          (*areaParams)[bin].mean     += area->getSumOfValues() / area->getNumPixels();
-			(*areaParams)[bin].mean     += area->getMax().val;
+			//          int bin = std::min(spectrumSize - 1, std::max((unsigned int) 0, getFFTBin(area.getMedianHeight())));
+			int bin = std::min(spectrumSize - 1, std::max((unsigned int) 0, getFFTBin(area.getMax()._y - 2)));
+			areaParams[bin].numAreas += 1;
+			//          areaParams[bin].mean     += area.getSumOfValues() / area.getNumPixels();
+			areaParams[bin].mean     += area.getMax().val;
 		}
-		delete area;
 	}
 }
 
@@ -204,19 +218,19 @@ void CWTNoiseEstimator::reestimateNoise(double *noise_power)
 	// Decrease of the power according to estimation
 	for (auto i = 0U; i < spectrumSize; ++i)
 	{
-		if ((*areaParams)[i].numAreas != 0  && (*areaParams)[i].mean > 0 && (*areaParams)[i].mean < 1000)
+		if (areaParams[i].numAreas != 0  && areaParams[i].mean > 0 && areaParams[i].mean < 1000)
 		{
 			//TODO get a good power estimation
-			//          qDebug() << "noise_power[" << i << "] =" << noise_power[i] << "  subtracted= " << (*areaParams)[i].mean / (*areaParams)[i].numAreas;
-			noise_power[i] = std::max(0.0, noise_power[i] -  pow((*areaParams)[i].mean, 2.0) / (*areaParams)[i].numAreas);
+			//          qDebug() << "noise_power[" << i << "] =" << noise_power[i] << "  subtracted= " << areaParams[i].mean / areaParams[i].numAreas;
+			noise_power[i] = std::max(0.0, noise_power[i] -  pow(areaParams[i].mean, 2.0) / areaParams[i].numAreas);
 		}
 	}
 }
 
 void CWTNoiseEstimator::applyToArr(std::initializer_list<ArrayValueFilter> funs)
 {
-	for (unsigned int i = arr->getColPadding(); i < wt->cols(); ++i)
-		for (unsigned int j = arr->getRowPadding(); j < wt->rows(); ++j)
+	for (auto i = arr.getColPadding(); i < wt->cols(); ++i)
+		for (auto j = arr.getRowPadding(); j < wt->rows(); ++j)
 			for (auto f : funs)
 				f(i, j);
 }
@@ -236,7 +250,7 @@ void CWTNoiseEstimator::writeSimpleCWT(double *signal_in)
 
 void CWTNoiseEstimator::clearAreaParams()
 {
-	std::fill_n(areaParams->begin(), areaParams->size(), areaParams_());
+	std::fill_n(areaParams.begin(), areaParams.size(), areaParams_());
 }
 
 

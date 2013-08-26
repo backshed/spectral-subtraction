@@ -1,6 +1,8 @@
 #pragma once
 #include <complex>
-
+#include <functional>
+#include <iterator>
+#include <type_traits>
 //! Mathematic utilities.
 namespace MathUtil
 {
@@ -9,14 +11,14 @@ namespace MathUtil
 	 * @param val Complex value
 	 * @return x^2 + y^2
 	 */
-	double CplxToPower(std::complex<double> val);
+	double CplxToPower(const std::complex<double> val);
 
 	/**
 	 * @brief Converts a complex into a double corresponding to its phase.
 	 * @param val Complex value
 	 * @return arc tan(y, x)
 	 */
-	double CplxToPhase(std::complex<double> val);
+	double CplxToPhase(const std::complex<double> val);
 
 
 
@@ -28,7 +30,7 @@ namespace MathUtil
 	 * @param phaseoutput Phase output.
 	 * @param size Size of array.
 	 */
-	void computePowerAndPhaseSpectrum(std::complex<double> *in, double *powoutput, double *phaseoutput, unsigned int size);
+	void computePowerAndPhaseSpectrum(const std::complex<double> * const in, double * const powoutput, double * const phaseoutput, const unsigned int size);
 
 
 	/**
@@ -41,8 +43,12 @@ namespace MathUtil
 	 * @param map Mapping function. Must take an element of type *InputIterator, and return an element of type T.
 	 * @param reduce Reduction function. Must take two elements of type T and return an element of type T. std::plus is a good candidate most of the time.
 	 */
-	template <class T, class InputIterator, class MapFunction, class ReductionFunction>
-	T mapReduce_n(InputIterator in, unsigned int size, T baseval, MapFunction map, ReductionFunction reduce)
+	template <typename T, typename InputIterator, typename MapFunction, typename ReductionFunction>
+	T mapReduce_n(const InputIterator in,
+				  const unsigned int size,
+				  const T baseval,
+				  const MapFunction map,
+				  const ReductionFunction reduce)
 	{
 		T val = baseval;
 
@@ -77,7 +83,7 @@ namespace MathUtil
 	 * @param reduce Reduction function. Must take two elements of type T and return an element of type T. std::plus is a good candidate most of the time.
 	 */
 	template <class T, class InputIterator, class InputIterator2,  class MapFunction, class ReductionFunction>
-	T mapReduce2_n(InputIterator in, InputIterator2 in2, unsigned int size, T baseval, MapFunction map, ReductionFunction reduce)
+	T mapReduce2_n(const InputIterator in, const InputIterator2 in2, const unsigned int size, const T baseval, const MapFunction map, const ReductionFunction reduce)
 	{
 		T val = baseval;
 
@@ -105,7 +111,7 @@ namespace MathUtil
 	 * @param powoutput Power output.
 	 * @param size Size of array.
 	 */
-	void computePowerSpectrum(std::complex<double> *in, double *powoutput, unsigned int size);
+	void computePowerSpectrum(const std::complex<double> * const in, double * const powoutput, const unsigned int size);
 
 	/**
 	 * @brief energy Returns the average energy for a full spectrum
@@ -114,7 +120,7 @@ namespace MathUtil
 	 * @param length Length of tab
 	 * @return Energy
 	 */
-	double energy(double *tab, unsigned int length);
+	double energy(const double *tab, const unsigned int length);
 
 	/**
 	 * @brief abssum Returns the sum of the absolute values in an array
@@ -123,7 +129,7 @@ namespace MathUtil
 	 * @param length Length of tab
 	 * @return Sum of the absolute values
 	 */
-	double abssum(double *tab, unsigned int length);
+	double abssum(const double *tab, const unsigned int length);
 
 	/**
 	 * @brief Puts a signed 16bit integer (red book) between the -1 / 1 range in double.
@@ -131,13 +137,13 @@ namespace MathUtil
 	 * @param x Integer to convert.
 	 * @return double Corresponding floating point value.
 	 */
-	double ShortToDouble(short x);
+	double ShortToDouble(const short x);
 	/**
 	 * @brief Puts a double between -1 and 1 into a 16 bit signed integer (red book).
 	 *
 	 * @param x Double to convert.
 	 * @return short Corresponding short value.
 	 */
-	short DoubleToShort(double x);
+	short DoubleToShort(const double x);
 
 }

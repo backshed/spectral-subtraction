@@ -12,6 +12,9 @@ class Estimation
 {
 	public:
 		Estimation(SubtractionManager& configuration);
+		Estimation(const Estimation& est);
+		const Estimation &operator=(const Estimation& est);
+		virtual Estimation* clone() = 0;
 		virtual ~Estimation();
 		/**
 		 * @brief Executes the estimation algorithm.
@@ -24,7 +27,7 @@ class Estimation
 		 *
 		 * Most of the buffers will have to change.
 		 */
-		virtual void onFFTSizeUpdate();
+		virtual void onFFTSizeUpdate() final;
 
 		/**
 		 * @brief Actions to perform if the data changes a lot.
@@ -32,7 +35,7 @@ class Estimation
 		 * For instance, discard previous data saved by the algorithms which would not have sense anymore.
 		 * In particular, reset the noise estimation.
 		 */
-		virtual void onDataUpdate();
+		virtual void onDataUpdate() final;
 
 		/**
 		 * @brief noisePower

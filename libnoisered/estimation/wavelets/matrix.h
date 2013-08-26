@@ -2,25 +2,29 @@
 #include <vector>
 #include "point.h"
 
-
-//TODO : make a pure matrix class and inherit from it to serve CWT purposes.
 /**
  * @brief Represents a double-valued matrix.
  *
  * Access is in column - row fashion, because this is more efficient for the algorithm used and for cache locality.
  *
  */
-class Matrix : public std::vector<std::vector<double>>
+class MaskedMatrix
 {
 	public:
+		typedef std::vector<std::vector<double>>::size_type size_type;
 		/**
 		 * @brief Constructor
 		 *
 		 * @param cols Number of columns.
 		 * @param rows Number of rows.
 		 */
-		Matrix(size_type cols, size_type rows);
+		MaskedMatrix(const size_type cols, const size_type rows);
+		MaskedMatrix();
 
+		MaskedMatrix& operator=(const MaskedMatrix&);
+		//Matrix& operator=(Matrix&&);
+		std::vector<double>& operator[](size_type n);
+		size_type size();
 		/**
 		 * @brief Returns true if a point is adjacent to zero.
 		 *
@@ -30,7 +34,7 @@ class Matrix : public std::vector<std::vector<double>>
 		 * @param j Line.
 		 * @return bool True if matrix[i][j] is adjacent to 0.
 		 */
-		bool is_adjacent_to_zero(int i, int j);
+		bool is_adjacent_to_zero(const size_type i, const size_type j);
 
 		/**
 		 * @brief Returns one of the nearest unexplored point which is adjacent to zero.
@@ -44,7 +48,7 @@ class Matrix : public std::vector<std::vector<double>>
 		 *
 		 * @return Point A Point which satisfies the conditions.
 		 */
-		Point next_adjacent_to_zero(unsigned int i, unsigned int j, unsigned int x0);
+		Point next_adjacent_to_zero(const size_type i, const size_type j, const size_type x0);
 
 		/**
 		 * @brief Returns the mask of the matrix.
@@ -68,7 +72,7 @@ class Matrix : public std::vector<std::vector<double>>
 		 *
 		 * @param value Column.
 		 */
-		void setColPadding(const unsigned int &value);
+		void setColPadding(const size_type  &value);
 
 		/**
 		 * @brief Returns the row at which the data starts.
@@ -84,7 +88,7 @@ class Matrix : public std::vector<std::vector<double>>
 		 *
 		 * @param value Row.
 		 */
-		void setRowPadding(const unsigned int &value);
+		void setRowPadding(const size_type  &value);
 
 		const unsigned int mask_value = 2; /**< TODO */
 
@@ -97,7 +101,7 @@ class Matrix : public std::vector<std::vector<double>>
 		 * @param j Row.
 		 * @return bool True if matrix[i][j] is masked.
 		 */
-		bool isMasked(unsigned int i, unsigned int j);
+		bool isMasked(const size_type i, const size_type j);
 
 		/**
 		 * @brief Masks the value at (i, j).
@@ -105,7 +109,7 @@ class Matrix : public std::vector<std::vector<double>>
 		 * @param i Column.
 		 * @param j Row.
 		 */
-		void mask(unsigned int i, unsigned int j);
+		void mask(const size_type i, const size_type j);
 
 		/**
 		 * @brief Unmasks the value at (i, j).
@@ -113,15 +117,13 @@ class Matrix : public std::vector<std::vector<double>>
 		 * @param i Column.
 		 * @param j Row.
 		 */
-		void unmask(unsigned int i, unsigned int j);
+		void unmask(const size_type i, const size_type j);
 
 	private:
-		unsigned int _colPadding; /**< TODO */
-		unsigned int numCols; /**< TODO */
-		unsigned int _rowPadding; /**< TODO */
-		unsigned int numRows; /**< TODO */
-		unsigned int _tmp_cols;
-		unsigned int _tmp_rows;
+		size_type _colPadding = 0; /**< TODO */
+		size_type _rowPadding = 0; /**< TODO */
 
+		std::vector<std::vector<double>> _values; /**< TODO */
 		std::vector<std::vector<double>> _mask; /**< TODO */
+
 };
