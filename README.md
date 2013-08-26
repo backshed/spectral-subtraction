@@ -25,8 +25,8 @@ To build everything :
 Note about the BeagleBoard
 ==========================
 
-Login: debian
-Password: temppwd
+- Login: debian
+- Password: temppwd
 
 Everything is pre-compiled, just run : 
  cd spectral-subtraction/output
