@@ -16,7 +16,24 @@ not work.
 To build everything :
 - Check the makefile for the julius URL
 - Download and configure julius:
-      make juliusinit 
+ make juliusinit 
+      
 - Build everything: (Output is in output/ folder)
-      make all
+ make all
 
+
+Note about the BeagleBoard
+==========================
+
+Login: debian
+Password: temppwd
+
+Everything is pre-compiled, just run : 
+ cd spectral-subtraction/output
+ 
+For japanese corpus:
+ ./julius_jp.sh 
+ 
+For english corpus:
+ ./julius_en.sh
+ 
