@@ -7,23 +7,29 @@
  *TODO replace with std::pair ?
  *
  */
+template<typename T>
 struct Pair
 {
-	/**
-	 * @brief Constructor.
-	 *
-	 * @param x
-	 * @param y
-	 */
-	Pair(const unsigned int x, const unsigned int y);
-	virtual ~Pair();
+	public:
+		/**
+		* @brief Constructor.
+		*
+		* @param x
+		* @param y
+		*/
+		Pair(const T x, const T y):
+			_x(x), _y(y)
+		{
+		}
 
-	unsigned int _x, _y; /**< TODO */
-	/**
-	 * @brief Debug : displays the value of the point on stdout.
-	 *
-	 */
-	void display();
+		virtual ~Pair()
+		{
+
+		}
+
+
+		T _x, _y; /**< TODO */
+
 };
 
 #pragma once

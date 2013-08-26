@@ -38,7 +38,7 @@ namespace MathUtil
 
 	double ShortToDouble(const short x)
 	{
-		const double normalizationFactor = 1.0 / std::pow(2.0, sizeof(short) * 8 - 1.0);
+		const double normalizationFactor = 1.0 / std::pow(2, sizeof(short) * 8 - 1);
 		return x * normalizationFactor;
 	}
 

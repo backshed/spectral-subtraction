@@ -68,21 +68,21 @@ class Area
 		 *
 		 * @return int Biggest height.
 		 */
-		int verticalSize();
+		MaskedMatrix::size_type verticalSize();
 
 		/**
 		 * @brief Returns the median height pixel.
 		 *
 		 * @return int Median height.
 		 */
-		int getMedianHeight();
+		MaskedMatrix::size_type getMedianHeight();
 
 		/**
 		 * @brief Returns the biggest horizontal size of the area.
 		 *
 		 * @return unsigned int Biggest width.
 		 */
-		unsigned int getWidth() const;
+		MaskedMatrix::size_type getWidth() const;
 
 		/**
 		 * @brief Returns the sum of the values in the area.
@@ -105,18 +105,18 @@ class Area
 		 *
 		 * @return const Point Point with the max. value in the area.
 		 */
-		const Point getMax() const;
+		const Point<MaskedMatrix::size_type> getMax() const;
 
 	private:
-		Point max_pt = Point(); /**< TODO */
-		unsigned int minHeight = 0; /**< TODO */
-		unsigned int maxHeight = 0; /**< TODO */
-		unsigned int x0 = 0; /**< TODO */
-		unsigned int length = 0; /**< TODO */
-		std::vector<Pair> pairList = std::vector<Pair>(); /**< TODO */
+		Point<MaskedMatrix::size_type> max_pt = Point<MaskedMatrix::size_type>(); /**< TODO */
+		MaskedMatrix::size_type minHeight = 0; /**< TODO */
+		MaskedMatrix::size_type maxHeight = 0; /**< TODO */
+		MaskedMatrix::size_type x0 = 0; /**< TODO */
+		MaskedMatrix::size_type length = 0; /**< TODO */
+		std::vector<Pair<MaskedMatrix::size_type>> pairList = std::vector<Pair<MaskedMatrix::size_type>>(); /**< TODO */
 
 		double sumOfValues = 0; /**< TODO */
 		unsigned int numPixels = 0; /**< TODO */
 
-		unsigned int medianHeight = 0; /**< TODO */
+		MaskedMatrix::size_type medianHeight = 0; /**< TODO */
 };

@@ -47,7 +47,7 @@ void Area::plotContour(MaskedMatrix &m, MaskedMatrix::size_type i, MaskedMatrix:
 	auto i_orig = i, j_orig = j;
 
 	x0 = i;
-	Point p;
+	Point<MaskedMatrix::size_type> p;
 
 	auto add_point = [&]()
 	{
@@ -55,7 +55,7 @@ void Area::plotContour(MaskedMatrix &m, MaskedMatrix::size_type i, MaskedMatrix:
 		j = p._y;
 		if (i >= x0 + length)
 		{
-			pairList.push_back(Pair(j, j));
+			pairList.push_back(Pair<MaskedMatrix::size_type>(j, j));
 			++length;
 		}
 		else
@@ -120,12 +120,12 @@ void Area::printParameters()
 	std::cout << "Max:  Val: " << max_pt.val << "\t\t (x, y) : (" << max_pt._x << ", " << max_pt._y << ")" << std::endl;
 }
 
-int Area::getMedianHeight()
+MaskedMatrix::size_type Area::getMedianHeight()
 {
 	return medianHeight - 2; // we cover for the 2 pixels displacement
 }
 
-unsigned int Area::getWidth() const
+MaskedMatrix::size_type Area::getWidth() const
 {
 	return length;
 }
@@ -140,12 +140,12 @@ unsigned int Area::getNumPixels() const
 	return numPixels;
 }
 
-const Point Area::getMax() const
+const Point<MaskedMatrix::size_type> Area::getMax() const
 {
 	return max_pt;
 }
 
-int Area::verticalSize()
+MaskedMatrix::size_type Area::verticalSize()
 {
 	return maxHeight - minHeight;
 }

@@ -48,7 +48,7 @@ class MaskedMatrix
 		 *
 		 * @return Point A Point which satisfies the conditions.
 		 */
-		Point next_adjacent_to_zero(const size_type i, const size_type j, const size_type x0);
+		Point<size_type> next_adjacent_to_zero(const size_type i, const size_type j, const size_type x0);
 
 		/**
 		 * @brief Returns the mask of the matrix.
@@ -65,7 +65,7 @@ class MaskedMatrix
 		 *
 		 * @return unsigned int Column.
 		 */
-		unsigned int getColPadding() const;
+		size_type getColPadding() const;
 
 		/**
 		 * @brief Sets the column at which the data starts.
@@ -81,7 +81,7 @@ class MaskedMatrix
 		 *
 		 * @return unsigned int Row.
 		 */
-		unsigned int getRowPadding() const;
+		size_type getRowPadding() const;
 
 		/**
 		 * @brief Sets the row at which the data starts.

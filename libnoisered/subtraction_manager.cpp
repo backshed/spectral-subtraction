@@ -180,7 +180,7 @@ unsigned int SubtractionManager::getLength() const
 unsigned int SubtractionManager::readFile(const char *str)
 {
 	std::ifstream ifile(str, std::ios_base::ate | std::ios_base::binary);
-	_tabLength = ((unsigned int) ifile.tellg()) / (sizeof(short) / sizeof(char));
+	_tabLength = ((unsigned int) ifile.tellg()) / (unsigned int) (sizeof(short) / sizeof(char));
 	ifile.clear();
 	ifile.seekg(0, std::ios_base::beg);
 

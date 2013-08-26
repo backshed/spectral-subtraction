@@ -21,12 +21,12 @@ AudioManager::AudioManager()
 	stream.setByteOrder(QDataStream::LittleEndian);
 
 	audioBuffer->seek(0);
-	for(auto i = 0U; i < 8192; ++i)
+	/*for(auto i = 0U; i < 8192; ++i)
 	{
 		stream << 0;
 	}
 	audioBuffer->seek(0);
-
+	*/
 	audioOut = new QAudioOutput(format, this);
 
 	//connect(audioOut, SIGNAL(stateChanged(QAudio::State)), this, SLOT(handleStateChanged(QAudio::State)));
@@ -34,10 +34,8 @@ AudioManager::AudioManager()
 
 void AudioManager::writeAudio(short* ext_buffer, unsigned int len)
 {
-#ifdef __arm__
 	data->append((const char*) ext_buffer, len * sizeof(short));
-#else
-	qint64 pos = audioBuffer->pos();
+/*	qint64 pos = audioBuffer->pos();
 	audioBuffer->seek(audioBuffer->size());
 
 
@@ -49,7 +47,7 @@ void AudioManager::writeAudio(short* ext_buffer, unsigned int len)
 		stream << ext_buffer[i];
 	}
 	audioBuffer->seek(pos);
-#endif
+*/
 	if(audioOut->state() != QAudio::ActiveState)
 		play();
 }
@@ -62,7 +60,7 @@ void AudioManager::play()
 
 void AudioManager::stop()
 {
-	if(audioOut->state() == QAudio::ActiveState)
+	if(audioOut->state() != QAudio::ActiveState)
 	{
 		audioOut->stop();
 		audioBuffer->seek(0);
@@ -70,14 +68,13 @@ void AudioManager::stop()
 }
 void AudioManager::handleStateChanged(QAudio::State newState)
 {
-	audioBuffer->seek(0);
 	switch (newState) {
 		case QAudio::IdleState:
-			//audioOut->start(audioBuffer);
+			audioOut->start(audioBuffer);
 			break;
 
 		case QAudio::StoppedState:
-			//audioOut->start(audioBuffer);
+			audioOut->start(audioBuffer);
 			break;
 
 		default:

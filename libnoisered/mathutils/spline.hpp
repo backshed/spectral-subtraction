@@ -57,6 +57,11 @@ class Spline : private std::vector<std::pair<double, double> >
 			_type(CUBIC)
 		{}
 
+		~Spline()
+		{
+
+		}
+
 		typedef std::vector<std::pair<double, double> > base;
 		typedef base::const_iterator const_iterator;
 
@@ -199,7 +204,7 @@ class Spline : private std::vector<std::pair<double, double> >
 			permutation_matrix<std::size_t> pm(A.size1());
 
 			// perform LU-factorization
-			int res = lu_factorize(A, pm);
+			auto res = lu_factorize(A, pm);
 			if (res != 0) { return false; }
 
 			// create identity matrix of "inverse"

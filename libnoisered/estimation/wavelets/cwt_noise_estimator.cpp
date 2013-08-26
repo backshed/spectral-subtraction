@@ -42,11 +42,6 @@ CWTNoiseEstimator::~CWTNoiseEstimator()
 	delete copyFromWT;
 }
 
-void CWTNoiseEstimator::clean()
-{
-	delete copyFromWT;
-}
-
 void CWTNoiseEstimator::initialize(SubtractionManager &config)
 {
 	samplingRate = config.getSamplingRate();
@@ -109,8 +104,8 @@ void CWTNoiseEstimator::computeCWT(double *signal)
 void CWTNoiseEstimator::computeAreas()
 {
 	areas.clear();
-	for (unsigned int i = arr.getColPadding(); i < wt->cols(); ++i)
-		for (unsigned int j = arr.getRowPadding(); j < wt->rows(); ++j)
+	for (auto i = arr.getColPadding(); i < wt->cols(); ++i)
+		for (auto j = arr.getRowPadding(); j < wt->rows(); ++j)
 			if (arr[i][j] > 0)
 			{
 				if (arr.isMasked(i, j)) // already explored area
@@ -205,7 +200,7 @@ void CWTNoiseEstimator::computeAreasParameters()
 		if (area.getWidth() >= 2 && area.getNumPixels() > 4)
 		{
 			//          int bin = std::min(spectrumSize - 1, std::max((unsigned int) 0, getFFTBin(area.getMedianHeight())));
-			int bin = std::min(spectrumSize - 1, std::max((unsigned int) 0, getFFTBin(area.getMax()._y - 2)));
+			MaskedMatrix::size_type bin = std::min(spectrumSize - 1LU, std::max(0LU, getFFTBin(((long long) area.getMax()._y - (long long) 2))));
 			areaParams[bin].numAreas += 1;
 			//          areaParams[bin].mean     += area.getSumOfValues() / area.getNumPixels();
 			areaParams[bin].mean     += area.getMax().val;
@@ -254,16 +249,16 @@ void CWTNoiseEstimator::clearAreaParams()
 }
 
 
-double CWTNoiseEstimator::getFreq(int pixel)
+double CWTNoiseEstimator::getFreq(MaskedMatrix::size_type pixel)
 {
-	return 259500.0 / (pixel - 2.0); // two pixel padding
+	return 259500.0 / double(pixel - 2); // two pixel padding
 }
 
-unsigned int CWTNoiseEstimator::getFFTBin(int pixel)
+long unsigned int CWTNoiseEstimator::getFFTBin(MaskedMatrix::size_type pixel)
 {
 	// remove static
 	static double f_per_bin = (samplingRate / 2.0) / spectrumSize;
-	return std::max((unsigned int) 10, std::min((unsigned int) std::round(getFreq(pixel) / f_per_bin), spectrumSize - 1));
+	return std::max(10LU, std::min((long unsigned int)(std::round(getFreq(pixel) / f_per_bin)), spectrumSize - 1LU));
 	// TODO 10 empirique, cf. Excel
 }
 

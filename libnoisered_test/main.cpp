@@ -9,14 +9,14 @@ int main()
 	short tab[4096] = {0};
 	SubtractionManager s_mgr(512, 16000);
 	//Test : Simple Estimation
-	s_mgr.setEstimationImplementation(std::shared_ptr<Estimation>(new SimpleEstimation(s_mgr)));
+	s_mgr.setEstimationImplementation(new SimpleEstimation(s_mgr));
 
 	DEBUG(0)
 	// Test : Simple Subtraction
 	SimpleSpectralSubtraction* subtraction = new SimpleSpectralSubtraction(s_mgr);
 	subtraction->setAlpha(12);
 	subtraction->setBeta(15);
-	s_mgr.setSubtractionImplementation(std::shared_ptr<Subtraction>(subtraction));
+	s_mgr.setSubtractionImplementation(subtraction);
 	s_mgr.readBuffer(tab, 4096);
 	DEBUG(1)
 	DEBUG(s_mgr.FFTSize())
@@ -30,13 +30,13 @@ int main()
 	elss->setAlphawt(11);
 	elss->setBeta(12);
 	elss->setBetawt(15);
-	s_mgr.setSubtractionImplementation(std::shared_ptr<Subtraction>(elss));
+	s_mgr.setSubtractionImplementation(elss);
 	s_mgr.readBuffer(tab, 4096);
 	s_mgr.execute();
 
 	DEBUG(2)
 	// Test : Geometric Subtraction
-	s_mgr.setSubtractionImplementation(std::shared_ptr<Subtraction>(new GeometricSpectralSubtraction(s_mgr)));
+	s_mgr.setSubtractionImplementation(new GeometricSpectralSubtraction(s_mgr));
 	s_mgr.readBuffer(tab, 4096);
 	s_mgr.execute();
 
@@ -48,13 +48,13 @@ int main()
 
 	DEBUG(4)
 	// Test : Martin noise estimation
-	s_mgr.setEstimationImplementation(std::shared_ptr<Estimation>(new MartinEstimation(s_mgr)));
+	s_mgr.setEstimationImplementation(new MartinEstimation(s_mgr));
 	s_mgr.readBuffer(tab, 4096);
 	s_mgr.execute();
 
 	DEBUG(5)
 	// Test : Wavelet noise estimation
-	s_mgr.setEstimationImplementation(std::shared_ptr<Estimation>(new WaveletEstimation(s_mgr)));
+	s_mgr.setEstimationImplementation(new WaveletEstimation(s_mgr));
 	s_mgr.readBuffer(tab, 4096);
 	s_mgr.execute();
 

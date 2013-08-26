@@ -102,6 +102,6 @@ double *WaveletEstimation::noisePower()
 
 void WaveletEstimation::specific_onDataUpdate()
 {
-	cwt_noise_estimator.clean();
+
 }
 

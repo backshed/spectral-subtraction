@@ -13,7 +13,7 @@ using namespace cwtlib;
  * like void f(unsigned int i, unsigned int j) { arr[i][j] += 1; }.
  * These operations should be applied only on the given coordinates.
  */
-typedef std::function<void (unsigned int, unsigned int)> ArrayValueFilter;
+typedef std::function<void (MaskedMatrix::size_type, MaskedMatrix::size_type)> ArrayValueFilter;
 
 #define AMIN 0                  /* A min  */
 #define ASTP 0.05               /* A step */
@@ -59,13 +59,7 @@ class CWTNoiseEstimator
 		 */
 		void initialize(SubtractionManager &config);
 
-		/**
-		 * @brief Cleanup some inner data.
-		 *
-		 * Called by the destructor.
-		 *
-		 */
-		void clean();
+
 
 	private:
 		/**
@@ -156,7 +150,7 @@ class CWTNoiseEstimator
 		 * @param pixel Input pixel.
 		 * @return double Approximate frequency.
 		 */
-		double getFreq(int pixel);
+		double getFreq(MaskedMatrix::size_type pixel);
 
 		/**
 		 * @brief Gets the FFT bin corresponding to a pixel in the WT.
@@ -164,5 +158,5 @@ class CWTNoiseEstimator
 		 * @param pixel Vertical position of a pixel in the WT.
 		 * @return unsigned int Corresponding FFT bin.
 		 */
-		unsigned int getFFTBin(int pixel);
+		unsigned long getFFTBin(MaskedMatrix::size_type pixel);
 };

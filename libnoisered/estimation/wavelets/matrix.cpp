@@ -16,10 +16,8 @@ MaskedMatrix::MaskedMatrix():
 
 MaskedMatrix &MaskedMatrix::operator=(const MaskedMatrix &xm)
 {
-	_values.clear();
-	_mask.clear();
-	std::copy(xm._values.begin(), xm._values.end(), _values.begin());
-	std::copy(xm._mask.begin(), xm._mask.end(), _mask.begin());
+	_values.assign(xm._values.begin(), xm._values.end());
+	_mask.assign(xm._mask.begin(), xm._mask.end());
 
 	return *this;
 }
@@ -61,20 +59,20 @@ bool MaskedMatrix::is_adjacent_to_zero(const size_type i, const size_type j)
 		   ;
 }
 
-Point MaskedMatrix::next_adjacent_to_zero(const size_type i, const size_type j, const size_type  x0)
+Point<MaskedMatrix::size_type> MaskedMatrix::next_adjacent_to_zero(const size_type i, const size_type j, const size_type  x0)
 {
-	if (is_adjacent_to_zero(i + 1, j + 1)) return Point(i + 1, j + 1);
-	if (is_adjacent_to_zero(i + 1, j))   return Point(i + 1, j);
-	if (is_adjacent_to_zero(i + 1, j - 1)) return Point(i + 1, j - 1);
-	if (is_adjacent_to_zero(i, j + 1))   return Point(i,   j + 1);
-	if (is_adjacent_to_zero(i, j - 1))   return Point(i,   j - 1);
-	if (is_adjacent_to_zero(i - 1, j + 1) && i > x0) return Point(i - 1, j + 1);
-	if (is_adjacent_to_zero(i - 1, j)   && i > x0) return Point(i - 1, j);
-	if (is_adjacent_to_zero(i - 1, j - 1) && i > x0) return Point(i - 1, j - 1);
+	if (is_adjacent_to_zero(i + 1UL, j + 1UL)) return Point<MaskedMatrix::size_type>(i + 1UL, j + 1UL);
+	if (is_adjacent_to_zero(i + 1UL, j))   return Point<MaskedMatrix::size_type>(i + 1UL, j);
+	if (is_adjacent_to_zero(i + 1UL, j - 1UL)) return Point<MaskedMatrix::size_type>(i + 1UL, j - 1UL);
+	if (is_adjacent_to_zero(i, j + 1UL))   return Point<MaskedMatrix::size_type>(i,   j + 1UL);
+	if (is_adjacent_to_zero(i, j - 1UL))   return Point<MaskedMatrix::size_type>(i,   j - 1UL);
+	if (is_adjacent_to_zero(i - 1UL, j + 1UL) && i > x0) return Point<MaskedMatrix::size_type>(i - 1UL, j + 1UL);
+	if (is_adjacent_to_zero(i - 1UL, j)   && i > x0) return Point<MaskedMatrix::size_type>(i - 1UL, j);
+	if (is_adjacent_to_zero(i - 1UL, j - 1UL) && i > x0) return Point<MaskedMatrix::size_type>(i - 1UL, j - 1UL);
 
 	// Let's hope it does not happen!
 	// std::cout << "bad things happens next_adjacent_to_zero\n";
-	return (Point(0, 0, true));
+	return (Point<MaskedMatrix::size_type>(0, 0, true));
 }
 
 const std::vector<std::vector<double>> &MaskedMatrix::getMask() const
@@ -82,7 +80,7 @@ const std::vector<std::vector<double>> &MaskedMatrix::getMask() const
 	return _mask;
 }
 
-unsigned int MaskedMatrix::getColPadding() const
+MaskedMatrix::size_type MaskedMatrix::getColPadding() const
 {
 	return _colPadding;
 }
@@ -92,7 +90,7 @@ void MaskedMatrix::setColPadding(const size_type &value)
 	_colPadding = value;
 }
 
-unsigned int MaskedMatrix::getRowPadding() const
+MaskedMatrix::size_type MaskedMatrix::getRowPadding() const
 {
 	return _rowPadding;
 }
