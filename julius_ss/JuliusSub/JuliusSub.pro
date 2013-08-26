@@ -9,9 +9,9 @@ QT       += core
 QT       -= gui
 
 CONFIG += c++11
-QMAKE_CXX = g++-4.8
-QMAKE_LINK = g++-4.8
-QMAKE_LINK_SHLIB = g++-4.8
+QMAKE_CXX = g++
+QMAKE_LINK = g++
+QMAKE_LINK_SHLIB = g++
 QMAKE_CXXFLAGS += -fopenmp -O3 -march=native -D_GLIBCXX_PARALLEL
 QMAKE_LFLAGS += -fopenmp
 
@@ -24,7 +24,7 @@ TEMPLATE = app
 
 
 
-QMAKE_CXXFLAGS+=-std=c++11 -fopenmp -O3 -march=native -D_GLIBCXX_PARALLEL
+QMAKE_CXXFLAGS+=-std=c++11 -O3 -march=native
 
 SOURCES += main.cpp \
 	subWrapper.cpp \
@@ -44,15 +44,16 @@ unix:!macx: PRE_TARGETDEPS += $$PWD/../../output/libnoisered.a
 unix:!macx: LIBS +=
 
 unix:!macx: PRE_TARGETDEPS += $$PWD/../../output/libjls.a
-
-linux-arm-g++ {
+# message($$QMAKE_TARGET.arch)
+# contains(QMAKE_TARGET.arch, arm):{
+# message("BeagleBoard compilation")
 MOBILITY += multimedia
 INCLUDEPATH +=/usr/include/QtMultimediaKit
 INCLUDEPATH +=/usr/include/QtMobility
 LIBS +=  -lQtMultimediaKit
-}
-linux-g++-64 {
-QT += multimedia
-}
+# }
+# linux-g++-64 {
+# QT += multimedia
+#}
 
 LIBS +=  -lcwt -lfftw3 -ldl -lpthread  -lasound -lz -lsndfile -lm -lpulse -lpulse-simple
