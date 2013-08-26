@@ -1,8 +1,8 @@
-MAKE=make
-JULIUS_URL="http://sourceforge.jp/frs/redir.php?m=jaist&f=%2Fjulius%2F59049%2Fjulius-4.2.3.tar.gz"
+MAKE=make 
+JULIUS_URL="http://sourceforge.jp/frs/redir.php?m=jaist&f=%2Fjulius%2F59049%2Fjulius-4.2.3.tar.gz" 
 JULIUS_NAME=julius-4.2.3
-all: lred julius jss
 
+all: lred julius jss
 
 lred:
 	qmake libnoisered/libnoisered.pro -o build/libnoisered/release/Makefile
