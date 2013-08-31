@@ -81,8 +81,9 @@ The user mostly interacts with the \texttt{SubtractionManager} object. This obje
 \item Handlers to call if there is a change of data, or FFT size.
 \item Methods to set general parameters, like the number of iterations, or the usage of the overlap-add method.
 \item Two very important objects, of base class \texttt{Estimation} and \texttt{Subtraction}, and the associated getters and setters.
+\item An object to manage the Fourier Transform, of base class \texttt{FFTManager}.
 \end{itemize}
-The \texttt{Estimation} and \texttt{Subtraction} objects hold the algorithm implementation. This reduces memory consumption, because only the wanted algorithm and needed implementation details are loaded, versus the previous approach where every algorithm had to be initialized. To permit a good memory management, I used a \brand{C++11} smart pointer \texttt{std::shared\_ptr} to keep them.
+The \texttt{Estimation} and \texttt{Subtraction} objects hold the algorithm implementation. This reduces memory consumption, because only the wanted algorithm and needed implementation details are loaded, versus the previous approach where every algorithm had to be initialized. In order to permit a good memory management, I used a \brand{C++11} smart pointer \texttt{std::shared\_ptr} to keep them.
 
 An example of initialization would be : 
 \begin{lstlisting}[caption=Example initialization]
@@ -92,14 +93,21 @@ SimpleSpectralSubtraction* sub_algo = new SimpleSpectralSubtraction(s_mgr);
 // For instance they are not present in GeometricSpectralSubtraction class
 sub_algo->setAlpha(data->alphaBsc); 
 sub_algo->setBeta(data->betaBsc);
-s_mgr.setSubtractionImplementation(std::shared_ptr<Subtraction>(sub_algo));
+s_mgr.setSubtractionImplementation(sub_algo);
+s_mgr.setEstimationImplementation(new MartinNoiseEstimation);
 \end{lstlisting}
 
 The \texttt{Estimation} and \texttt{Subtraction} objects are functors. I choose to build them with a reference to the \texttt{SubtractionManager} object because had not I done this, I would have to add at least two parameters to most methods in \texttt{Estimation} and \texttt{Subtraction}, one to get the sampling rate, and one to get the size of the arrays, because they are both needed most of the time.
 
+Finally, by the end of the internship I tried to make my library independent from the implementation of the \ac{FFT}. I had originaly used the \texttt{fftw\_complex} type everywhere a complex number was required. But I thought it would be better to keep the library ahead of this implementation detail, so I changed it to use the \texttt{std::complex} class.
+
+I also made a wrapper class, \texttt{FFTManager}, which is subclassed by \texttt{FFTWManager}. I had to find the minimal interface required to perform the \ac{FFT}. This class also holds the result of the Fourier transform.
+
+There is an important use for this abstraction. While doing profiling, I found that the \ac{FFT} was still the part of the program where the most time was spent. \ac{FFTW} might be quite fast, but it can be outperformed by architecture-specific implementations. For instance, \brand{Texas Instruments} ships some code to perform a very fast \ac{FFT} using the \ac{DSP} of the \brand{BeagleBoard}. As well, \brand{Intel} ships the \brand{Math Kernel Library\textregistered}, specialized for use with its processors since it uses custom extensions like \ac{AVX}.
+\newpage
 \begin{figure}[h]
 \begin{center}
-\includegraphics[scale=0.4]{base.pdf}
+\includegraphics[scale=0.4]{base.png}
 \caption{Current organization of the library. Not all implementation details present.}
 \label{diag_api_chords}
 \end{center}
@@ -121,15 +129,11 @@ for (auto iter = 0U; iter < iterations(); ++iter)
 		copyInput(sample_n);
 		forwardFFT();
 
-		if(dataSource() == DataSource::File && sample_n == 0)
-			onDataUpdate();
-
 		// Noise estimation
-		(*getEstimationImplementation())(spectrum());
+		estimation(spectrum());
 
 		// Spectral subtraction
-		(*getSubtractionImplementation())(spectrum(), 
-			getEstimationImplementation()->noisePower());
+		subtraction(spectrum(), estimation->noisePower());
 
 		backwardFFT();
 		copyOutput(sample_n);
@@ -218,7 +222,9 @@ The textual files always follow the same convention : a line begins with two num
 \end{figure}
 \end{itemize}
 
-\ac{HTK}, on the other part, requires a particular format of segmentation file to train the model, where all the data from all the files is concatenated into a single file. The times must be specified in samples : 
+\newpage
+\ac{HTK}, on the other part, requires a particular format of segmentation file to train the model, where all the data from all the files is concatenated into a single file. The times must be specified in samples :
+ 
 \begin{figure}[h]
 \centering
 \begin{verbbox}
@@ -236,9 +242,22 @@ The textual files always follow the same convention : a line begins with two num
 Likewise, there are many other textual conversions to perform, which are mostly found in the separate functions of the script.
 \subsubsection{Evaluation}
 \paragraph{Signal-level evaluation}
-There are two common metrics\cite{horii2013musical} to evaluate the quality of the noise reduction.
+There are two common metrics\cite{horii2013musical} to evaluate the quality of the noise reduction : the \ac{NRR} and \ac{SDR}.
+\begin{itemize}
+\item The \ac{NRR} compares the signal before and after application of the noise reduction algorithm. It is an indicator of how much of the noise have been reduced: it is better when it is superior to $0$. However, if it is too high, the signal might not be recognizable at all anymore.
+\item The \ac{SDR} compares a noiseless signal to the noise-removed signal. Hence, it is not useable in a real situation : the noise has to be applied artificially to some source signal which has to be kept somewhere. It is an indicator of how much of the vocal part of the signal has been damaged by the algorithm: it is better when it is close to $0$.
+\end{itemize}
+
+During my internship, I compared many times the different algorithms and different parameters. Thanks to the extensive textual resources of the lab, I could compare my results with reference scientific results, which allowed me to perform some debugging, and to be sure of my implementation.
 \paragraph{Word-level evaluation}
-To evaluate on word-level, it is necessary to use the speech recognition software.
+To evaluate the performance on word-level, it is necessary to use the speech recognition software (\brand{Julius}) : we give some audio file with sentences to the software and it outputs the text it recognized. I made a script (\texttt{output/execute\_speech\_recog.py}) that takes a given set of sentences, and the same sentences processed with different kinds of noise, and finally calls \brand{Julius} with multiple algorithms for each of these sets of files. Then, it averages the results for each set.
+
+I chose to use twenty sentences from the \ac{JNAS} speech corpus, to which I applied all the noises with a script called \texttt{ApplyNoiseToAudio}, located in the folder of the same name, that I did in \brand{C\#} for the sake of learning the basics of the language.
+This script also computes files for different signal-to-noise ratios : I chose ratios of $0, 10, 20, 30, 50$ decibels.
+
+Computing all the values took about secen hours on a $i7$ processor.
+
+We still get a lot of results :  
 \subsubsection{Making the processed signal listenable}
 \subsection{Research work}
 \subsubsection{First idea to improve spectral subtraction}
