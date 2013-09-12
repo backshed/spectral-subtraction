@@ -9,6 +9,7 @@ As soon as I could, I tried to make the algorithms as a separate library, which 
 
 \subparagraph{Choice of \ac{FFTW}} I choose to use \ac{FFTW} because it seems that it is one of the best performing Fourier Transform, apart from implementations which are devised specially towards a particular \brand{CPU}: \url{http://www.fftw.org/speed/}.
 It also supports the \brand{NEON} vectorial instructions of the \brand{ARM} processor, which can provide a performance boost.
+This is an area where performance is critical : I did some profiling of the software during my internship, and most of the time is spent in the \ac{FFT} computation.
 \subparagraph{Overlap-add technique}
 One of the technique used here is the overlap-add technique. Instead of performing a Fourier transform on a data-filled array, the input array is twice the data size, and its second half is filled by zeros.
 After the subtraction is applied, the output array's first half is added to the previous array's last half, and so on. This is the only point on the algorithms that can't be threaded easily.
@@ -38,20 +39,30 @@ There are several advantages :
 \begin{itemize}
 \item They make the code very concise and readable. For instance, here is the code that computes the power for every band of a spectrum array, in complex format : 
 \begin{lstlisting}[caption=math\_util.cpp]
-void compute_power(fftw_complex *in, double *powoutput, unsigned int size)
+void computePowerSpectrum(const std::complex<double> * in, 
+	double * powoutput, 
+	unsigned int size)
 {
-	std::transform(in, in + size, powoutput, ToPower);
+	std::transform(in, in + size, powoutput, CplxToPower);
 }
 \end{lstlisting}
 
-Here, \texttt{ToPower} is a \brand{C++11} lambda expression, which is used in other functions as well :
+Where \texttt{CplxToPower} is a wrapper : 
 \begin{lstlisting}[caption=math\_util.cpp]
-auto ToPower = [&] (fftw_complex val)
+double CplxToPower(const std::complex<double> val)
 {
-	return std::pow(val[0], 2) + std::pow(val[1], 2);
-};
+	return std::norm(val);
+}
 \end{lstlisting}
-I choose to use a lambda-expression because common compilers seems to optimize them better than ordinary functions\cite[p.~213]{cppstl}, and here performance is critical.
+
+I also tried to use lambda-expressions whenever I could because common compilers seems to optimize them better than ordinary functions\cite[p.~213]{cppstl}, and here performance is critical:
+
+\begin{lstlisting}[caption=estimation/wavelets/cwt\_wavelet\_estimator.cpp]
+ArrayValueFilter lowCeiling([&](unsigned int i, unsigned int j)
+	{ arr[i][j] = (arr[i][j] > ceil) ? arr[i][j] : 0; });
+\end{lstlisting}
+
+
 \item The \brand{C++} standard imposes a maximal complexity for these algorithms. For instance, \texttt{std::max} must be in $\theta(n)$ (courtesy of \url{www.cplusplus.com}).
 \item They present the advantage of having parallel versions, when using \brand{GCC}. These versions are enabled with a single \brand{G++} flag : \texttt{D\_GLIBCXX\_PARALLEL}. This way, they can be easily disabled for the embedded board, where it is inefficient because it is single-threaded, while they can be enabled when doing tests on the computer. 
 \end{itemize}
@@ -104,7 +115,7 @@ Finally, by the end of the internship I tried to make my library independent fro
 I also made a wrapper class, \texttt{FFTManager}, which is subclassed by \texttt{FFTWManager}. I had to find the minimal interface required to perform the \ac{FFT}. This class also holds the result of the Fourier transform.
 
 There is an important use for this abstraction. While doing profiling, I found that the \ac{FFT} was still the part of the program where the most time was spent. \ac{FFTW} might be quite fast, but it can be outperformed by architecture-specific implementations. For instance, \brand{Texas Instruments} ships some code to perform a very fast \ac{FFT} using the \ac{DSP} of the \brand{BeagleBoard}. As well, \brand{Intel} ships the \brand{Math Kernel Library\textregistered}, specialized for use with its processors since it uses custom extensions like \ac{AVX}.
-\newpage
+
 \begin{figure}[h]
 \begin{center}
 \includegraphics[scale=0.4]{base.png}
@@ -165,6 +176,7 @@ One can either:
 \end{itemize}
 
 The output is put in a table which has copy-paste abilities, to put the results on a spreadsheet software, like \brand{LibreOffice Calc} or \brand{Microsoft\textregistered Excel\texttrademark}. This is very useful to plot graphs, for instance.
+To copy the data, the standard keyboard shortcut is used : \texttt{CTRL-A} to select everything and \texttt{CTRL-C} to copy.
 \subsubsection{Implementation of an English acoustic and language model}
 This part will refer to the folder \texttt{timit\_htk}. 
 \paragraph{Technologies used}
@@ -248,21 +260,28 @@ There are two common metrics\cite{horii2013musical} to evaluate the quality of t
 \item The \ac{SDR} compares a noiseless signal to the noise-removed signal. Hence, it is not useable in a real situation : the noise has to be applied artificially to some source signal which has to be kept somewhere. It is an indicator of how much of the vocal part of the signal has been damaged by the algorithm: it is better when it is close to $0$.
 \end{itemize}
 
-During my internship, I compared many times the different algorithms and different parameters. Thanks to the extensive textual resources of the lab, I could compare my results with reference scientific results, which allowed me to perform some debugging, and to be sure of my implementation.
+During my internship, I compared many times the different algorithms and parameters. Thanks to the extensive textual resources of the lab, I could compare my results with reference scientific results, which allowed me to perform some debugging, and to be sure of my implementation.
 \paragraph{Word-level evaluation}
 To evaluate the performance on word-level, it is necessary to use the speech recognition software (\brand{Julius}) : we give some audio file with sentences to the software and it outputs the text it recognized. I made a script (\texttt{output/execute\_speech\_recog.py}) that takes a given set of sentences, and the same sentences processed with different kinds of noise, and finally calls \brand{Julius} with multiple algorithms for each of these sets of files. Then, it averages the results for each set.
 
 I chose to use twenty sentences from the \ac{JNAS} speech corpus, to which I applied all the noises with a script called \texttt{ApplyNoiseToAudio}, located in the folder of the same name, that I did in \brand{C\#} for the sake of learning the basics of the language.
 This script also computes files for different signal-to-noise ratios : I chose ratios of $0, 10, 20, 30, 50$ decibels.
 
-Computing all the values took about secen hours on a $i7$ processor.
+Computing all the values took about seven hours on an \brand{Intel Core i7} processor.
 
 We still get a lot of results :  
 \subsubsection{Making the processed signal listenable}
+I had to add an audio output which would play the modified signal in real time on the \brand{BeagleBoard} implementation. However, I had some problems with this at first. \brand{Julius} internally uses \ac{ALSA} for its microphone input, so at first, I thought I should use \ac{ALSA} too, to manage the output. However, while learning, I discovered than adding full-duplex operation (both input and output) was not well supported, and that I would have to modify the source code of \brand{Julius}, which I wanted to avoid the most to preserve compatibility with future updates.
+
+My solution was to use another audio interface wrapper, which is part of the \brand{Qt} toolkit :\\ \texttt{QAudioOutput}. I already knew how to use it since it was used in the testing application so the implementation was quick. It adds the \brand{Qt} dependency to the project, but it is available on all major platforms, including the \brand{BeagleBoard}. One of the concerns was with the buffer size : I had to dive a bit deeply inside \brand{BeagleBoard} forums to find that the optimized buffer size for the audio chipset would be $1024$ samples. This might vary on other devices, however, so the code might need to change on this point if the software was to be ported.
 \subsection{Research work}
 \subsubsection{First idea to improve spectral subtraction}
-\paragraph{Kansai joint conference}
-stuff
+\paragraph{Kansai joint speech seminar}
+I participated in a conference held in a university close to Ritsumeikan. I had to make a poster which will be shown in \ref{annex1}.
+The main theme of this seminar is research about audio, with a little emphasis on speech. It was held on \formatdate{20}{07}{2013}. The seminar was in three rooms, two were mostly about signal processing, whlie another was more about language study on a semantic level. The complete list of the presentations, mostly in Japanese, is here : \url{http://nlp.i.ryukoku.ac.jp/gakkai/godozemi/201307/index.html}
+
+Students and teachers from different Kansai universities, and sometimes other foreign student would comment on the poster of every student.
+(Note : the Kansai (\begin{CJK}{UTF8}{min}関西地方\end{CJK}) is a region of Japan which encompasses Osaka, Kyoto, Nara...).
 \paragraph{Evaluation}
 stuff
 \subsubsection{Second idea to improve spectral subtraction}
