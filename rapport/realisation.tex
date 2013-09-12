@@ -276,6 +276,14 @@ I had to add an audio output which would play the modified signal in real time o
 My solution was to use another audio interface wrapper, which is part of the \brand{Qt} toolkit :\\ \texttt{QAudioOutput}. I already knew how to use it since it was used in the testing application so the implementation was quick. It adds the \brand{Qt} dependency to the project, but it is available on all major platforms, including the \brand{BeagleBoard}. One of the concerns was with the buffer size : I had to dive a bit deeply inside \brand{BeagleBoard} forums to find that the optimized buffer size for the audio chipset would be $1024$ samples. This might vary on other devices, however, so the code might need to change on this point if the software was to be ported.
 \subsection{Research work}
 \subsubsection{First idea to improve spectral subtraction}
+As said before, the problem with spectral subtraction is that it generates musical tones which can be a problem for the listener, or for the speech recognition software.
+
+So I decided to try to find a way to reduce, if not suppress, these musical tones.
+For this, I would have to recognize them efficently.
+
+Following the advices of Mr. Nishiura, I made a research map to explain the process I followed : 
+
+
 \paragraph{Kansai joint speech seminar}
 I participated in a conference held in a university close to Ritsumeikan. I had to make a poster which will be shown in \ref{annex1}.
 The main theme of this seminar is research about audio, with a little emphasis on speech. It was held on \formatdate{20}{07}{2013}. The seminar was in three rooms, two were mostly about signal processing, whlie another was more about language study on a semantic level. The complete list of the presentations, mostly in Japanese, is here : \url{http://nlp.i.ryukoku.ac.jp/gakkai/godozemi/201307/index.html}
