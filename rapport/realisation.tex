@@ -346,13 +346,40 @@ Following the advices of Mr. Nishiura, I made a research map to explain the proc
 \end{center}
 \end{figure}
 
+So, my first idea was to find a new way to detect musical tones in a noise-reduced signal.
+To do this, I thought about defining them, and it occured to me that a time $\longleftrightarrow$ frequency plane would be a good way to try to understand them.
+
+I thought of two ways of building one : either by using a lot of FFTs one after each other, or either by doing a continuous wavelet transform. However I was not sure of the capacity of the first method to solve the problem, so I tried to go with the second one.
+
+I had first to learn how to use the continuous wavelet transform, and to choose a good wavelet to perform it. After some experimentation with Matlab, it seemed that the most efficient wavelet for what I was trying to achieve was the \textit{Morlet} wavelet. 
+
+Then, I tried to find a fast and portable implementation of a wavelet transform : I found \brand{cwtlib++}, a \brand{C++} wavelet transform library, with no dependencies.
+
+\paragraph{Finding the musical tones}
+My global idea to reduce the noise was as follows : 
+\begin{enumerate}
+\item Perform a spectral subtraction on a FFT frame $X$ with a noise estimation $E$ into $X'$ : $X'_i = X_i - E_i$.
+\item Estimate the quantity of musical tones $M$ in each frequency band of $X$.
+\item Substract this quantity to $E$ into a new, temporary noise estimation : $E'_i = E_i - M_i$.
+\item Re-perform another spectral subtraction : $X_i - E'_i$.
+\end{enumerate}
+This is because musical tones are caused by over-subtraction in some areas of the signal, because the noise estimation doesn't always corresponds to the noise being really present. 
+
+To estimate the musical tones, I came across multiple heuristics induced by observation of musical tones generated in real frames.
+
+\begin{itemize}
+\item In one FFT frame, there will be different groups of musical tones, but for each of these groups, every musical tone is around the same frequency.
+\item The musical tones are louder in volume than the residual ambient noise, but quiter than the speech material.
+\item In a continuous wavelet transform, they mostly have simple shapes.
+\end{itemize}
+Some pictures can be seen in the poster in appendix \ref{appendix1}.
+Using these algorithms, I made the \texttt{CWTNoiseEstimator} class that tries to implement these ideas. I made a shape recognition algorithm that plots the potential musical tones according to the previous heuristics, and computes the parameters of the musical tone (frequency, amplitude...). Then, I make a average for every band of frequency, to create $M$. Unfortunately, as it can be seen on the results in the poster, there aren't much gain finally.
 \paragraph{Kansai joint speech seminar}
 I participated in a conference held in a university close to Ritsumeikan. I had to make a poster which will be shown in \ref{appendix1}.
 The main theme of this seminar is research about audio, with a little emphasis on speech. It was held on \formatdate{20}{07}{2013}. The seminar was in three rooms, two were mostly about signal processing, whlie another was more about language study on a semantic level. The complete list of the presentations, mostly in Japanese, is here : \url{http://nlp.i.ryukoku.ac.jp/gakkai/godozemi/201307/index.html}
 
 Students and teachers from different Kansai universities, and sometimes other foreign student would comment on the poster of every student.
 (Note : the Kansai (\begin{CJK}{UTF8}{min}関西地方\end{CJK}) is a region of Japan which encompasses Osaka, Kyoto, Nara...).
-\paragraph{Evaluation}
-stuff
+
 \subsubsection{Second idea to improve spectral subtraction}
 \paragraph{Evaluation}
