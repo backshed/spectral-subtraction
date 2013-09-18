@@ -373,7 +373,7 @@ To estimate the musical tones, I came across multiple heuristics induced by obse
 \item In a continuous wavelet transform, they mostly have simple shapes.
 \end{itemize}
 Some pictures can be seen in the poster in appendix \ref{appendix1}.
-Using these algorithms, I made the \texttt{CWTNoiseEstimator} class that tries to implement these ideas. I made a shape recognition algorithm that plots the potential musical tones according to the previous heuristics, and computes the parameters of the musical tone (frequency, amplitude...). Then, I make a average for every band of frequency, to create $M$. Unfortunately, as it can be seen on the results in the poster, there aren't much gain finally.
+Using these algorithms, I made the \texttt{CWTNoiseEstimator} class that tries to implement these ideas. I made a shape recognition algorithm that plots the potential musical tones according to the previous heuristics, and computes the parameters of the musical tone (frequency, amplitude...). Then, I make an average for every band of frequency, to create $M$. Unfortunately, as it can be seen on the results in the poster, there is not much gain finally.
 \paragraph{Kansai joint speech seminar}
 I participated in a conference held in a university close to Ritsumeikan. I had to make a poster which will be shown in \ref{appendix1}.
 The main theme of this seminar is research about audio, with a little emphasis on speech. It was held on \formatdate{20}{07}{2013}. The seminar was in three rooms, two were mostly about signal processing, whlie another was more about language study on a semantic level. The complete list of the presentations, mostly in Japanese, is here : \url{http://nlp.i.ryukoku.ac.jp/gakkai/godozemi/201307/index.html}
@@ -381,5 +381,23 @@ The main theme of this seminar is research about audio, with a little emphasis o
 Students and teachers from different Kansai universities, and sometimes other foreign student would comment on the poster of every student.
 (Note : the Kansai (\begin{CJK}{UTF8}{min}関西地方\end{CJK}) is a region of Japan which encompasses Osaka, Kyoto, Nara...).
 
-\subsubsection{Second idea to improve spectral subtraction}
-\paragraph{Evaluation}
+\subsubsection{Second idea to reduce noise}
+After this, I started to try to think about other ways to reduce noise, and I thought about using some parts of what I had heard of during my previous internship : using reinforcment learning to set the standard spectral subtraction parameters $\alpha$ and $\beta$ in real time, according to the noise, because some of my measurements shown that some couples would work better with some kinds of noises than other couples.
+
+My idea was as follows : 
+\begin{enumerate}
+\item Using different kinds and families of noises, create a library of "situations" that would serve as a starting point.
+\item When running in a new environment the software chooses quickly a good couple $(\alpha, \beta)$ but the learning algorithm keeps running to reduce further the amount of noise.
+\end{enumerate}
+
+The learning algorithms need a reward, so that they learn which changes give a reward and which changes give a malus.
+Since we need to reduce noise, I thought about comparing the \ac{NRR} with the new parameters, with the \ac{NRR} with the previous parameters.
+I was confronted to two problems : 
+\begin{itemize}
+\item The most common algorithms, \brand{Q-Learning}\cite{watkins1992q} and \brand{SARSA}\cite{rummery1994line}, are made for discrete values while  $(\alpha, \beta)$ is continuous.
+\item These algorithms are meant to stop when some "action" is performed, like for instance going from $A$ to $B$ while dodging a pit, while here, we need an algorithm that keeps performing all the time.
+\end{itemize}
+
+I put my work in two folders : \texttt{libnoisered/learning} and \texttt{libnoisered/subtraction/learning\_ss}.
+
+However, due to lack of time and knowledge about learning, I couldn't finish.
