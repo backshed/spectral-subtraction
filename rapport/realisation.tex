@@ -1,17 +1,17 @@
-\section{Realisation}
-\subsection{Engineering work}
-My work was split into many different parts. I made a \brand{GitHub} deposit : \url{https://github.com/jcelerier/spectral-subtraction} in which there are folders that correspond to these parts.
+\chapter{Realisation}
+\section{Engineering work}
+My work was split into many different parts. I made a \brand{GitHub} repository : \url{https://github.com/jcelerier/spectral-subtraction} in which there are folders that correspond to these parts.
 
-\subsubsection{Implementation of the algorithms}
+\subsection{Implementation of the algorithms}
 This part will refer to the folder \texttt{libnoisered}. 
 
-\paragraph{Technologies used}
+\subsubsection{Technologies used}
 As soon as I could, I tried to make the algorithms as a separate library, which has for sole dependencies \ac{FFTW} and \brand{CWTLIB++}. A corresponding \brand{Doxygen} documentation can be generated inside this folder, or by calling \texttt{make doc} on the root of the repository.
 The library is of course written in \brand{C++}, and I tried to adhere to the latest standard, \brand{C++11}, as much as possible. For this reason, only fairly recent compilers will work : \brand{gcc-4.7} and \brand{Visual C++ 2013} (still in a release candidate at the time of this writing).
 I tested compilation with a massive set of warnings to ensure the less bugs possible (cf. Appendix \ref{appendix2})
 
-\subparagraph{Trying to be general}
-I tried to make some of my code very generic, very performant, and the most parallel-friendly possible so that I could reuse this if the need would show up.
+\paragraph{Trying to be general}
+I tried to make some of my code very generic, very performant, and the most parallel-friendly possible so that I could reuse it, would the need for it show up.
 One good example would be my implementation of the MapReduce algorithm, very useful in a lot of mathematical computations.
 For instance, a common value to compute in the library was the sum of the squares : 
 
@@ -45,7 +45,7 @@ T mapReduce_n(const InputIterator in,
 	return val;
 }
 \end{lstlisting}
-\newpage
+
 The usage can be as follows, for instance with a complex number : 
 \begin{lstlisting}
 double val = MapReduce_n(input_vector, size, 0.0, [] (complex val)
@@ -65,21 +65,21 @@ for (auto i = 0U; i < size; ++i)
 \end{lstlisting} 
 takes $2.6$ seconds while my method takes $0.4$ seconds, and the specialized one $0.2$.
 
-\subparagraph{Choice of \ac{FFTW}} I choose to use \ac{FFTW} because it seems that it is one of the best performing Fourier Transform, apart from implementations which are devised specially towards a particular \brand{CPU}: \url{http://www.fftw.org/speed/}.
+\paragraph{Choice of \ac{FFTW}} I choose to use \ac{FFTW} because it seems that it is one of the best performing Fourier Transform, apart from implementations which are devised specially towards a particular \brand{CPU}: \url{http://www.fftw.org/speed/}.
 It also supports the \brand{NEON} vectorial instructions of the \brand{ARM} processor, which can provide a performance boost.
 This is an area where performance is critical : I did some profiling of the software during my internship, and most of the time is spent in the \ac{FFT} computation.
-\subparagraph{Overlap-add technique}
+\paragraph{Overlap-add technique}
 One of the technique used here is the overlap-add technique. Instead of performing a Fourier transform on a data-filled array, the input array is twice the data size, and its second half is filled by zeros.
 After the subtraction is applied, the output array's first half is added to the previous array's last half, and so on. This is the only point on the algorithms that can't be threaded easily.
 Overlap-add method can be enabled or disabled. If it is disabled, a simple rectangular window is used.
 
-\paragraph{Simple noise estimation}
+\subsubsection{Simple noise estimation}
 The most basic noise estimation algorithm would be to take the first frame of the signal, assume nobody is talking, and use it as a noise estimation.
 However, since the algorithm is meant for real-time applications which could last for some minutes or even hours, the background noise might change.
 
 So I decided to improve it by computing the \ac{RMS} level for each frame, and replacing the noise estimation with a new frame if the level is under $102\%$ of the current level.
 \newpage
-\paragraph{Spectral Subtraction}
+\subsubsection{Spectral Subtraction}
 The numerical algorithms are most of the time very straightforward.
 
 \begin{algorithm}
@@ -133,7 +133,7 @@ ArrayValueFilter lowCeiling([&](unsigned int i, unsigned int j)
 \end{itemize}
 
 
-\paragraph{First organisation}
+\subsubsection{First organisation}
 At first, when there were only a few algorithms to code, it seemed logical to have a class only for noise estimation algorithms, and a class only for subtraction algorithms. However, some algorithms like the one proposed by Rainer Martin\cite{martin2001noise} uses a lot of static variables and tables, because data has to be kept from a frame to another. 
 Here was the first class diagram : 
 \begin{figure}[H]
@@ -146,7 +146,7 @@ Here was the first class diagram :
 \end{figure}
 The problem is that the data and the algorithms were intertwined. This could have caused problems when trying to thread. Also, the \texttt{SpectralSubtractor} and \texttt{NoiseEstimator} had to be friend with \texttt{SubtractionData}, which held many of the parameters required to perform the algorithms, like the number of iterations, etc.
 Finally, the user had to manipulate two different objects, which causes unneeded clutter in the code.
-\paragraph{Mid-internship reorganisation}
+\subsubsection{Mid-internship reorganisation}
 I then decided to refactor my code, by taking a modular approach, that would be more logical.
 The user mostly interacts with the \texttt{SubtractionManager} object. This object holds : 
 \begin{itemize}
@@ -193,7 +193,7 @@ The \texttt{Subtraction} class is little more than an interface, with only the c
 
 Calling \texttt{Estimation::onFFTSizeUpdate()} or \texttt{Estimation::onDataUpdate()} will perform some actions needed for the noise estimation array, like resizing it, and make a subsequent call to \texttt{Estimation::specific\_onFFTSizeUpdate()} or \texttt{Estimation::specific\_onDataUpdate()}, which are left pure virtual in the base class. It is up to the real algorithms to implement them.
 \newpage
-\paragraph{Core algorithm}
+\subsubsection{Core algorithm}
 Finally, a very important algorithm is \texttt{SubtractionManager::execute()} because it is the one that gets called when the data and parameters are ready.
 
 Thanks to the care taken in the design, the code is very short and extremely generic: 
@@ -217,7 +217,7 @@ for (auto iter = 0U; iter < iterations(); ++iter)
 }
 \end{lstlisting}
 
-\subparagraph{Approach taken for the iterations management}
+\paragraph{Approach taken for the iterations management}
 As it can be seen on the previous graph, the first loop is the iterations loop. One of the problems I was struck with was how to make the iterations work with the noise estimation ? 
 
 On the case of a file, \texttt{sample\_n} will begin at the beginning of the file, and end at the end of the file, so it will be a non-problem : every iteration will run the whole file.
@@ -227,12 +227,12 @@ Since the estimation algorithms can reestimate the noise, and since the noise wo
 
 This is why the Martin algorithm is needed in case of real time signals : it can estimate noise even if there is only speech. The only other way to solve this would have been to wait for the speakers to finish their speech, process the whole speech and send it to Julius, but it would not be real-time anymore. So I prefered to use the callback approach, since it would induce far less latency.
 
-\subsubsection{Test application}
+\subsection{Test application}
 This part will refer to the folder \texttt{denoiseGUI}. 
-\paragraph{Technologies used}
+\subsubsection{Technologies used}
 The application is fully developed using the \brand{Qt} framework, so that it can work easily on different environments (all the major desktop operating systems). It has only been tested on the \brand{Qt5} version.
 
-\paragraph{Features of the software}
+\subsubsection{Features of the software}
 I had to make this application to compare the algorithms, and later, to perform batch processing on either a lot of files or a lot of parameters.
 It can change all the relevant algorithms and parameters, load audio files and playback them before and after processing, and computes relevant evaluation parameters, the noise reduction ratio and speech distortion ratio\cite{horii2013musical}.
 \begin{figure}[h]
@@ -243,7 +243,7 @@ It can change all the relevant algorithms and parameters, load audio files and p
 \end{center}
 \end{figure}
 
-\subparagraph{Batch processing} It is enabled in two different ways. 
+\paragraph{Batch processing} It is enabled in two different ways. 
 Noise reduction ratio and speech distortion ratio are both computed, if the correct files are loaded.
 One can either:
 \begin{itemize}
@@ -254,16 +254,16 @@ One can either:
 The output is put in a table which has copy-paste abilities, to put the results on a spreadsheet software, like \brand{LibreOffice Calc} or \brand{Microsoft\textregistered Excel\texttrademark}. This is very useful to plot graphs, for instance.
 To copy the data, the standard keyboard shortcut is used : \texttt{CTRL-A} to select everything and \texttt{CTRL-C} to copy.
 
-\subsubsection{Making the processed signal listenable}
+\subsection{Making the processed signal listenable}
 I had to add an audio output which would play the modified signal in real time on the \brand{BeagleBoard} implementation. However, I had some problems with this at first. \brand{Julius} internally uses \ac{ALSA} for its microphone input, so at first, I thought I should use \ac{ALSA} too, to manage the output. However, while learning, I discovered than adding full-duplex operation (both input and output) was not well supported, and that I would have to modify the source code of \brand{Julius}, which I wanted to avoid the most to preserve compatibility with future updates.
 
 My solution was to use another audio interface wrapper, which is part of the \brand{Qt} toolkit :\\ \texttt{QAudioOutput}. I already knew how to use it since it was used in the testing application so the implementation was quick. It adds the \brand{Qt} dependency to the project, but it is available on all major platforms, including the \brand{BeagleBoard}. One of the concerns was with the buffer size : I had to dive a bit deeply inside \brand{BeagleBoard} forums to find that the optimized buffer size for the audio chipset would be $1024$ samples. This might vary on other devices, however, so the code might need to change on this point if the software was to be ported.
 
-\subsubsection{Implementation of an English acoustic and language model}
+\subsection{Implementation of an English acoustic and language model}
 This part will refer to the folder \texttt{timit\_htk}. 
-\paragraph{Technologies used}
+\subsubsection{Technologies used}
 I used mainly \ac{HTK}, and made a script using \brand{Python}, plus some calls to standard Unix command-line utilities, like \brand{awk} and \brand{sed}. \brand{SOX} is also used to perform resampling.
-\paragraph{Explanation of the method used}
+\subsubsection{Explanation of the method used}
 There are only four files in this folder.
 \begin{itemize}
 \item \texttt{htk.py} is the main python script for the generation of the models.
@@ -279,7 +279,7 @@ If there is a need to re-run the scripts, the call to \texttt{Resample} has to b
 There are many small steps involved. The process mostly follows the steps given by the \brand{HTK Book}\cite{htkbook}, the reference book on the subject.
 The auxiliary functions are mostly here to convert the \ac{TIMIT} training data into data compatible with \ac{HTK}.
 
-\paragraph{The TIMIT corpus}
+\subsubsection{The TIMIT corpus}
 The corpus is a set of sentences pronounced by different speakers, which all have a different accent. There is also a dictionary.
 
 There are four kind of files, one audio and three textual.
@@ -334,8 +334,8 @@ The textual files always follow the same convention : a line begins with two num
 
 Likewise, there are many other textual conversions to perform, which are mostly found in the separate functions of the script.
 
-\subsubsection{Evaluation}
-\paragraph{Signal-level evaluation}
+\subsection{Evaluation}
+\subsubsection{Signal-level evaluation}
 There are two common metrics\cite{horii2013musical} to evaluate the quality of the noise reduction : the \ac{NRR} and \ac{SDR}.
 \begin{itemize}
 \item The \ac{NRR} compares the signal before and after application of the noise reduction algorithm. It is an indicator of how much of the noise have been reduced: it is better when it is superior to $0$. However, if it is too high, the signal might not be recognizable at all anymore.
@@ -343,7 +343,7 @@ There are two common metrics\cite{horii2013musical} to evaluate the quality of t
 \end{itemize}
 
 During my internship, I compared many times the different algorithms and parameters. Thanks to the extensive textual resources of the lab, I could compare my results with reference scientific results, which allowed me to perform some debugging, and to be sure of my implementation.
-\paragraph{Word-level evaluation}
+\subsubsection{Word-level evaluation}
 To evaluate the performance on word-level, it is necessary to use the speech recognition software (\brand{Julius}) : we give some audio file with sentences to the software and it outputs the text it recognized. I made a script (\texttt{output/execute\_speech\_recog.py}) that takes a given set of sentences, and the same sentences processed with different kinds of noise, and finally calls \brand{Julius} with multiple algorithms for each of these sets of files. The script then computes a word error rate by comparing the original sentences and computed sentences. 
 The algorithms are as follows : 
 \begin{itemize}
@@ -388,8 +388,8 @@ We still get a lot of results, that I averaged in a spreadsheet :
 One first thing to notice is that using noise reduction is not always wise : on the first and third graph we can see that the bypassed error rate is better than the non-bypassed. 
 
 However we can also see how the signal-to-noise ratio affects the results : the geometric algorithms will perform better than the others on low SNR. So the algorithms should only be applied when there is a lot of noise.
-\subsection{Research work}
-\subsubsection{First idea to improve spectral subtraction}
+\section{Research work}
+\subsection{First idea to improve spectral subtraction}
 As said before, the problem with spectral subtraction is that it generates musical tones which can be a problem for the listener, or for the speech recognition software.
 
 So I decided to try to find a way to reduce, if not suppress, these musical tones.
@@ -414,7 +414,7 @@ I had first to learn how to use the continuous wavelet transform, and to choose 
 
 Then, I tried to find a fast and portable implementation of a wavelet transform : I found \brand{cwtlib++}, a \brand{C++} wavelet transform library, with no dependencies.
 
-\paragraph{Finding the musical tones}
+\subsubsection{Finding the musical tones}
 My global idea to reduce the noise was as follows : 
 \begin{enumerate}
 \item Perform a spectral subtraction on a FFT frame $X$ with a noise estimation $E$ into $X'$ : $X'_i = X_i - E_i$.
@@ -433,14 +433,14 @@ To estimate the musical tones, I came across multiple heuristics induced by obse
 \end{itemize}
 Some pictures can be seen in the poster in appendix \ref{appendix1}.
 Using these algorithms, I made the \texttt{CWTNoiseEstimator} class that tries to implement these ideas. I made a shape recognition algorithm that plots the potential musical tones according to the previous heuristics, and computes the parameters of the musical tone (frequency, amplitude...). Then, I make an average for every band of frequency, to create $M$. Unfortunately, as it can be seen on the results in the poster, there is not much gain finally.
-\paragraph{Kansai joint speech seminar}
+\subsubsection{Kansai joint speech seminar}
 I participated in a conference held in a university close to Ritsumeikan. I had to make a poster which will be shown in \ref{appendix1}.
 The main theme of this seminar is research about audio, with a little emphasis on speech. It was held on \formatdate{20}{07}{2013}. The seminar was in three rooms, two were mostly about signal processing, whlie another was more about language study on a semantic level. The complete list of the presentations, mostly in Japanese, is here : \url{http://nlp.i.ryukoku.ac.jp/gakkai/godozemi/201307/index.html}
 
 Students and teachers from different Kansai universities, and sometimes other foreign student would comment on the poster of every student.
 (Note : the Kansai (\begin{CJK}{UTF8}{min}関西地方\end{CJK}) is a region of Japan which encompasses Osaka, Kyoto, Nara...).
 
-\subsubsection{Second idea to reduce noise}
+\subsection{Second idea to reduce noise}
 After this, I started to try to think about other ways to reduce noise, and I thought about using some parts of what I had heard of during my previous internship : using reinforcment learning to set the standard spectral subtraction parameters $\alpha$ and $\beta$ in real time, according to the noise, because some of my measurements shown that some couples would work better with some kinds of noises than other couples.
 
 My idea was as follows : 
